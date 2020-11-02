@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title>Java生成有规则的编号</title>
+      <link href="/2020/11/02/Java%E7%94%9F%E6%88%90%E6%9C%89%E8%A7%84%E5%88%99%E7%9A%84%E7%BC%96%E5%8F%B7/"/>
+      <url>/2020/11/02/Java%E7%94%9F%E6%88%90%E6%9C%89%E8%A7%84%E5%88%99%E7%9A%84%E7%BC%96%E5%8F%B7/</url>
+      
+        <content type="html"><![CDATA[<p>做订单、出入库单等等数据时，往往需要自动生成有一定规则的编号。</p><p>编号格式为：两个字母+日期（8位）+编号（3位）。</p><h2 id="第一种方法："><a href="#第一种方法：" class="headerlink" title="第一种方法："></a>第一种方法：</h2><p>其中，日期为系统当前的日期。首先获取系统当前日期，然后根据日期格式将date类型转换成String类型即可。</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">SimpleDateFormat f = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyyMMdd"</span>);<span class="comment">//设置日期格式</span></span><br><span class="line">String date = f.format(<span class="keyword">new</span> Date);</span><br></pre></td></tr></table></figure><p>后三位编号根据数据库中当天已存在编号进行自增。首先需要查询出数据库中当天的编号并且以降序排序。sql语句如下：</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String sql = <span class="string">"select * from 数据库表名 where 字段 like '字母"</span>+date+<span class="string">"%' order by 字段 desc"</span>;</span><br></pre></td></tr></table></figure><p>查询的数据放在集合内，判断集合内是否有数据。有数据就获取集合中第一条数据中的编号（最大号），再截取编号的后三位，转换为int类型，自增后再转换为String类型，通过三目运算符循环三次在前面加0直至为三位数的字符串，最后拼接得到编号。若集合内没有数据就直接拼接001。</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">List&lt;实体类&gt; 集合名 = service.方法名(); <span class="comment">// 调用Service中的方法获取SQL中的数据</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(集合名.size() &gt; <span class="number">0</span>)&#123;</span><br><span class="line">String n = 集合名.get(<span class="number">0</span>).get字段名();</span><br><span class="line"><span class="keyword">int</span> intNumber = Integer.parseInt(n.substring(<span class="number">10</span>));</span><br><span class="line">intNumber++;</span><br><span class="line">String Number = String.valueOf(intNumber);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++)&#123;</span><br><span class="line">String Number = Number.length() &lt; <span class="number">3</span> ? <span class="string">"0"</span> + Number : Number;</span><br><span class="line">&#125;</span><br><span class="line">    String Number = <span class="string">"字母"</span> + date + Number;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    String Number = <span class="string">"字母"</span> + date + <span class="string">"001"</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure><h2 id="第二种方法：思路"><a href="#第二种方法：思路" class="headerlink" title="第二种方法：思路"></a>第二种方法：思路</h2><p>设计一张临时数据库表存放编号(只需存一行数据和两列字段(如：id,value)即可，value供修改)，每次需要用时查询此表，获取当前value，同时加1，供后续使用，不够三位数时也可采用第一种方法中的补零策略(方法很多)</p><h2 id="第三种方法：redis推荐"><a href="#第三种方法：redis推荐" class="headerlink" title="第三种方法：redis推荐"></a>第三种方法：redis推荐</h2><p>配置redis(单机)，下图为在springBOOT架构中application.yml的配置，传统架构的配置方式都一样</p><p><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/20190818125153151.png" alt=""></p><p>生成编号代码：<br><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/20190818130515200.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L21pbmtleXRv,size_16,color_FFFFFF,t_70" alt=""></p><p>TimeUnit部分源码：<br><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/20190818130705952.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L21pbmtleXRv,size_16,color_FFFFFF,t_70" alt=""></p><h2 id="三种方法比较："><a href="#三种方法比较：" class="headerlink" title="三种方法比较："></a>三种方法比较：</h2><p>第一、二种方法都会有个致命的BUG，就是在多并发的情况下，拿到同一个编号的几率很大，有人说加同步代码块synchronized啊，确实可行，但在访问量大的情况下，一直让用户等待，页面一直在loading，那就尴尬啦，让人怀疑我们的技术能力啊</p><p><code>注意：synchronized与负载均衡(分布式)没关系，synchronized只跟进程有关联</code></p><p>第三种方法，就避免了这个问题，因为Redis是单进程单线程模式，采用队列模式将并发访问变成串行访问<br><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/20190818132312935.png" alt=""></p><p>如数据源无此Key，那初始值为1，每次获取后，自动加1供后续使用</p><p><code>注意：increment方法中value还可以为double类型</code><br><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/20190818134033441.png" alt=""></p><p>如数据源无此Key，那初始值为2.3，每次获取后，自动加2.3</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Java </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Java </tag>
+            
+            <tag> 编号生成 </tag>
+            
+            <tag> redis </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>ScheduledTaskRegistrar实现动态增删启停定时任务功能</title>
       <link href="/2020/11/01/ScheduledTaskRegistrar%E5%AE%9E%E7%8E%B0%E5%8A%A8%E6%80%81%E5%A2%9E%E5%88%A0%E5%90%AF%E5%81%9C%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%8A%9F%E8%83%BD/"/>
       <url>/2020/11/01/ScheduledTaskRegistrar%E5%AE%9E%E7%8E%B0%E5%8A%A8%E6%80%81%E5%A2%9E%E5%88%A0%E5%90%AF%E5%81%9C%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%8A%9F%E8%83%BD/</url>
@@ -13,7 +42,7 @@
       
       <categories>
           
-          <category> Java </category>
+          <category> SpringBoot </category>
           
       </categories>
       
