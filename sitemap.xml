@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://www.goitman.cn/2020/07/13/%E6%B5%85%E6%9E%90%20VO%E3%80%81DTO%E3%80%81DO%E3%80%81PO%20%E7%9A%84%E6%A6%82%E5%BF%B5%E3%80%81%E5%8C%BA%E5%88%AB%E5%92%8C%E7%94%A8%E5%A4%84%EF%BC%81/</loc>
+    
+    <lastmod>2021-04-30T08:00:37.885Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.goitman.cn/2021/04/30/%E6%9E%9A%E4%B8%BE%EF%BC%8C%E4%BD%A0%E4%BA%86%E8%A7%A3%E5%AE%83%E5%90%97/</loc>
     
     <lastmod>2021-04-30T07:42:00.415Z</lastmod>
@@ -54,13 +61,6 @@
     <loc>http://www.goitman.cn/categories/index.html</loc>
     
     <lastmod>2020-07-16T06:49:08.101Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.goitman.cn/2020/07/13/%E6%B5%85%E6%9E%90%20VO%E3%80%81DTO%E3%80%81DO%E3%80%81PO%20%E7%9A%84%E6%A6%82%E5%BF%B5%E3%80%81%E5%8C%BA%E5%88%AB%E5%92%8C%E7%94%A8%E5%A4%84%EF%BC%81/</loc>
-    
-    <lastmod>2020-07-13T08:20:36.315Z</lastmod>
     
   </url>
   
