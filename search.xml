@@ -4,6 +4,37 @@
   
     
     <entry>
+      <title>compileflow 淘宝工作流引擎</title>
+      <link href="/2021/07/22/compileflow%20%E6%B7%98%E5%AE%9D%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%BC%95%E6%93%8E/"/>
+      <url>/2021/07/22/compileflow%20%E6%B7%98%E5%AE%9D%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%BC%95%E6%93%8E/</url>
+      
+        <content type="html"><![CDATA[<h2 id="compileflow是什么"><a href="#compileflow是什么" class="headerlink" title="compileflow是什么"></a>compileflow是什么</h2><p>compileflow是一个非常轻量、高性能、可集成、可扩展的流程引擎。</p><p>compileflow Process引擎是淘宝工作流TBBPM引擎之一，是专注于纯内存执行，无状态的流程引擎，通过将流程文件转换生成java代码编译执行，简洁高效。当前是阿里业务中台交易等多个核心系统的流程引擎。</p><p>compileflow能让开发人员通过流程编辑器设计自己的业务流程，将复杂的业务逻辑可视化，为业务设计人员与开发工程师架起了一座桥梁。</p><blockquote><p><a href="https://github.com/compileflow/compileflow-designer-upgrade" target="_blank" rel="noopener">最新插件安装包下载</a> </p></blockquote><h2 id="设计意图"><a href="#设计意图" class="headerlink" title="设计意图"></a>设计意图</h2><ol><li>希望为业务开发提供端至端，从设计至实现的业务流程解决方案。</li><li>提供多种流程引擎，实现从战略至商业能力，商业能力至业务流程，业务流程至系统，并最终实现业务的可视化全局架构。</li><li>设计高效的执行引擎，实现对服务的快速组合或扩展，提升idea(构思)至value(价值)的研发响应与交互速度。</li></ol><h2 id="特色"><a href="#特色" class="headerlink" title="特色"></a>特色</h2><ol><li>高性能：通过将流程文件转换生成java代码编译执行<code>(爽啊，Activiti可没这功能)</code>，简洁高效。</li><li>丰富的应用场景：在阿里巴巴中台解决方案中广泛使用，支撑了导购、交易、履约、资金等多个业务场景。</li><li>可集成：轻量、简洁的设计使得可以极其方便地集成到各个解决方案和业务场景中。</li><li>完善的插件支持：流程设计目前有IntelliJ IDEA、Eclipse插件支持，可以在流程设计中实时动态生成java代码并预览，所见即所得。</li><li>支持流程设计图导出svg文件和单元测试代码。</li></ol><h2 id="IntelliJ-IDEA安装插件"><a href="#IntelliJ-IDEA安装插件" class="headerlink" title="IntelliJ IDEA安装插件"></a>IntelliJ IDEA安装插件</h2><blockquote><p><code>注意: compileflow仅支持JDK 1.8及以上版本。</code></p></blockquote><p>以IntelliJ IDEA 2019版本为例，下载最新包到本地</p><p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/07/22/C1USc8xzsgHoyAT.png" alt="微信图片_20210722112025.png"></p><p>使用本地安装的方式安装，注意安装整个zip不用手动解压 </p><p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/07/22/WbBXhDQMPUfrwoK.png" alt="微信图片_20210722113354.png"></p><p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/07/22/yAnptbmq6PrvUeQ.png" alt="微信图片_20210722113123.png"></p><p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/07/22/o6Q8luLqvBGIeUc.png" alt="微信图片_20210722113159.png"></p><p>重启IntelliJ IDEA就会生效</p><h2 id="使用教程"><a href="#使用教程" class="headerlink" title="使用教程"></a>使用教程</h2><p>如果Maven项目，需引入依赖</p><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.compileflow<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>compileflow<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure><h3 id="简单示例"><a href="#简单示例" class="headerlink" title="简单示例"></a>简单示例</h3><h4 id="新建BPM文件"><a href="#新建BPM文件" class="headerlink" title="新建BPM文件"></a>新建BPM文件</h4><ul><li><p>可在resources目录下创建，选中resources目录右键点击【Create New Bpm<br>File】。例如我这边创建在resources的bpm目录下。<br><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/07/22/M5rhKWqGlnoQsBj.png" alt=""></p></li><li><p>输入文件名，例如：我这里的hello<br><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/07/22/vzokpQNTjqbZlPd.png" alt=""></p></li><li><p>插件默认会生成了hello.bpm文件，是一个简单的开平方根demo流程，如下图<br><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/07/22/4S8xPMGQrznsu7W.png" alt=""></p></li></ul><h4 id="可视化编辑"><a href="#可视化编辑" class="headerlink" title="可视化编辑"></a>可视化编辑</h4><ul><li><p>你可以选择下方【process-flow】进行可视化编辑，从左侧拖入节点到画布，或者选中节点拖动。<br><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/07/22/pNi38WaMHI5xon2.png" alt=""></p></li><li><p>双击空白处可编辑全局参数<br><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/07/22/oBctevwJzYUg4q5.png" alt=""></p></li></ul><ul><li>双击节点可以编辑节点参数（拖拽可调整节点位置）<br><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/07/22/Sey9Xr1TJcbdasz.png" alt=""></li></ul><h4 id="Java代码预览"><a href="#Java代码预览" class="headerlink" title="Java代码预览"></a>Java代码预览</h4><ul><li>可以选择下方【java code】进行Java代码预览。<br><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/07/22/z1RWMcSvdkB4ugV.png" alt=""></li></ul><h4 id="创建测试代码"><a href="#创建测试代码" class="headerlink" title="创建测试代码"></a>创建测试代码</h4><ul><li><p>选中文件右键，点击【Create New Bpm JUnit Test】可自动生成测试类<br><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/07/22/yb2NYWcHoJzgVaT.png" alt=""></p></li><li><p>到指定路径查看生成的测试类（修改入参数运行整个demo就完成了）<br><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/07/22/nRAm1NB8DIZgk3S.png" alt=""></p></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技术专题 </category>
+          
+          <category> 工作流 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> compileflow </tag>
+            
+            <tag> Activiti </tag>
+            
+            <tag> 工作流 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>rabbitmq 消息延迟推送--插件模式</title>
       <link href="/2021/07/13/rabbitmq%20%E6%B6%88%E6%81%AF%E5%BB%B6%E8%BF%9F%E6%8E%A8%E9%80%81--%E6%8F%92%E4%BB%B6%E6%A8%A1%E5%BC%8F/"/>
       <url>/2021/07/13/rabbitmq%20%E6%B6%88%E6%81%AF%E5%BB%B6%E8%BF%9F%E6%8E%A8%E9%80%81--%E6%8F%92%E4%BB%B6%E6%A8%A1%E5%BC%8F/</url>
@@ -13,7 +44,9 @@
       
       <categories>
           
-          <category> rabbitmq </category>
+          <category> 技术专题 </category>
+          
+          <category> 消息队列 </category>
           
       </categories>
       
@@ -67,7 +100,7 @@
       
       <categories>
           
-          <category> 枚举 </category>
+          <category> Java基础 </category>
           
       </categories>
       
@@ -94,7 +127,9 @@
       
       <categories>
           
-          <category> 加解密 </category>
+          <category> 技术专题 </category>
+          
+          <category> 算法 </category>
           
       </categories>
       
@@ -125,7 +160,7 @@
       
       <categories>
           
-          <category> 图片处理 </category>
+          <category> 辅助工具 </category>
           
       </categories>
       
@@ -152,7 +187,9 @@
       
       <categories>
           
-          <category> Java </category>
+          <category> 技术专题 </category>
+          
+          <category> 缓存 </category>
           
       </categories>
       
@@ -181,7 +218,9 @@
       
       <categories>
           
-          <category> 定时任务 </category>
+          <category> 技术专题 </category>
+          
+          <category> 任务调度 </category>
           
       </categories>
       
