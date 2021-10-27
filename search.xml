@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title>什么是进制？</title>
+      <link href="/2021/10/27/%E4%BB%80%E4%B9%88%E6%98%AF%E8%BF%9B%E5%88%B6/"/>
+      <url>/2021/10/27/%E4%BB%80%E4%B9%88%E6%98%AF%E8%BF%9B%E5%88%B6/</url>
+      
+        <content type="html"><![CDATA[<p>进制也就是进位计数制，是人为定义的带进位的计数方法。对于任何一种进制如：X进制，就表示每一位上的数运算时都是逢X进一位。十进制是逢十进一，十六进制是逢十六进一，二进制就是逢二进一，以此类推，x进制就是逢x进位。</p><p>对于任何一个数，我们可以用不同的进位制来表示。比如：十进数57(10)，可以用二进制表示为111001(2)，也可以用五进制表示为212（5)，也可以用八进制表示为71(8)、用十六进制表示为39(16)，它们所代表的数值都是一样的。</p><h1 id="十进制"><a href="#十进制" class="headerlink" title="十进制"></a>十进制</h1><p>十进制编码几乎就是数值本身。数值本身是一个数学上的抽象概念。经过长期的演化、融合、选择、淘汰，系统简便、功能全面的十进制计数法成为人类文化中主流的计数方法。<br>十进制数的书写可以不加标注，或加<code>后缀D</code>，其中D是英文十进制Decimal的首字母D。</p><ul><li><code>十进制的基数为10，数码由0-9组成，计数规律逢十进一。</code></li></ul><h1 id="二进制"><a href="#二进制" class="headerlink" title="二进制"></a>二进制</h1><ul><li><code>二进制由两个数码0，1组成，运算规律是逢二进一。</code></li></ul><p>二进制数的书写通常在数的<code>右下方注上基数2</code>，或在<code>后缀加B</code>表示，其中B是英文二进制Binary的首字母。如：二进制数10110011可以写成（10110011）2，或写成10110011B。</p><p>计算机领域我们之所以采用二进制进行计数，是因为二进制具有以下优点：</p><ol><li>二进制数中只有两个数码0和1，可用具有两个不同稳定状态的元器件来表示一位数码。例如，电路中某一通路的电流的有无，某一节点电压的高低，晶体管的导通和截止等。</li><li>二进制数运算简单，大大简化了计算中运算部件的结构。二进制数的加法和乘法基本运算法则各有四条，如下：<blockquote><p>0+0=0，0+1=1，1+0=1，1+1=10<br>0×0=0，0×1=0，1×0=0，1×1=1</p></blockquote></li><li>二进制天然兼容逻辑运算。二进制计数在日常使用上有个不便之处，就是位数往往很长，读写不便，如：把十进制的100000D写成二进制就是11000011010100000B，所以<code>计算机领域我们实际采用的是十六进制</code>。二进制数转换为十六进制数时，长度缩减为原先的约四分之一，把十进制的100000写成八进制就是303240。<code>十六进制的一个数位可代表二进制的四个数位</code>。这样，十进制的100000写成十六进制就是186A0。</li></ol><h1 id="八进制"><a href="#八进制" class="headerlink" title="八进制"></a>八进制</h1><p>由于二进制数据的基数R较小，所以二进制数据的书写和阅读不方便，为此，在<code>小型机中引入了八进制</code>。八进制的基数R=8=2^3，有数码0、1、2、3、4、5、6、7组成，并且<code>每个数码正好对应三位二进制数</code>，所以八进制能很好地反映二进制。<br><code>八进制用下标8或数据后面加O表示</code>，如：二进制数据 (11 101 010 . 010 110 100)2 对应八进制数据 (352.264)8或352.264O。</p><h1 id="十六进制"><a href="#十六进制" class="headerlink" title="十六进制"></a>十六进制</h1><p>十六进制数由十六个数码：<code>数字0～9加上字母A-F组成（A-F分别表示十进制数10～15）</code>，十六进制数运算规律是逢十六进一，即基数R=16=2^4。<br>通常在表示时用<code>尾部标志H或下标16</code>以示区别，在c语言中用添加前缀0x以表示十六进制数。如：十六进制数4AC8可写成(4AC8)16，或写成4AC8H。</p><h1 id="进制转换"><a href="#进制转换" class="headerlink" title="进制转换"></a>进制转换</h1><h2 id="二进制转换"><a href="#二进制转换" class="headerlink" title="二进制转换"></a>二进制转换</h2><h3 id="二进制转换八进制"><a href="#二进制转换八进制" class="headerlink" title="二进制转换八进制"></a>二进制转换八进制</h3><p><code>不足三位，用&#39;0&#39;补齐，正数部分往左补齐，小数部分往右补齐</code><br><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/10/27/Hg5Z3ql67YvInDM.jpg" alt="二进制转换八进制"></p><h3 id="二进制转换十进制"><a href="#二进制转换十进制" class="headerlink" title="二进制转换十进制"></a>二进制转换十进制</h3><p>幂取值以小数点为界<code>往左为正0 ~ n</code>，<code>往右为负-1 ~ -n</code>(如下图1/2、0/4、1/8….)<br><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/10/27/RNU3pASjCEbThwI.jpg" alt="二进制转换十进制"></p><h3 id="二进制转换十六进制"><a href="#二进制转换十六进制" class="headerlink" title="二进制转换十六进制"></a>二进制转换十六进制</h3><p><code>不足四位，用&#39;0&#39;补齐，正数部分往左补齐，小数部分往右补齐</code><br><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/10/27/wuKYp2XFGdHVtob.jpg" alt="二进制转换十六进制"></p><h2 id="八进制转换"><a href="#八进制转换" class="headerlink" title="八进制转换"></a>八进制转换</h2><h3 id="八进制转换二进制"><a href="#八进制转换二进制" class="headerlink" title="八进制转换二进制"></a>八进制转换二进制</h3><p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/10/27/TuHa3gQrLKOAcVI.jpg" alt="八进制转换二进制"></p><h3 id="八进制转换十进制"><a href="#八进制转换十进制" class="headerlink" title="八进制转换十进制"></a>八进制转换十进制</h3><p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/10/27/2NjXRJiaWnELxbw.jpg" alt="八进制转换十进制"></p><h3 id="八进制转换十六进制"><a href="#八进制转换十六进制" class="headerlink" title="八进制转换十六进制"></a>八进制转换十六进制</h3><p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/10/27/TuHa3gQrLKOAcVI.jpg" alt="八进制转换二进制"></p><p><code>不足四位，用&#39;0&#39;补齐，正数部分往左补齐，小数部分往右补齐</code><br><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/10/27/4vgYShL6HQJNaUB.jpg" alt="八进制转换十六进制"></p><h2 id="十进制转换"><a href="#十进制转换" class="headerlink" title="十进制转换"></a>十进制转换</h2><p><code>正数除以X进制，商至&#39;0&#39;为止；小数乘以X进制为正数为止</code></p><h3 id="十进制转换二进制"><a href="#十进制转换二进制" class="headerlink" title="十进制转换二进制"></a>十进制转换二进制</h3><p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/10/27/4I8PQoKldaCX1E7.jpg" alt="十进制转换二进制"></p><h3 id="十进制转换八进制"><a href="#十进制转换八进制" class="headerlink" title="十进制转换八进制"></a>十进制转换八进制</h3><p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/10/27/DlKxuaq2jWcLyAg.jpg" alt="十进制转换八进制"></p><h3 id="十进制转换十六进制"><a href="#十进制转换十六进制" class="headerlink" title="十进制转换十六进制"></a>十进制转换十六进制</h3><p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/10/27/fLgAUWeBFZGqrzh.jpg" alt="十进制转换十六进制"></p><h2 id="十六进制转换"><a href="#十六进制转换" class="headerlink" title="十六进制转换"></a>十六进制转换</h2><h3 id="十六进制转换二进制"><a href="#十六进制转换二进制" class="headerlink" title="十六进制转换二进制"></a>十六进制转换二进制</h3><p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/10/27/hUQ2XvTuJ3AWCRK.png" alt="十六进制转换二进制"></p><h3 id="十六进制转换八进制"><a href="#十六进制转换八进制" class="headerlink" title="十六进制转换八进制"></a>十六进制转换八进制</h3><p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/10/27/7Cs2KgqRADy6J5T.jpg" alt="十六进制转换八进制"></p><h3 id="十六进制转换十进制"><a href="#十六进制转换十进制" class="headerlink" title="十六进制转换十进制"></a>十六进制转换十进制</h3><p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/10/27/io3wjV5lOg98nuc.jpg" alt="十六进制转换十进制"></p><h2 id="小技巧"><a href="#小技巧" class="headerlink" title="小技巧"></a>小技巧</h2><ul><li><code>十进制转八进制或者十六进制有两种方法</code></li></ul><blockquote><ol><li>间接法<br>把十进制转成二进制，然后再由二进制转成八进制或者十六进制。这里不再做图片用法解释。</li><li>直接法(本文使用方法)<br>把十进制转八进制或者十六进制按照除8或者16取余，直到商为0为止。</li></ol></blockquote><ul><li><code>八进制与十六进制之间的转换有两种方法</code></li></ul><blockquote><ol><li>以先转成二进制然后再相互转换(本文使用方法)。</li><li>先转成十进制然后再相互转换。</li></ol></blockquote>]]></content>
+      
+      
+      <categories>
+          
+          <category> Java基础 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 十进制 </tag>
+            
+            <tag> 二进制 </tag>
+            
+            <tag> 进制转换 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Excel导入导出注解通用版</title>
       <link href="/2021/10/18/Excel%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA%E6%B3%A8%E8%A7%A3%E9%80%9A%E7%94%A8%E7%89%88/"/>
       <url>/2021/10/18/Excel%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA%E6%B3%A8%E8%A7%A3%E9%80%9A%E7%94%A8%E7%89%88/</url>
@@ -109,8 +138,6 @@
       
         <tags>
             
-            <tag> 定时任务 </tag>
-            
             <tag> 代码生成 </tag>
             
             <tag> Erupt </tag>
@@ -118,6 +145,8 @@
             <tag> 权限管理 </tag>
             
             <tag> 数据安全 </tag>
+            
+            <tag> 定时任务 </tag>
             
             <tag> 系统监控 </tag>
             
@@ -498,9 +527,9 @@
       
         <tags>
             
-            <tag> spring </tag>
-            
             <tag> 定时任务 </tag>
+            
+            <tag> spring </tag>
             
             <tag> 通用mapper </tag>
             
