@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title>Linux CPU使用率与负载过高解决思路</title>
+      <link href="/2021/12/08/Linux%20CPU%E4%BD%BF%E7%94%A8%E7%8E%87%E4%B8%8E%E8%B4%9F%E8%BD%BD%E8%BF%87%E9%AB%98%E8%A7%A3%E5%86%B3%E6%80%9D%E8%B7%AF/"/>
+      <url>/2021/12/08/Linux%20CPU%E4%BD%BF%E7%94%A8%E7%8E%87%E4%B8%8E%E8%B4%9F%E8%BD%BD%E8%BF%87%E9%AB%98%E8%A7%A3%E5%86%B3%E6%80%9D%E8%B7%AF/</url>
+      
+        <content type="html"><![CDATA[<h1 id="查看系统CPU负载及使用率"><a href="#查看系统CPU负载及使用率" class="headerlink" title="查看系统CPU负载及使用率"></a>查看系统CPU负载及使用率</h1><p>命令分别有：</p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看进程级别的cpu使用情况</span></span><br><span class="line">top</span><br><span class="line"><span class="comment"># 查看系统级别的cpu使用情况</span></span><br><span class="line">vmstat</span><br></pre></td></tr></table></figure><h2 id="top-命令"><a href="#top-命令" class="headerlink" title="top 命令"></a>top 命令</h2><p>可以查看进程的CPU、内存等资源的使用情况</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/08/V4Jdeh2cWsak83I.png" alt=""></p><p>在top命令运行过程中可以<code>通过top的内部命令做显示方式的控制</code>：  </p><table><thead><tr><th align="center">命  令</th><th>描  述</th></tr></thead><tbody><tr><td align="center">1</td><td>开启或关闭显示所有cpu使用详细情况</td></tr><tr><td align="center">l</td><td>关闭或开启第一部分<code>第一行</code> top 信息的表示</td></tr><tr><td align="center">t</td><td>关闭或开启第一部分<code>第二行</code> Tasks 和<code>第三行</code> Cpus 信息的表示</td></tr><tr><td align="center">m</td><td>关闭或开启第一部分<code>第四行</code> Mem 和 <code>第五行</code> Swap 信息的表示</td></tr><tr><td align="center">N</td><td>以 <code>PID 的大小</code>的顺序排列表示进程列表（第三部分后述）</td></tr><tr><td align="center">P</td><td>以 <code>CPU 占用率大小</code>的顺序排列进程列表 （第三部分后述）</td></tr><tr><td align="center">M</td><td>以<code>内存占用率大小</code>的顺序排列进程列表 （第三部分后述）</td></tr><tr><td align="center">h</td><td>显示帮助</td></tr><tr><td align="center">n</td><td>设置在进程列表所显示进程的数量</td></tr><tr><td align="center">q</td><td>退出 top</td></tr><tr><td align="center">s</td><td>改变画面更新频率（输入数字）</td></tr></tbody></table><h2 id="vmstat命令"><a href="#vmstat命令" class="headerlink" title="vmstat命令"></a>vmstat命令</h2><p>可以查看系统整体的cpu，内存的使用情况</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/08/2SxVKWCYdgsIJuG.png" alt=""></p><table><thead><tr><th align="center">属  性</th><th>描  述</th></tr></thead><tbody><tr><td align="center">r</td><td>表示<code>系统中 CPU 等待处理的线程</code>。由于 <code>CPU 每次只能处理一个线程，所以，该数值越大，通常表示系统运行越慢</code>。</td></tr><tr><td align="center">us</td><td><code>用户模式</code>消耗的 CPU 时间百分比。<code>该值较高时，说明用户进程消耗的 CPU 时间比较多</code>，比如，如果<code>该值长期超过 50%，则需要对程序算法或代码等进行优化</code>。</td></tr><tr><td align="center">sy</td><td><code>内核模式</code>消耗的 CPU 时间百分比。</td></tr><tr><td align="center">wa</td><td><code>IO 等待消耗</code>的 CPU 时间百分比。<code>该值较高时，说明 IO 等待比较严重，这可能磁盘大量作随机访问造成的，也可能是磁盘性能出现了瓶颈</code>。</td></tr><tr><td align="center">id</td><td><code>处于空闲状态</code>的 CPU 时间百分比。如果<code>该值持续为 0，同时 sy 是 us 的两倍，则通常说明系统则面临着 CPU 资源的短缺</code>。</td></tr></tbody></table><h1 id="操作进程CPU占用和负载较高"><a href="#操作进程CPU占用和负载较高" class="headerlink" title="操作进程CPU占用和负载较高"></a>操作进程CPU占用和负载较高</h1><h2 id="使用top直接终止cpu消耗大的进程"><a href="#使用top直接终止cpu消耗大的进程" class="headerlink" title="使用top直接终止cpu消耗大的进程"></a>使用top直接终止cpu消耗大的进程</h2><p>top命令查看对cpu消耗大的进程，直接输入<code>&quot;k&quot;</code>，然后<code>输入相应进程的PID号</code>即可终止该进程。</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/08/KbDx3hSd8Rfzpri.png" alt=""></p><h2 id="通过top观察cpu很空闲，但是负载比较高的情况"><a href="#通过top观察cpu很空闲，但是负载比较高的情况" class="headerlink" title="通过top观察cpu很空闲，但是负载比较高的情况"></a>通过top观察cpu很空闲，但是负载比较高的情况</h2><p>load average 是对CPU负载的评估，<code>其值越高，说明其任务队列越长，处于等待执行的任务越多</code>。</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/08/V4Jdeh2cWsak83I.png" alt=""></p><p>出现此种情况时，可能是由于僵死进程导致的。可以通过指令<code>ps -axjf</code> 查看<code>是否存在 D 状态进程</code>。</p><blockquote><p>D 状态：是指<code>不可中断的睡眠状态</code>。该状态的进程<code>无法被kill，也无法自行退出</code>。只能通过<code>恢复其依赖的资源</code>或者<code>重启系统</code>来解决。</p></blockquote>]]></content>
+      
+      
+      <categories>
+          
+          <category> 服务器 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Linux </tag>
+            
+            <tag> 使用率 </tag>
+            
+            <tag> 负载均衡 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Log4j2 使用详解</title>
       <link href="/2021/12/06/Log4j2%20%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3/"/>
       <url>/2021/12/06/Log4j2%20%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3/</url>
