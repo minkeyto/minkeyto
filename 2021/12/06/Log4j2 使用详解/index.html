@@ -1,0 +1,1568 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Log4j2 使用详解 | 灵熙云工作室</title><meta name="description" content="常用日志框架 java.util.logging：是JDK在1.4版本中引入的Java原生日志框架。 Log4j：Apache的一个开源项目，可以控制日志信息输送的目的地是控制台、文件、GUI组件等，可以控制每一条日志的输出格式，这些可以通过一个配置文件来灵活地进行配置，而不需要修改应用的代码。虽然已经停止维护了，但目前绝大部分企业都是用的log4j。 LogBack：是Log4j的一个改良版本。"><meta name="keywords" content="log4j2,LogBack,slf4j"><meta name="author" content="灵熙云,minkeyto@qq.com"><meta name="copyright" content="灵熙云"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/file/favicon.png"><link rel="canonical" href="http://www.goitman.cn/2021/12/06/Log4j2%20%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preconnect" href="//zz.bdstatic.com"/><meta property="og:type" content="article"><meta property="og:title" content="Log4j2 使用详解"><meta property="og:url" content="http://www.goitman.cn/2021/12/06/Log4j2%20%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3/"><meta property="og:site_name" content="灵熙云工作室"><meta property="og:description" content="常用日志框架 java.util.logging：是JDK在1.4版本中引入的Java原生日志框架。 Log4j：Apache的一个开源项目，可以控制日志信息输送的目的地是控制台、文件、GUI组件等，可以控制每一条日志的输出格式，这些可以通过一个配置文件来灵活地进行配置，而不需要修改应用的代码。虽然已经停止维护了，但目前绝大部分企业都是用的log4j。 LogBack：是Log4j的一个改良版本。"><meta property="og:image" content="https://s2.loli.net/2021/12/07/ktehZuTXwYJrM9E.jpg"><meta property="article:published_time" content="2021-12-06T12:45:27.019Z"><meta property="article:modified_time" content="2021-12-08T06:53:28.217Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'false'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="next" title="Apifox自动化测试一体化协作平台" href="http://www.goitman.cn/2021/11/03/Apifox%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E4%B8%80%E4%BD%93%E5%8C%96%E5%8D%8F%E4%BD%9C%E5%B9%B3%E5%8F%B0/"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?5c009f46ba6df7bc385f101477536214";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容:${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: false,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: true,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script>var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2021-12-08 14:53:28'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img{
+  opacity: 1
+}
+</style></noscript><link rel="stylesheet" href="/css/effect.css"><meta name="generator" content="Hexo 4.2.1"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/file/head.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">23</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">70</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">14</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-file"></i><span> 专题笔记</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/2020/08/17/Redis/"><i class="fa-fw fa fa-book"></i><span> Redis</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div></div></div><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#常用日志框架"><span class="toc-number">1.</span> <span class="toc-text">常用日志框架</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#日志门面slf4j"><span class="toc-number">2.</span> <span class="toc-text">日志门面slf4j</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#为什么选用log4j2"><span class="toc-number">3.</span> <span class="toc-text">为什么选用log4j2</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#配置种类"><span class="toc-number">4.</span> <span class="toc-text">配置种类</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XML基本语法"><span class="toc-number">5.</span> <span class="toc-text">XML基本语法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#常用配置"><span class="toc-number">5.1.</span> <span class="toc-text">常用配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#日志级别"><span class="toc-number">5.2.</span> <span class="toc-text">日志级别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Configuration元素"><span class="toc-number">5.3.</span> <span class="toc-text">Configuration元素</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Appender元素"><span class="toc-number">5.4.</span> <span class="toc-text">Appender元素</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ConsoleAppender"><span class="toc-number">5.4.1.</span> <span class="toc-text">ConsoleAppender</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RollingFileAppender"><span class="toc-number">5.4.2.</span> <span class="toc-text">RollingFileAppender</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#触发规则"><span class="toc-number">5.4.2.1.</span> <span class="toc-text">触发规则</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#OnStartupTriggeringPolicy"><span class="toc-number">5.4.2.1.1.</span> <span class="toc-text">OnStartupTriggeringPolicy</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#TimeBasedTriggeringPolicy"><span class="toc-number">5.4.2.1.2.</span> <span class="toc-text">TimeBasedTriggeringPolicy</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#SizeBasedTriggeringPolicy"><span class="toc-number">5.4.2.1.3.</span> <span class="toc-text">SizeBasedTriggeringPolicy</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#CronTriggeringPolicy"><span class="toc-number">5.4.2.1.4.</span> <span class="toc-text">CronTriggeringPolicy</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#滚动策略"><span class="toc-number">5.4.2.2.</span> <span class="toc-text">滚动策略</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#DirectWriteRolloverStrategy"><span class="toc-number">5.4.2.2.1.</span> <span class="toc-text">DirectWriteRolloverStrategy</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#DefaultRolloverStrategy"><span class="toc-number">5.4.2.2.2.</span> <span class="toc-text">DefaultRolloverStrategy</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#Delete-归档保留规则"><span class="toc-number">5.4.2.2.2.1.</span> <span class="toc-text">Delete(归档保留规则)</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#PosixViewAttribute-归档自定义文件属性"><span class="toc-number">5.4.2.2.2.2.</span> <span class="toc-text">PosixViewAttribute(归档自定义文件属性)</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RollingRandomAccessFileAppender"><span class="toc-number">5.4.3.</span> <span class="toc-text">RollingRandomAccessFileAppender</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JDBCAppender"><span class="toc-number">5.4.4.</span> <span class="toc-text">JDBCAppender</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#操作实例"><span class="toc-number">5.4.4.1.</span> <span class="toc-text">操作实例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#属性详解"><span class="toc-number">5.4.4.2.</span> <span class="toc-text">属性详解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Layout"><span class="toc-number">5.4.5.</span> <span class="toc-text">Layout</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Filter"><span class="toc-number">5.4.6.</span> <span class="toc-text">Filter</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#内置过滤器"><span class="toc-number">5.4.6.1.</span> <span class="toc-text">内置过滤器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#作用范围"><span class="toc-number">5.4.6.2.</span> <span class="toc-text">作用范围</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#实例"><span class="toc-number">5.4.6.3.</span> <span class="toc-text">实例</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Loggers"><span class="toc-number">5.5.</span> <span class="toc-text">Loggers</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#LoggerConfig"><span class="toc-number">5.5.1.</span> <span class="toc-text">LoggerConfig</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#root"><span class="toc-number">5.5.2.</span> <span class="toc-text">root</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Additivity"><span class="toc-number">5.5.3.</span> <span class="toc-text">Additivity</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#属性替换"><span class="toc-number">5.6.</span> <span class="toc-text">属性替换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XInclude"><span class="toc-number">5.7.</span> <span class="toc-text">XInclude</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#后述"><span class="toc-number">6.</span> <span class="toc-text">后述</span></a></li></ol></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://s2.loli.net/2021/12/07/ktehZuTXwYJrM9E.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">灵熙云工作室</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-file"></i><span> 专题笔记</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/2020/08/17/Redis/"><i class="fa-fw fa fa-book"></i><span> Redis</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Log4j2 使用详解</div></div><div id="post-meta"><div class="meta-firstline"><time class="post-meta__date"><span class="post-meta__date-created" title="发表于 2021-12-06 20:45:27"><i class="far fa-calendar-alt fa-fw"></i> 发表于 2021-12-06</span><span class="post-meta__separator">|</span><span class="post-meta__date-updated" title="更新于 2021-12-08 14:53:28"><i class="fas fa-history fa-fw"></i> 更新于 2021-12-08</span></time><span class="post-meta__categories"><span class="post-meta__separator">|</span><i class="fas fa-inbox fa-fw post-meta__icon"></i><a class="post-meta__categories" href="/categories/%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/">技术专题</a><i class="fas fa-angle-right post-meta__separator"></i><i class="fas fa-inbox fa-fw post-meta__icon"></i><a class="post-meta__categories" href="/categories/%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/%E6%97%A5%E5%BF%97%E6%A1%86%E6%9E%B6/">日志框架</a></span></div><div class="meta-secondline"> <span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta__icon"></i><span>字数总计:</span><span class="word-count">19.5k</span><span class="post-meta__separator">|</span><i class="far fa-clock fa-fw post-meta__icon"></i><span>阅读时长: 75 分钟</span></span></div><div class="meta-thirdline"><span class="post-meta-pv-cv"><span class="post-meta__separator">|</span><i class="far fa-eye fa-fw post-meta__icon"></i><span>阅读量:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-commentcount"></span><span class="post-meta__separator">|</span><i class="far fa-comments fa-fw post-meta__icon"></i><span>评论数:</span><a href="/2021/12/06/Log4j2%20%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3/#post-comment" itemprop="discussionUrl"><span class="valine-comment-count comment-count" data-xid="/2021/12/06/Log4j2%20%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3/" itemprop="commentCount"></span></a></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h1 id="常用日志框架"><a href="#常用日志框架" class="headerlink" title="常用日志框架"></a>常用日志框架</h1><ul>
+<li>java.util.logging：是JDK在1.4版本中引入的Java原生日志框架。</li>
+<li>Log4j：Apache的一个开源项目，可以控制日志信息输送的目的地是控制台、文件、GUI组件等，可以控制每一条日志的输出格式，这些可以通过一个配置文件来灵活地进行配置，而不需要修改应用的代码。虽然已经停止维护了，但目前绝大部分企业都是用的log4j。</li>
+<li>LogBack：是Log4j的一个改良版本。</li>
+<li>Log4j2：Log4j2已经不仅仅是Log4j的一个升级版本了，它从头到尾都被重写了 日志门面slf4j。</li>
+</ul>
+<h1 id="日志门面slf4j"><a href="#日志门面slf4j" class="headerlink" title="日志门面slf4j"></a>日志门面slf4j</h1><blockquote>
+<p>上述介绍的是一些日志框架的实现，这里我们需要<code>用日志门面来解决系统与日志实现框架的耦合性</code>。<code>slf4j，即简单日志门面（Simple Logging Facade for Java），它不是一个真正的日志实现，而是一个抽象层（ abstraction layer），它允许你在后台使用任意一个日志实现</code>。</p>
+</blockquote>
+<p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/11/18/ZX9SM56K1epCqdu.jpg" alt=""></p>
+<p>前面介绍的几种日志框架一样，每一种日志框架都有自己单独的API，要使用对应的框架就要使用其对应的API，这就大大的增加应用程序代码对于日志框架的耦合性。</p>
+<p>使用了slf4j后，对于应用程序来说，无论底层的日志框架如何变，应用程序不需要修改任意一行代码，就可以直接上线了。</p>
+<h1 id="为什么选用log4j2"><a href="#为什么选用log4j2" class="headerlink" title="为什么选用log4j2"></a>为什么选用log4j2</h1><p><code>相比与其他的日志系统，log4j2丢数据这种情况少；disruptor技术，在多线程环境下，性能高于logback等10倍以上；利用jdk1.5并发的特性，减少了死锁的发生；</code></p>
+<blockquote>
+<p>log4j2的亮点主要体现在：<code>异步、并发、配置优化、插件机制等</code></p>
+</blockquote>
+<p>在这列举一下一些网上其他博文中对它们的性能评测：<br><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/11/18/uGaU4JBTqm9C6iy.png" alt=""></p>
+<blockquote>
+<ul>
+<li>可以看到在同步日志模式下, Logback的性能是最糟糕的.</li>
+<li>log4j2的性能无论在同步日志模式还是异步日志模式下都是最佳的.</li>
+</ul>
+</blockquote>
+<p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/11/18/5YpGOgVQrauk3Ei.png" alt=""></p>
+<blockquote>
+<p><code>log4j2优越的性能其原因在于log4j2使用了LMAX，一个无锁的线程间通信库代替了，logback和log4j之前的队列，并发性能大大提升。</code></p>
+</blockquote>
+<h1 id="配置种类"><a href="#配置种类" class="headerlink" title="配置种类"></a>配置种类</h1><p>Log4j2的配置可以通过以下四种方式之一来实现：</p>
+<ul>
+<li>通过 XML、JSON、YAML 或者 properties 格式的配置文件；</li>
+<li>通过创建一个 ConfigurationFactory 和 Configuration 接口的实现；</li>
+<li>调用 Configuration接口暴露的方法来在默认配置的基础上添加其他组件；</li>
+<li>通过在内部 Logger 类上调用方法。</li>
+</ul>
+<h1 id="XML基本语法"><a href="#XML基本语法" class="headerlink" title="XML基本语法"></a>XML基本语法</h1><blockquote>
+<p>Log4j2可以使用两种XML格式：<code>简明</code>和<code>严格</code>。</p>
+</blockquote>
+<p>简明格式可以简化配置，元素名匹配其代表的组件，但不能通过 XML Schema 来验证。<br>简明格式的元素名和属性名<code>都不是大小写敏感</code>的。另外，<code>属性既可以指定为属性，也可以指定为包含文本值且没有属性的XML元素</code>。以下两段xml是等价的</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 简明 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"%m%n"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 严格 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Pattern</span>&gt;</span>%m%n<span class="tag">&lt;/<span class="name">Pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">PatternLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="常用配置"><a href="#常用配置" class="headerlink" title="常用配置"></a>常用配置</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="comment">&lt;!--日志级别以及优先级排序: OFF &gt; FATAL &gt; ERROR &gt; WARN &gt; INFO &gt; DEBUG &gt; TRACE &gt; ALL --&gt;</span></span><br><span class="line"><span class="comment">&lt;!--Configuration后面的status，这个用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，你会看到</span></span><br><span class="line"><span class="comment">	log4j2内部各种详细输出--&gt;</span></span><br><span class="line"><span class="comment">&lt;!--monitorInterval：Log4j能够自动检测修改配置 文件和重新配置本身，可设置一个非零的间隔秒数来检测配置变更 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"WARN"</span> <span class="attr">monitorInterval</span>=<span class="string">"60"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 自定义一些变量 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Properties</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 变量定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Property</span> <span class="attr">name</span>=<span class="string">"log_base_dir"</span>&gt;</span>/app_data/logs/my_app<span class="tag">&lt;/<span class="name">Property</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- Appender在将日志数据写入目标位置之前，一般会将日志数据通过Layout进行格式化。PatternLayout可以</span></span><br><span class="line"><span class="comment">		使用与C语言printf函数类似的转换模式来指定输出格式。常见的配置如下：</span></span><br><span class="line"><span class="comment">        - %d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; : 日志生成时间，输出格式为“年-月-日 时:分:秒.毫秒”</span></span><br><span class="line"><span class="comment">        - %p : 日志输出格式</span></span><br><span class="line"><span class="comment">        - %c : logger的名称</span></span><br><span class="line"><span class="comment">        - %m : 日志内容，即 logger.info("message")</span></span><br><span class="line"><span class="comment">        - %n : 换行符</span></span><br><span class="line"><span class="comment">        - %T : 线程号</span></span><br><span class="line"><span class="comment">        - %L : 日志输出所在行数</span></span><br><span class="line"><span class="comment">        - %M : 日志输出所在方法名 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Property</span> <span class="attr">name</span>=<span class="string">"log_pattern"</span>&gt;</span>[%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125;][%-5p][%T][%c.%M:%L] %msg%xEx%n<span class="tag">&lt;/<span class="name">Property</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 单个日志文件最大大小，单位可以是KB, MB or GB --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Property</span> <span class="attr">name</span>=<span class="string">"max_single_file_size"</span>&gt;</span>1MB<span class="tag">&lt;/<span class="name">Property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 使用Appenders元素可以将日志事件数据写到各种目标位置（目前可以为控制台、文件、多种数据库API、远程套</span></span><br><span class="line"><span class="comment">		接字服务器、Apache Flume、JMS、远程UNIX Syslog daemon），其内的每个Appender都必须要有一个name属性作</span></span><br><span class="line"><span class="comment">		为唯一标识，该标识的值在Logger中通过AppenderRef来引用，从而将该Appender配置到该Logger中 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- Console Appender常用于将日志输出到System.out，一般用在开发环境 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Console</span> <span class="attr">name</span>=<span class="string">"Console"</span> <span class="attr">target</span>=<span class="string">"SYSTEM_OUT"</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 只接受程序中DEBUG级别的日志进行处理--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">ThresholdFilter</span> <span class="attr">level</span>=<span class="string">"DEBUG"</span> <span class="attr">onMatch</span>=<span class="string">"ACCEPT"</span> <span class="attr">onMismatch</span>=<span class="string">"DENY"</span>/&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 在大多数情况下，Appender将格式化LogEvent的责任委托给Layout --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"$&#123;log_pattern&#125;"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Console</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!-- RollingFile Appender会将日志输出到fileName属性指定的文件中，且需要指定TriggeringPolicy和</span></span><br><span class="line"><span class="comment">		RolloverStrategy。其中TriggeringPolicy决定是否生成新的日志文件，RolloverStrategy决定如何生成新的日志</span></span><br><span class="line"><span class="comment">		文件。如果没有配置RolloverStrategy，则会使用DefaultRolloverStrategy。从2.5开始，可以在</span></span><br><span class="line"><span class="comment">		DefaultRolloverStrategy中配置一个自定义的删除动作。从2.8开始，如果没有指定文件名，则会使用</span></span><br><span class="line"><span class="comment">		DirectWriteRolloverStrategy来代替DefaultRolloverStrategy --&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 这个RollingFile Appender会打印出所有的DEBUG及以下级别（DEBUG、INFO、ERROR、FATAL、OFF）的信息 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"DebugLogRollingFile"</span> <span class="attr">fileName</span>=<span class="string">"$&#123;log_base_dir&#125;/my_app_debug.log"</span> <span class="attr">filePattern</span>=<span class="string">"$&#123;log_base_dir&#125;/$$&#123;date:yyyy_MM_dd&#125;/my_app_debug_%d&#123;yyyy_MM_dd_HH&#125;_%i.log.gz"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">ThresholdFilter</span> <span class="attr">level</span>=<span class="string">"DEBUG"</span> <span class="attr">onMatch</span>=<span class="string">"ACCEPT"</span> <span class="attr">onMismatch</span>=<span class="string">"DENY"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"$&#123;log_pattern&#125;"</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>/&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- Policies表示一个CompositeTriggeringPolicy，可以组合多个TriggeringPolicy，只要内部的任意一</span></span><br><span class="line"><span class="comment">			个TriggeringPolicy满足触发条件，都会滚动日志 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Policies</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- TimeBasedTriggeringPolicy用于按时间滚动日志。只要filePattern属性值中的日期/时间模式</span></span><br><span class="line"><span class="comment">			（pattern）不再应用于当前文件时就进行日志滚动。这种规则通过interval和modulate属性来配置。</span></span><br><span class="line"><span class="comment">			interval属性指定一个整数，用于基于日期/时间模式中的最小的时间单位数滚动一次。例如，filePattern</span></span><br><span class="line"><span class="comment">			值为/app_data/logs/my_app/$$&#123;date:yyyy_MM_dd&#125;/my_app_%d&#123;yyyy_MM_dd_HH&#125;_%i.log，这</span></span><br><span class="line"><span class="comment">			里使用小时作为最小的时间单位时，假如interval参数值为4，则表示每4小时滚动一次。默认值为1。</span></span><br><span class="line"><span class="comment">			modulate表示是否调整interval属性值以便下次滚动发生在interval边界处。如果时间最小单位为小时，当</span></span><br><span class="line"><span class="comment">			前时间为早上3点，间隔为4小时，则第一次滚动将发生在早上4点时（而不是早上7点），后续滚动将发生在早</span></span><br><span class="line"><span class="comment">			上8点、中午12点、下午4点等时刻 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">TimeBasedTriggeringPolicy</span> <span class="attr">interval</span>=<span class="string">"1"</span> <span class="attr">modulate</span>=<span class="string">"false"</span>/&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- SizeBasedTriggeringPolicy用于按文件大小滚动日志。每当日志文件超过size指定的大小（一般</span></span><br><span class="line"><span class="comment">			不超过几十MB，否则使用软件打开导出的日志时很不方便），则这size大小的日志会自动存入按</span></span><br><span class="line"><span class="comment">			filePattern属性指定建立的文件夹下面并进行压缩存档 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">"$&#123;max_single_file_size&#125;"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">Policies</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- DefaultRolloverStrategy可以同时接受RollingFileAppender中filePattern属性值中日期/时间和整数</span></span><br><span class="line"><span class="comment">			计数器（%i）的pattern，当日期/时间满足条件时，则会使用当前的日期/时间生成新的日志文件，如果</span></span><br><span class="line"><span class="comment">			filePattern属性值中含有一个整数计数器%i，则在每次滚动时该整数都会增加，如果filePattern属性值中</span></span><br><span class="line"><span class="comment">			同时包含了日期/时间和整数计数器（%i），计数器会在日期/时间不变时而满足其他滚动触发条件时（文件大</span></span><br><span class="line"><span class="comment">			小）开始自增，直到日期/时间发生变化时，计数器会重新自增。以.gz、.zip、.bz2、deflate、pack200或</span></span><br><span class="line"><span class="comment">			xz结尾的filePattern值，会在日志文件归档时以后缀对应的格式进行压缩。min属性指定计数器的最小值，默</span></span><br><span class="line"><span class="comment">			认为1。max属性指定计数 器的最大值，一旦计数器达到了最大值，最早的归档将会在每次滚动时被删除，默</span></span><br><span class="line"><span class="comment">			认值为7。fileIndex属性如果设置为max（默认），则具有更大索引的文件比具有更小索引的文件内容更新，</span></span><br><span class="line"><span class="comment">			如果设置为min，文件将重命名且计数器将遵循Fixed Window策略，这两种情况均有可能导致批量的文件重命</span></span><br><span class="line"><span class="comment">			名，自2.8版本开始，如果fileIndex属性设置为nomax，则min和max属性值都将会被忽略，文件编号将每次递</span></span><br><span class="line"><span class="comment">			增1，每次滚动都会递增到更大的值，且没有最大文件编号的限制 --&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--&lt;DefaultRolloverStrategy max="100" min="1" fileIndex = "nomax"/&gt;--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">DefaultRolloverStrategy</span> <span class="attr">fileIndex</span>=<span class="string">"nomax"</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- Log4j 2.5引入了删除动作（Delete元素）。在滚动删除旧的日志文件时，相比使用</span></span><br><span class="line"><span class="comment">			DefaultRolloverStrategy的max属性，该功能可以让用户拥有更多的删除控制。删除动作可以让用户配</span></span><br><span class="line"><span class="comment">			置若干个条件来删除相对于基准目录的文件。该功能可以删除非日志文件，使用时一定要小心。可以通</span></span><br><span class="line"><span class="comment">			过testMode属性来测试配置是否会错删文件。basePath属性值用于指定删除文件的基准目录，必须显式</span></span><br><span class="line"><span class="comment">			指定。maxDepth属性指定扫描目录的最大层级，0表示仅能访问基准目录（安全限制不能访问的情况除外），</span></span><br><span class="line"><span class="comment">			Integer.MAX_VALUE值表示可以访问所有层级。默认值为1，表示仅扫描基准目录下的文件。testMode属性</span></span><br><span class="line"><span class="comment">			值如果设置为true，文件不会实际删除，而是在status logger打印一条INFO级别的消息，可以使用该功</span></span><br><span class="line"><span class="comment">			能来测试是否会错删目标文件，默认为false。--&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">&lt;!-- 这里的Delete元素配置了每次滚动都会删除基准目录下匹配“*/my_app_debug_*.log.gz”日志</span></span><br><span class="line"><span class="comment">			文件，只要9分钟以前的日志文件总大小超过2MB，或9分钟以前的日志文件文件总数超过2个就按时</span></span><br><span class="line"><span class="comment">			间顺序删除较早的日志文件。该元素可以防止日志文件所在分区的磁盘空间被占满。特别需要注意</span></span><br><span class="line"><span class="comment">			的是，只有在发生日志滚动时才会尝试进行删除，否则即使满足了删除条件，但如果没有新的滚动</span></span><br><span class="line"><span class="comment">			日志生成的话也不会发生删除操作。 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">Delete</span> <span class="attr">basePath</span>=<span class="string">"$&#123;log_base_dir&#125;"</span> <span class="attr">maxDepth</span>=<span class="string">"2"</span>&gt;</span></span><br><span class="line">                    <span class="comment">&lt;!-- Delete元素里可以指定若干个PathCondition类型的元素。如果指定了不止一个条件，则这些条件都</span></span><br><span class="line"><span class="comment">			需要在删除之前接受某个路径。这些条件可以嵌套，只有外部条件接受某个路径之后，其内部条件才会决定是</span></span><br><span class="line"><span class="comment">			否接受该路径。如果这些条件没有嵌套，则它们的执行顺序是任意的。这些条件也可以通过使用IfAll,IfAny</span></span><br><span class="line"><span class="comment">			和IfNot等组合条件进行AND、OR和NOT等逻辑运算。用户也可以创建自定义条件或使用内置条件：</span></span><br><span class="line"><span class="comment">                    - IfFileName：接受匹配正则表达式或glob的文件路径；</span></span><br><span class="line"><span class="comment">                    - IfLastModified：接受比指定时段早或一样早的文件；</span></span><br><span class="line"><span class="comment">                    - IfAccumulatedFileCount：在遍历文件树时文件总数超过文件数上限后接受路径；</span></span><br><span class="line"><span class="comment">                    - IfAccumulatedFileSize：在遍历文件树时文件总大小超过上限后接受路径；</span></span><br><span class="line"><span class="comment">                    - IfAll：如果所有内嵌条件都接受了某个路径才会接受该路径，相当于AND逻辑，其内嵌条件的执行顺序</span></span><br><span class="line"><span class="comment">				是任意的；</span></span><br><span class="line"><span class="comment">                    - IfAny：如果任意一个内嵌条件接受了某个目录就接受该目录，相当于OR逻辑，其内嵌条件的执行顺序是</span></span><br><span class="line"><span class="comment">				任意的；</span></span><br><span class="line"><span class="comment">                    - IfNot：如果内嵌条件不接受某个路径就接收该路径，相当于NOT逻辑。--&gt;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">&lt;!-- IfFileName可以通过glob（使用受限的模式语言,比正则更简单）或regex属性（正则）来匹配相对路</span></span><br><span class="line"><span class="comment">				径（相对于Delete的basePath属性指定的基准目录）--&gt;</span></span><br><span class="line">                    <span class="comment">&lt;!-- 当外部的条件满足时才会计算内部的条件，内部的同级条件的计算顺序是任意的。 --&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">IfFileName</span> <span class="attr">glob</span>=<span class="string">"*/my_app_debug_*.log.gz"</span>&gt;</span></span><br><span class="line">                        <span class="comment">&lt;!-- IfLastModified可以通过age属性值来指定接受最后修改时间为指定时间或早于指定时间的路径，</span></span><br><span class="line"><span class="comment">				该属性的值可参考org.apache.logging.log4j.core.appender.rolling.action.Duration.</span></span><br><span class="line"><span class="comment">				parse(CharSequence text)方法的文档 --&gt;</span></span><br><span class="line">                        <span class="comment">&lt;!-- IfLastModified指定删除最近修改时间为9分钟前或更早，按时间顺序最早的日志文件 --&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">IfLastModified</span> <span class="attr">age</span>=<span class="string">"9m"</span>&gt;</span></span><br><span class="line">                            <span class="comment">&lt;!-- 这里的IfAny内嵌了两个PathCondition，表示满足任意一个条件即可 --&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                                <span class="comment">&lt;!-- IfAccumulatedFileSize可通过exceeds属性值指定一个文件总大小上限值。如果文件</span></span><br><span class="line"><span class="comment">					数超过了该上限值则删除文件 --&gt;</span></span><br><span class="line">                                <span class="tag">&lt;<span class="name">IfAccumulatedFileSize</span> <span class="attr">exceeds</span>=<span class="string">"2MB"</span>/&gt;</span></span><br><span class="line">                                <span class="comment">&lt;!-- IfAccumulatedFileCount可通过exceeds属性值指定一个文件总数上限值。如果文件</span></span><br><span class="line"><span class="comment">					数超过了该上限值则删除文件 --&gt;</span></span><br><span class="line">                                <span class="tag">&lt;<span class="name">IfAccumulatedFileCount</span> <span class="attr">exceeds</span>=<span class="string">"2"</span>/&gt;</span></span><br><span class="line">                            <span class="tag">&lt;/<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">IfLastModified</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">IfFileName</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">Delete</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">DefaultRolloverStrategy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"InfoLogRollingFile"</span> <span class="attr">fileName</span>=<span class="string">"$&#123;log_base_dir&#125;/my_app_info.log"</span> <span class="attr">filePattern</span>=<span class="string">"$&#123;log_base_dir&#125;/$$&#123;date:yyyy_MM_dd&#125;/my_app_info_%d&#123;yyyy_MM_dd_HH&#125;_%i.log.gz"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">ThresholdFilter</span> <span class="attr">level</span>=<span class="string">"INFO"</span> <span class="attr">onMatch</span>=<span class="string">"ACCEPT"</span> <span class="attr">onMismatch</span>=<span class="string">"DENY"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"$&#123;log_pattern&#125;"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Policies</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">TimeBasedTriggeringPolicy</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">"$&#123;max_single_file_size&#125;"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">Policies</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">DefaultRolloverStrategy</span> <span class="attr">fileIndex</span>=<span class="string">"nomax"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">Delete</span> <span class="attr">basePath</span>=<span class="string">"$&#123;log_base_dir&#125;"</span> <span class="attr">maxDepth</span>=<span class="string">"2"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">IfFileName</span> <span class="attr">glob</span>=<span class="string">"*/my_app_info_*.log.gz"</span>&gt;</span></span><br><span class="line">                        <span class="comment">&lt;!-- 这里表示匹配“*/my_app_info_*.log.gz”模式的日志文件的删除策略如下：</span></span><br><span class="line"><span class="comment">                        - 只要日志文件总数量超过5个就删除按时间顺序最早的日志文件</span></span><br><span class="line"><span class="comment">                        - 只要日志文件总大小超过10MB就会删除按时间顺序最早的日志文件</span></span><br><span class="line"><span class="comment">                        - 只要日志文件最近修改时间为9分钟前或更早就会删除按时间顺序最早的日志文件 --&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfAccumulatedFileSize</span> <span class="attr">exceeds</span>=<span class="string">"8MB"</span>/&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfAccumulatedFileCount</span> <span class="attr">exceeds</span>=<span class="string">"5"</span>/&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfLastModified</span> <span class="attr">age</span>=<span class="string">"9m"</span>/&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">IfFileName</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">Delete</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">DefaultRolloverStrategy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"WarnLogRollingFile"</span> <span class="attr">fileName</span>=<span class="string">"$&#123;log_base_dir&#125;/my_app_warn.log"</span> <span class="attr">filePattern</span>=<span class="string">"$&#123;log_base_dir&#125;/$$&#123;date:yyyy_MM_dd&#125;/my_app_warn_%d&#123;yyyy_MM_dd_HH&#125;_%i.log.gz"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">ThresholdFilter</span> <span class="attr">level</span>=<span class="string">"WARN"</span> <span class="attr">onMatch</span>=<span class="string">"ACCEPT"</span> <span class="attr">onMismatch</span>=<span class="string">"DENY"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"$&#123;log_pattern&#125;"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Policies</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">TimeBasedTriggeringPolicy</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">"$&#123;max_single_file_size&#125;"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">Policies</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">DefaultRolloverStrategy</span> <span class="attr">fileIndex</span>=<span class="string">"nomax"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">Delete</span> <span class="attr">basePath</span>=<span class="string">"$&#123;log_base_dir&#125;"</span> <span class="attr">maxDepth</span>=<span class="string">"2"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">IfFileName</span> <span class="attr">glob</span>=<span class="string">"*/my_app_warn_*.log.gz"</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfAccumulatedFileSize</span> <span class="attr">exceeds</span>=<span class="string">"3GB"</span>/&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfAccumulatedFileCount</span> <span class="attr">exceeds</span>=<span class="string">"3000"</span>/&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfLastModified</span> <span class="attr">age</span>=<span class="string">"30d"</span>/&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">IfFileName</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">Delete</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">DefaultRolloverStrategy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"ErrorLogRollingFile"</span> <span class="attr">fileName</span>=<span class="string">"$&#123;log_base_dir&#125;/my_app_error.log"</span> <span class="attr">filePattern</span>=<span class="string">"$&#123;log_base_dir&#125;/$$&#123;date:yyyy_MM_dd&#125;/my_app_error_%d&#123;yyyy_MM_dd_HH&#125;_%i.log.gz"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">ThresholdFilter</span> <span class="attr">level</span>=<span class="string">"ERROR"</span> <span class="attr">onMatch</span>=<span class="string">"ACCEPT"</span> <span class="attr">onMismatch</span>=<span class="string">"DENY"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"$&#123;log_pattern&#125;"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Policies</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">TimeBasedTriggeringPolicy</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">"$&#123;max_single_file_size&#125;"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">Policies</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">DefaultRolloverStrategy</span> <span class="attr">fileIndex</span>=<span class="string">"nomax"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">Delete</span> <span class="attr">basePath</span>=<span class="string">"$&#123;log_base_dir&#125;"</span> <span class="attr">maxDepth</span>=<span class="string">"2"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">IfFileName</span> <span class="attr">glob</span>=<span class="string">"*/my_app_error_*.log.gz"</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfAccumulatedFileSize</span> <span class="attr">exceeds</span>=<span class="string">"3GB"</span>/&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfAccumulatedFileCount</span> <span class="attr">exceeds</span>=<span class="string">"3000"</span>/&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfLastModified</span> <span class="attr">age</span>=<span class="string">"30d"</span>/&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">IfFileName</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">Delete</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">DefaultRolloverStrategy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!-- 记录druid的SQL语句 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"DruidSqlRollingFile"</span> <span class="attr">fileName</span>=<span class="string">"$&#123;log_base_dir&#125;/druid.log"</span> <span class="attr">filePattern</span>=<span class="string">"$&#123;log_base_dir&#125;/$$&#123;date:yyyy_MM_dd&#125;/druid_%d&#123;yyyy_MM_dd_HH&#125;_%i.log.gz"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"$&#123;log_pattern&#125;"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Policies</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">TimeBasedTriggeringPolicy</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">"$&#123;max_single_file_size&#125;"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">Policies</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">DefaultRolloverStrategy</span> <span class="attr">fileIndex</span>=<span class="string">"nomax"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">Delete</span> <span class="attr">basePath</span>=<span class="string">"$&#123;log_base_dir&#125;"</span> <span class="attr">maxDepth</span>=<span class="string">"2"</span> <span class="attr">testMode</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">IfFileName</span> <span class="attr">glob</span>=<span class="string">"*/druid_*.log.gz"</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfAccumulatedFileSize</span> <span class="attr">exceeds</span>=<span class="string">"3GB"</span>/&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfAccumulatedFileCount</span> <span class="attr">exceeds</span>=<span class="string">"3000"</span>/&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfLastModified</span> <span class="attr">age</span>=<span class="string">"30d"</span>/&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">IfFileName</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">Delete</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">DefaultRolloverStrategy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--定义logger，只有定义了logger并引入的appender，appender才会生效--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 当Logger在配置文件中声明时，就创建了一个LoggerConfig对象，两者一一对应，LoggerConfig包含一些</span></span><br><span class="line"><span class="comment">		Filter、这些Filters用于过滤传递给任意Appender的LogEvent，它还包含一些Appender的引用。Logger本身执</span></span><br><span class="line"><span class="comment">		行无指向的动作，它仅含有一个与LoggerConfig关联的名称（通过name属性指定），root Logger具有固定的默</span></span><br><span class="line"><span class="comment">		认名称，其他Logger需要指定各自的name属性值。LoggerConfig会被分配一个日志级别，通过level属性来指定。</span></span><br><span class="line"><span class="comment">		内建的日志级别按优先级从高到底排序有：OFF &gt; FATAL &gt; ERROR &gt; WARN &gt; INFO &gt; DEBUG &gt; TRACE &gt; ALL，</span></span><br><span class="line"><span class="comment">		Log4j 2 也支持自定义的日志级别。 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"ALL"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"Console"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"InfoLogRollingFile"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"WarnLogRollingFile"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"DebugLogRollingFile"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"ErrorLogRollingFile"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!-- 每个LoggerConfig的日志级别如果没有显式配置，则会继承其父级LoggerConfig的日志级别，而root </span></span><br><span class="line"><span class="comment">		LoggerConfig如果没有配置日志级别，则会为其分配一个默认的ERROR级别 --&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 某个Logger所允许的每条日志打印请求都会传递给其LoggerConfig中的所有Appender，也会传递给该</span></span><br><span class="line"><span class="comment">		LoggerConfig的parent LoggerConfig中的Appender，这种现象称为相加性（Additivity）。也就是说，</span></span><br><span class="line"><span class="comment">		Appender会从LoggerConfig的继承中继承相加性。这种特性可以用来汇整某几个logger的输出，可以在声</span></span><br><span class="line"><span class="comment">		明Logger的配置文件中设置additivity="false"来禁用这种叠加继承 --&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--记录druid-sql的记录--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"druid.sql.Statement"</span> <span class="attr">level</span>=<span class="string">"debug"</span> <span class="attr">additivity</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"DruidSqlRollingFile"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Logger</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!--过滤掉spring和mybatis的一些无用的DEBUG信息--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.springframework"</span> <span class="attr">level</span>=<span class="string">"INFO"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.mybatis"</span> <span class="attr">level</span>=<span class="string">"INFO"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!--log4j2 自带过滤日志--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.apache.catalina.startup.DigesterFactory"</span> <span class="attr">level</span>=<span class="string">"error"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.apache.catalina.util.LifecycleBase"</span> <span class="attr">level</span>=<span class="string">"error"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.apache.coyote.http11.Http11NioProtocol"</span> <span class="attr">level</span>=<span class="string">"warn"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.apache.sshd.common.util.SecurityUtils"</span> <span class="attr">level</span>=<span class="string">"warn"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.apache.tomcat.util.net.NioSelectorPool"</span> <span class="attr">level</span>=<span class="string">"warn"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.crsh.plugin"</span> <span class="attr">level</span>=<span class="string">"warn"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.crsh.ssh"</span> <span class="attr">level</span>=<span class="string">"warn"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.eclipse.jetty.util.component.AbstractLifeCycle"</span> <span class="attr">level</span>=<span class="string">"error"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.hibernate.validator.internal.util.Version"</span> <span class="attr">level</span>=<span class="string">"warn"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.springframework.boot.actuate.autoconfigure.CrshAutoConfiguration"</span> <span class="attr">level</span>=<span class="string">"warn"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.springframework.boot.actuate.endpoint.jmx"</span> <span class="attr">level</span>=<span class="string">"warn"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.thymeleaf"</span> <span class="attr">level</span>=<span class="string">"warn"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>文章太长，可参考上述常用配置，各取所需应用到项目中</p>
+</blockquote>
+<h2 id="日志级别"><a href="#日志级别" class="headerlink" title="日志级别"></a>日志级别</h2><p>Log4j的级别类org.apache.log4j.Level里面定义了日志级别，日志输出优先级由高到底分别为以下8种。</p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/07/v2dPRpgXinZzUh3.png" alt="日志优先级别"></p>
+<table>
+<thead>
+<tr>
+<th align="center">日志级别</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">ALL</td>
+<td>所有：所有日志级别，包括定制级别。</td>
+</tr>
+<tr>
+<td align="center">TRACE</td>
+<td>跟踪：指明程序运行轨迹，比DEBUG级别的粒度更细。</td>
+</tr>
+<tr>
+<td align="center">DEBUG</td>
+<td>调试：指明细致的事件信息，对调试应用最有用。</td>
+</tr>
+<tr>
+<td align="center">INFO</td>
+<td>信息：指明描述信息，从粗粒度上描述了应用运行过程。但是不能滥用，避免打印过多的日志。</td>
+</tr>
+<tr>
+<td align="center">WARN</td>
+<td>警告：表明会出现潜在错误的情形，有些信息不是错误信息，但是也要给程序员的一些提示。</td>
+</tr>
+<tr>
+<td align="center">ERROR</td>
+<td>错误：指出虽然发生错误事件，但仍然不影响系统的继续运行。打印错误和异常信息，如果不想输出太多的日志，可以使用这个级别。</td>
+</tr>
+<tr>
+<td align="center">FATAL</td>
+<td>致命：指出每个严重的错误事件将会导致应用程序的退出。这个级别比较高了。重大错误，这种级别可以直接停止程序了。</td>
+</tr>
+<tr>
+<td align="center">OFF</td>
+<td>取消：最高等级，关闭所有日志记录。</td>
+</tr>
+</tbody></table>
+<p>所以，日志优先级别标准顺序:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">OFF &gt; FATAL &gt; ERROR &gt; WARN &gt; INFO &gt; DEBUG &gt; TRACE &gt; ALL</span><br></pre></td></tr></table></figure>
+
+<p>如果将log level设置在某一个级别上，那么比此级别优先级高的log都能打印出来。如，<code>如果设置优先级为WARN，那么OFF、FATAL、ERROR、WARN 4个级别的log能正常输出，而INFO、DEBUG、TRACE、ALL级别的log则会被忽略</code>。</p>
+<blockquote>
+<p>Log4j建议使用四个级别，优先级从高到低分别是：<code>ERROR、WARN、INFO、DEBUG</code></p>
+</blockquote>
+<h2 id="Configuration元素"><a href="#Configuration元素" class="headerlink" title="Configuration元素"></a>Configuration元素</h2><table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">advertiser</td>
+<td>将用于通知单独的FileAppender或SocketAppender配置的Advertiser插件名称。<code>提供的唯一的Advertiser插件是“multicastdns”</code>。</td>
+</tr>
+<tr>
+<td align="center">dest</td>
+<td>err将输出到stderr，或文件路径或URL。</td>
+</tr>
+<tr>
+<td align="center">monitorInterval</td>
+<td>检查更改文件配置之前经过的最短时间（<code>以秒为单位</code>）</td>
+</tr>
+<tr>
+<td align="center">name</td>
+<td>配置的名称</td>
+</tr>
+<tr>
+<td align="center">packages</td>
+<td><code>逗号分隔的包名称列表用来搜索插件。</code>每个类加载器只加载一次插件，所以更改此值可能不会对重新配置产生任何影响。</td>
+</tr>
+<tr>
+<td align="center">schema</td>
+<td><code>标识类加载器定位用于验证配置的XML模式的位置。</code>仅当strict设置为true时有效。如果未设置，则不会执行模式验证。</td>
+</tr>
+<tr>
+<td align="center">shutdownHook</td>
+<td><code>指定当JVM关闭时Log4j是否应自动关闭</code>。关闭挂钩默认启用，但可以通过将此属性设置为“disable”来禁用</td>
+</tr>
+<tr>
+<td align="center">shutdownTimeout</td>
+<td>设置当JVM关闭后Appender和后台任务超时多少毫秒才关闭。默认为 0 ，表示每个Appender使用其默认的超时，不等待后台任务。这仅是个提示，而不能保证关闭进程不会花费更长的时间。将此值设置得太低会增加未写入最终目的地的未完成日志事件的风险。如果shutdownHook属性未设置，那么将不会使用该属性</td>
+</tr>
+<tr>
+<td align="center">status</td>
+<td>应该记录到控制台的内部Log4j事件的级别。此属性的有效值为<code>“trace”，“debug”，“info”，“warn”，“error”和“fatal”</code>。Log4j将向状态记录器记录有关初始化，翻转和其他内部操作的详细信息。如果您需要对log4j进行故障排除，则设置status=”trace”是你可用的第一个工具之一。</td>
+</tr>
+<tr>
+<td align="center">strict</td>
+<td>使用严格的 XML 格式， <code>JSON格式的配置文件不支持该属性</code></td>
+</tr>
+<tr>
+<td align="center">verbose</td>
+<td>加载插件时是否显示诊断信息</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>注：如果应用运行在Weblogic上时，修改项目中的配置文件不会自动加载生效(<code>monitorInterval属性失效</code>)，必须重启加载应用才可以，考虑到不能随便停止应用的需求，可以通过编程方法来进行配置log4j，从数据库中动态读取配置信息。</p>
+</blockquote>
+<h2 id="Appender元素"><a href="#Appender元素" class="headerlink" title="Appender元素"></a>Appender元素</h2><p>Log4j使用Appender将日志事件数据写到各种目标位置（目前<code>可以为控制台、文件、多种数据库 API、远程套接字服务器、Apache Flume、JMS、远程 UNIX Syslog daemon</code>）。</p>
+<p><code>每个Appender都必须要有一个name属性</code>，用来区别其他Appender的唯一标识，该标识的值在Logger中通过AppenderRef来引用，从而将该Appender配置到该 Logger 中。下面介绍常用的Appender。</p>
+<h3 id="ConsoleAppender"><a href="#ConsoleAppender" class="headerlink" title="ConsoleAppender"></a>ConsoleAppender</h3><table>
+<thead>
+<tr>
+<th align="center">参数名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">filter</td>
+<td align="center">Filter</td>
+<td><code>指定一个过滤器来决定是否将日志事件传递给 Appender 处理</code>。可以指定为一个 CompositeFilter 来使用多个过滤器。</td>
+</tr>
+<tr>
+<td align="center">layout</td>
+<td align="center">Layout</td>
+<td><code>指定格式化 LogEvent 的 Layout</code>。如果没有指定 Layout，则默认使用 %m%n 格式。</td>
+</tr>
+<tr>
+<td align="center">follow</td>
+<td align="center">boolean</td>
+<td>在配置好之后，是否可以通过System.setOut 或 System.setErr来重新指定输出位置为 System.out 或 System.err。不能在 Windows下用于Jansi，也<code>不能和 direct 属性一起使用</code></td>
+</tr>
+<tr>
+<td align="center">direct</td>
+<td align="center">boolean</td>
+<td>绕开 java.lang.System.out/.err 直接写入 java.io.FileDescriptor。<code>当输出重定向到文件或其他目标时可以节约10倍的性能消耗</code>。不能在 Windows 下用于Jansi，也<code>不能和follow属性一起使用</code>。在多线程应用中，输出不会遵循 java.lang.System.setOut()/.setErr()，而是可能会和其他输出纠缠在一起输出到java.lang.System.out/.err。<code>该属性是2.6.2版本新增的，目前仅在Linux和Windows下的OracleJVM环境中测试过</code></td>
+</tr>
+<tr>
+<td align="center">name</td>
+<td align="center">String</td>
+<td><code>(必选)</code> Appender 的名称，表示区别于其他 Appender 的唯一标识。</td>
+</tr>
+<tr>
+<td align="center">ignoreExceptions</td>
+<td align="center">boolean</td>
+<td><code>默认为true，表示当输出事件时出现的异常将会被内部记录而忽略</code>。当设置为false时，则会将异常传播给调用者。当将该 Appender 包装成 FailoverAppender 时，必须设置为 false。</td>
+</tr>
+<tr>
+<td align="center">target</td>
+<td align="center">String</td>
+<td>SYSTEM_OUT 或 SYSTEM_ERR。<code>默认为 SYSTEM_OUT</code>。</td>
+</tr>
+</tbody></table>
+<h3 id="RollingFileAppender"><a href="#RollingFileAppender" class="headerlink" title="RollingFileAppender"></a>RollingFileAppender</h3><table>
+<thead>
+<tr>
+<th align="center">参数名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">append</td>
+<td align="center">boolean</td>
+<td>当为true（默认）时，日志记录将会添加到文件末尾。<code>设置为 false 时，日志记录写入文件之前会清空文件。</code></td>
+</tr>
+<tr>
+<td align="center">bufferedIO</td>
+<td align="center">boolean</td>
+<td><code>当为true（默认）时，日志记录将会写入一个缓冲区，当缓冲区满或设置了 immediateFlush，日志记录才会写入磁盘中</code>。<code>该属性不能使用文件锁</code>。缓冲 I/O 能够显著提高性能，即使启用了immediateFlush</td>
+</tr>
+<tr>
+<td align="center">immediateFlush</td>
+<td align="center">boolean</td>
+<td>当为true（默认）时，每次写入都会跟随一次 flush 。这将<code>保证数据写入磁盘，但会影响性能</code>。<code>仅当使用异步 Logger 的 Appender 时设置每次写入都进行 flush 才有用</code>。异步的 Logger 和 Appender 会在一批次的日志事件末尾自动flush，<code>即使该属性设置为false，这种方式也可以保证数据写入磁盘，但是更有效率</code></td>
+</tr>
+<tr>
+<td align="center">bufferSize</td>
+<td align="center">int</td>
+<td>当bufferedIO为true时，该属性用来设置<code>缓冲区的大小，默认为 8192字节</code></td>
+</tr>
+<tr>
+<td align="center">createOnDemand</td>
+<td align="center">boolean</td>
+<td>Appender是按需（on-demand）创建文件的。<code>仅当日志事件通过所有过滤器并到达 Appender 时，该 Appender 才会创建文件</code>。默认为 false</td>
+</tr>
+<tr>
+<td align="center">filter</td>
+<td align="center">Filter</td>
+<td><code>指定一个过滤器来决定是否将日志事件传递给 Appender 处理</code>。可以指定为一个 CompositeFilter 来使用多个过滤器。</td>
+</tr>
+<tr>
+<td align="center">fileName</td>
+<td align="center">String</td>
+<td>设置<code>写入日志记录的文件名</code>。如果该文件或其父目录不存在，则会自动创建</td>
+</tr>
+<tr>
+<td align="center">filePattern</td>
+<td align="center">String</td>
+<td><code>归档日志文件的文件名模式（pattern）</code>。该模式依赖于所用的RolloverPolicy 。<code>DefaultRolloverPolicy可以接受兼容SimpleDateFormat的日期/时间或表示一个整数的计数器的 %i</code>。该模式也支持运行时插入值（interpolation），故任何 Lookup（比如 DateLookup）都可以包含该模式。</td>
+</tr>
+<tr>
+<td align="center">layout</td>
+<td align="center">Layout</td>
+<td><code>指定格式化 LogEvent 的 Layout</code> 。如果没有指定 Layout ，则默认使用 %m%n 格式</td>
+</tr>
+<tr>
+<td align="center">name</td>
+<td align="center">String</td>
+<td><code>(必选)</code> Appender 的名称，表示区别于其他 Appender 的唯一标识</td>
+</tr>
+<tr>
+<td align="center">policy</td>
+<td align="center">TriggeringPolicy</td>
+<td>设置确定是否创建文件的<code>规则</code>（policy）</td>
+</tr>
+<tr>
+<td align="center">strategy</td>
+<td align="center">RolloverStrategy</td>
+<td>设置确定<code>归档文件</code>的文件名和位置的<code>策略</code>（strategy）</td>
+</tr>
+<tr>
+<td align="center">ignoreExceptions</td>
+<td align="center">boolean</td>
+<td><code>默认为true，表示当输出事件时出现的异常将会被内部记录而忽略</code>。 <code>当设置为 false 时，则会将异常传播给调用者</code>。当将该 Appender 包装成 <code>FailoverAppender 时，必须设置为 false</code></td>
+</tr>
+<tr>
+<td align="center">filePermissions</td>
+<td align="center">String</td>
+<td><code>设置每当创建文件时所用的 POSIX 格式的文件属性权限</code>。底层文件系统应该支持POSIX格式的文件属性视图。比如： rw——- 或 rw-rw-rw- 等</td>
+</tr>
+<tr>
+<td align="center">fileOwner</td>
+<td align="center">String</td>
+<td><code>指定每次创建文件的属主</code>。由于权限原因，可能不允许更改文件属主，这时会抛出IOException。仅当有效的目标用户ID和文件的用户 ID 相同，或目标用户ID具有修改文件属主的权限（如果_POSIX_CHOWN_RESTRICTED 在日志文件路径下有效）时才会处理。底层文件系统应该支持owner文件属性视图。</td>
+</tr>
+<tr>
+<td align="center">fileGroup</td>
+<td align="center">String</td>
+<td><code>指定每次创建文件的属组</code>。底层文件系统应该支持POSIX格式的文件属性视图。</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><code>注：RollingFileAppender 不支持文件锁。</code></p>
+</blockquote>
+<h4 id="触发规则"><a href="#触发规则" class="headerlink" title="触发规则"></a>触发规则</h4><p><code>CompositeTriggeringPolicy</code>组合了多个触发规则（policy），如果配置的任意规则返回true时，则<code>CompositeTriggeringPolicy</code>也返回true，也发生了触发。 <code>CompositeTriggeringPolicy</code>通过将其规则包装进 Policies 元素即可配置。</p>
+<p>下例的日志滚动规则：<code>当JVM启动时、日志文件大小达到20MB</code>且<code>当前日期不再匹配日志开始日期时就滚动日志</code>。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Policies</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">OnStartupTriggeringPolicy</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">CronTriggeringPolicy</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">"20 MB"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">TimeBasedTriggeringPolicy</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Policies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="OnStartupTriggeringPolicy"><a href="#OnStartupTriggeringPolicy" class="headerlink" title="OnStartupTriggeringPolicy"></a>OnStartupTriggeringPolicy</h5><p>OnStartupTriggeringPolicy：<code>在日志文件比当前JVM启动时间较早时进行日志滚动</code>，同时遵循下面的minSize属性规则。</p>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">minSize</td>
+<td align="center">long</td>
+<td>日志文件滚动的最小大小。值为0表示不管文件大小为多大都滚动。<code>默认值 1 将阻止对空文件进行滚动</code>。</td>
+</tr>
+</tbody></table>
+<h5 id="TimeBasedTriggeringPolicy"><a href="#TimeBasedTriggeringPolicy" class="headerlink" title="TimeBasedTriggeringPolicy"></a>TimeBasedTriggeringPolicy</h5><p>TimeBasedTriggeringPolicy：<code>只要日期/时间模式（pattern）不再应用于当前文件时就进行日志滚动</code>。这种规则通过 interval 和 modulate 属性来配置。</p>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">interval</td>
+<td align="center">integer</td>
+<td><code>基于日期/时间模式中的最小的时间单位多久滚动一次</code>。如filePattern参数中使用<code>小时</code>作为最小的时间单位时(<code>/appData/logs/myApp/$${date:yyyy-MM-dd}/myApp-%d{yyyy-MM-dd HH}-%i.log</code>)，该参数值为4，则表示每 4 小时滚动一次。默认值为 1 。</td>
+</tr>
+<tr>
+<td align="center">modulate</td>
+<td align="center">boolean</td>
+<td>是否调整interval属性值，以便下次滚动发生在interval边界处。<code>如果时间单位为小时，当前时间为早上3点，间隔为4小时，则第一次滚动将发生在早上 4 点时（而不是早上 7点），后续滚动将发生在 早上 8 点、中午 12 点、下午 4 点等时刻</code>。</td>
+</tr>
+<tr>
+<td align="center">maxRandomDelay</td>
+<td align="center">integer</td>
+<td><code>滚动操作随机延迟的最长秒数</code>。默认0表示无延迟。该设置在有多个应用同时滚动日志的服务器上很有用，可以<code>扩宽滚动日志的的负载时间范围，避免某一个时刻由于滚动日志造成高 I/O 压力</code></td>
+</tr>
+</tbody></table>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 同时指定了基于时间和大小的触发规则，一天最多创建7个归档文件(多于7个时删除时间最早的归档文件)，</span></span><br><span class="line"><span class="comment">	存放在当前年月目录下，每个归档文件使用gzip进行压缩，每6个小时滚动一次 --&gt;</span></span><br><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"warn"</span> <span class="attr">name</span>=<span class="string">"MyApp"</span> <span class="attr">packages</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"RollingFile"</span> <span class="attr">fileName</span>=<span class="string">"logs/app.log"</span></span></span><br><span class="line"><span class="tag">                 <span class="attr">filePattern</span>=<span class="string">"logs/$$&#123;date:yyyy-MM&#125;/app-%d&#123;yyyy-MM-dd-HH&#125;-%i.log.gz"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Pattern</span>&gt;</span>%d %p %c&#123;1.&#125; [%t] %m%n<span class="tag">&lt;/<span class="name">Pattern</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Policies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">TimeBasedTriggeringPolicy</span> <span class="attr">interval</span>=<span class="string">"6"</span> <span class="attr">modulate</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">"250 MB"</span>/&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">Policies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"error"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"RollingFile"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="SizeBasedTriggeringPolicy"><a href="#SizeBasedTriggeringPolicy" class="headerlink" title="SizeBasedTriggeringPolicy"></a>SizeBasedTriggeringPolicy</h5><p>SizeBasedTriggeringPolicy：<code>在文件大小达到指定的大小时进行日志滚动</code>。文件大小可以使用 KB 、MB 或 GB 等后缀。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 同时指定了基于时间和大小的触发规则，一天最多创建7个归档文件（未配置DefaultRolloverStrategy时，</span></span><br><span class="line"><span class="comment">	其max属性默认为7），存放在当前年月目录下，每个归档文件使用 gzip 进行压缩 --&gt;</span></span><br><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"warn"</span> <span class="attr">name</span>=<span class="string">"MyApp"</span> <span class="attr">packages</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"RollingFile"</span> <span class="attr">fileName</span>=<span class="string">"logs/app.log"</span></span></span><br><span class="line"><span class="tag">                 <span class="attr">filePattern</span>=<span class="string">"logs/$$&#123;date:yyyy-MM&#125;/app-%d&#123;MM-dd-yyyy&#125;-%i.log.gz"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Pattern</span>&gt;</span>%d %p %c&#123;1.&#125; [%t] %m%n<span class="tag">&lt;/<span class="name">Pattern</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Policies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">TimeBasedTriggeringPolicy</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">"250 MB"</span>/&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">Policies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"error"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"RollingFile"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="CronTriggeringPolicy"><a href="#CronTriggeringPolicy" class="headerlink" title="CronTriggeringPolicy"></a>CronTriggeringPolicy</h5><p>CronTriggeringPolicy：<code>基于cron表达式来滚动日志</code>。</p>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">schedule</td>
+<td align="center">String</td>
+<td>和Quartz调度器一样的cron表达式</td>
+</tr>
+<tr>
+<td align="center">evaluateOnStartup</td>
+<td align="center">boolean</td>
+<td>在启动时，该cron表达式将基于文件的上次修改时间戳来求值。</td>
+</tr>
+</tbody></table>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 基于cron表达式和大小的触发规则，直接将日志以编号无限制的方式写入归档文件中。</span></span><br><span class="line"><span class="comment">	cron触发器会每小时滚动一次，而每个日志文件的大小限制在 250 MB，超过此大小就会滚动（新文件的编号递增） --&gt;</span></span><br><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"warn"</span> <span class="attr">name</span>=<span class="string">"MyApp"</span> <span class="attr">packages</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"RollingFile"</span> <span class="attr">filePattern</span>=<span class="string">"logs/app-%d&#123;yyyy-MM-dd-HH&#125;-%i.log.gz"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Pattern</span>&gt;</span>%d %p %c&#123;1.&#125; [%t] %m%n<span class="tag">&lt;/<span class="name">Pattern</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Policies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">CronTriggeringPolicy</span> <span class="attr">schedule</span>=<span class="string">"0 0 * * * ?"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">"250 MB"</span>/&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">Policies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"error"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"RollingFile"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="滚动策略"><a href="#滚动策略" class="headerlink" title="滚动策略"></a>滚动策略</h4><h5 id="DirectWriteRolloverStrategy"><a href="#DirectWriteRolloverStrategy" class="headerlink" title="DirectWriteRolloverStrategy"></a>DirectWriteRolloverStrategy</h5><p>DirectWriteRolloverStrategy：<code>将日志事件直接写入filePattern参数值表示的文件。</code>该策略不进行文件重命名。如果基于大小的触发规则要在特定时间段内写入多个文件，这些文件编号将从1开始持续递增，直到出现基于时间的滚动。</p>
+<blockquote>
+<p>注：<code>如果filePattern参数值中有一个表示压缩格式的后缀以进行文件压缩，当应用关闭时当前文件并不会进行压缩</code>。此外，<code>如果由于时间改变造成filePattern不在匹配当前文件了，那么当前文件在下次启动时也不会进行压缩</code>。</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 限制每小时里文件编号最大为 10 --&gt;</span></span><br><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"warn"</span> <span class="attr">name</span>=<span class="string">"MyApp"</span> <span class="attr">packages</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"RollingFile"</span> <span class="attr">filePattern</span>=<span class="string">"logs/app-%d&#123;yyyy-MM-dd-HH&#125;-%i.log.gz"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Pattern</span>&gt;</span>%d %p %c&#123;1.&#125; [%t] %m%n<span class="tag">&lt;/<span class="name">Pattern</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Policies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">CronTriggeringPolicy</span> <span class="attr">schedule</span>=<span class="string">"0 0 * * * ?"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">"250 MB"</span>/&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">Policies</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">DirectWriteRolloverStrategy</span> <span class="attr">maxFiles</span>=<span class="string">"10"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"error"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"RollingFile"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">maxFiles</td>
+<td align="center">String</td>
+<td><code>匹配filePattern期间所允许的最大文件数</code>。如果文件数超过了该属性值，则最早文件编号的文件将会删除。如果指定了该属性值，那么必须要大于 1。如果该属性值小于0或省略掉了，则将不会再限制文件编号。</td>
+</tr>
+<tr>
+<td align="center">compressionLevel</td>
+<td align="center">Integer</td>
+<td><code>设置压缩级别0 - 9</code>。0 = none，1 = best speed，9 = best compression。仅应用于 ZIP 文件。</td>
+</tr>
+<tr>
+<td align="center">tempCompressedFilePattern</td>
+<td align="center">String</td>
+<td>压缩时归档文件的文件名模式。</td>
+</tr>
+</tbody></table>
+<h5 id="DefaultRolloverStrategy"><a href="#DefaultRolloverStrategy" class="headerlink" title="DefaultRolloverStrategy"></a>DefaultRolloverStrategy</h5><p>DefaultRolloverStrategy：<code>可同时接受RollingFileAppender中filePattern属性值中日期/时间和整数计数器（%i）的匹配模式</code></p>
+<blockquote>
+<ul>
+<li>当日期/时间满足条件时，则会<code>使用当前的日期/时间生成新的日志文件</code></li>
+<li>如果filePattern属性值中含有一个<code>整数计数器 %i</code> ，则在<code>每次滚动时该整数都会增加</code></li>
+<li>如果filePattern属性值中同时<code>包含了日期/时间和整数计数器（%i），计数器会在日期/时间不变时，而满足其他滚动触发条件时（文件大小）开始自增</code>，<code>直到日期/时间发生变化时，计数器会重新自增</code></li>
+<li>以.gz、.zip、.bz2、deflate、pack200或xz结尾的filePattern值，会在日志文件归档时，以后缀对应的格式进行压缩</li>
+</ul>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 保留 20 个文件的重新生成策略(多于设定值时删除时间最早的归档文件)，未配置DefaultRolloverStrategy时，</span></span><br><span class="line"><span class="comment">	其max属性默认为7 --&gt;</span></span><br><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"warn"</span> <span class="attr">name</span>=<span class="string">"MyApp"</span> <span class="attr">packages</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"RollingFile"</span> <span class="attr">fileName</span>=<span class="string">"logs/app.log"</span></span></span><br><span class="line"><span class="tag">                 <span class="attr">filePattern</span>=<span class="string">"logs/$$&#123;date:yyyy-MM&#125;/app-%d&#123;MM-dd-yyyy&#125;-%i.log.gz"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Pattern</span>&gt;</span>%d %p %c&#123;1.&#125; [%t] %m%n<span class="tag">&lt;/<span class="name">Pattern</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Policies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">TimeBasedTriggeringPolicy</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">"250 MB"</span>/&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">Policies</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">DefaultRolloverStrategy</span> <span class="attr">max</span>=<span class="string">"20"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"error"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"RollingFile"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="center">参数名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">fileIndex</td>
+<td align="center">String</td>
+<td>如果设置为<code>max（默认）</code>，则具有更大索引的文件比具有更小索引的文件内容更新。<code>如果设置为min，文件将重命名</code>。设置nomax，则min和max属性值都将会被忽略，文件编号每次滚动都会递增1，无限制</td>
+</tr>
+<tr>
+<td align="center">min</td>
+<td align="center">Integer</td>
+<td>计数器的最小值，<code>默认为 1</code>。</td>
+</tr>
+<tr>
+<td align="center">max</td>
+<td align="center">Integer</td>
+<td>计数器的最大值。<code>一旦计数器达到了最大值，最早的归档将会在每次滚动时被删除。默认值为 7</code>。</td>
+</tr>
+<tr>
+<td align="center">compressionLevel</td>
+<td align="center">Integer</td>
+<td><code>设置压缩级别0 - 9</code>。0 = none，1 = best speed(最快压缩)，9 = best compression(最好压缩)。仅应用于ZIP文件。</td>
+</tr>
+<tr>
+<td align="center">tempCompressedFilePattern</td>
+<td align="center">String</td>
+<td>压缩时归档文件的文件名模式。</td>
+</tr>
+</tbody></table>
+<p><code>默认的滚动策略支持三种递增计数器</code></p>
+<ul>
+<li>fileIndex 属性min设置为1，max设置为3，文件名为foo.log，文件名模式为foo-<code>%i</code>.log。<code>(向下重命名)</code></li>
+</ul>
+<p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/11/23/NJCRX4xVrf9izgO.png" alt=""></p>
+<ul>
+<li>fileIndex 属性设置为max，而所有其他设置和上面都一样。<code>(向上重命名)</code></li>
+</ul>
+<p><img src= "/img/loading.gif" data-src="https://i.loli.net/2021/11/23/mAlqasOBeWYwcn6.png" alt=""></p>
+<blockquote>
+<p>上面两种方式都有可能导致批量重命名日志文件，所以<code>自2.8版本开始，fileIndex 参数添加了nomax属性</code>。</p>
+</blockquote>
+<h6 id="Delete-归档保留规则"><a href="#Delete-归档保留规则" class="headerlink" title="Delete(归档保留规则)"></a>Delete(归档保留规则)</h6><p>Log4j 2.5 引入了删除动作（Delete action）。<code>在滚动删除旧的日志文件时，相比使用DefaultRolloverStrategy 的 max 属性，该功能可以让用户拥有更多的删除控制</code>。删除动作可以让用户配置若干个条件来删除相对于基准目录的文件。</p>
+<blockquote>
+<p><code>注：该功能可以删除非日志文件，使用时一定要小心。可以通过 testMode 属性来测试配置是否会错删文件。</code></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">basePath</td>
+<td align="center">String</td>
+<td><code>(必选)</code>指定扫描要删除文件的基准目录。</td>
+</tr>
+<tr>
+<td align="center">maxDepth</td>
+<td align="center">int</td>
+<td><code>指定扫描的目录的最大层级</code>。0值表示仅能访问基准目录（安全限制不能访问的情况除外）。Integer.MAX_VALUE值表示可以访问所有层级。默认值为1，表示仅扫描基准目录下的文件。</td>
+</tr>
+<tr>
+<td align="center">followLinks</td>
+<td align="center">boolean</td>
+<td>设置是否跟随符号链接。默认为 false</td>
+</tr>
+<tr>
+<td align="center">testMode</td>
+<td align="center">boolean</td>
+<td><code>如果设置为true，文件不会实际删除，而是在status logger打印一条INFO级别的消息。</code>可以使用该功能来测试是否会错删文件。默认为 false。</td>
+</tr>
+<tr>
+<td align="center">pathSorter</td>
+<td align="center">PathSorter</td>
+<td>设置一个实现了PathSorter接口的插件来在选择删除文件之前排列文件。默认优先排列最近改动的文件。</td>
+</tr>
+<tr>
+<td align="center">pathConditions</td>
+<td align="center">PathCondition</td>
+<td><code>如果没有指定 ScriptCondition 则必须指定一个或多个PathCondition元素。如果指定了不止一个条件，则这些条件都需要在删除之前接受某个路径(IfFileName)。</code>这些条件可以嵌套，只有外部条件接受某个路径之后，其内部条件才会决定是否接受该路径。<br/><br/>如果这些条件没有嵌套，则它们的执行顺序是任意的。这些条件也可以<code>通过使用IfAll，IfAny和IfNot等组合条件进行AND、OR和NOT等逻辑运算。</code><br/><br/>用户也可以创建自定义条件或使用内置条件：<br/><code>IfFileName</code>：接受匹配正则表达式或glob的文件路径，<br/><code>IfLastModified</code>：接受比指定时段早或一样早的文件，<br/><code>IfAccumulatedFileCount</code>：在遍历文件树时文件总数超过文件数上限后接受路径，<br/><code>IfAccumulatedFileSize</code>：在遍历文件树时文件总大小超过上限后接受路径，<br/><code>IfAll</code>：如果所有内嵌条件都接受了某个路径才会接受该路径，相当于AND逻辑。内嵌条件的执行顺序是任意的，<br/><code>IfAny</code>：如果任意一个内嵌条件接受了某个目录就接受该目录，相当于OR逻辑。内嵌条件的执行顺序是任意的，<br/><code>IfNot</code>：如果内嵌条件不接受某个路径就接收该路径，相当于 NOT 逻辑。</td>
+</tr>
+<tr>
+<td align="center">scriptCondition</td>
+<td align="center">ScriptCondition</td>
+<td><code>如果没有指定PathConditions则必须指定该属性。</code>ScriptCondition元素应该通过包含Script，ScriptRef或ScriptFile元素来指定一个脚本。这里不做重点介绍。</td>
+</tr>
+</tbody></table>
+<ul>
+<li>IfFileName 条件属性：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">glob</td>
+<td align="center">String</td>
+<td><code>如果regex属性没有指定则必须指定该属性</code>。使用受限的模式语言（类似于正则表达式但语法更简单）来匹配相对路径（基于基准路径）。</td>
+</tr>
+<tr>
+<td align="center">regex</td>
+<td align="center">String</td>
+<td><code>如果glob属性没有指定则必须指定该属性</code>。使用Pattern类定义的正则表达式来匹配相对路径（基于基准路径）。</td>
+</tr>
+<tr>
+<td align="center">nestedConditions</td>
+<td align="center">PathCondition[]</td>
+<td>可选的内嵌 PathCondition 结合。</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><code>注：glob和regex属性必须二选一</code></p>
+</blockquote>
+<ul>
+<li>IfLastModified 条件属性：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">age</td>
+<td align="center">String</td>
+<td><code>(必须)</code>指定一个时段。该条件接受比指定时段早或一样的文件。s(秒)、m(分)、h(时)、d(天)</td>
+</tr>
+<tr>
+<td align="center">nestedConditions</td>
+<td align="center">PathCondition[]</td>
+<td>可选的内嵌 PathCondition 结合。</td>
+</tr>
+</tbody></table>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 使用cron触发规则，每天零时零分零秒触发一次。归档文件存放在当前年月目录。所有位于基准目录下</span></span><br><span class="line"><span class="comment">	匹配 */app-*.log.gz的文件，达到或超过60天的文件将会在滚动时删除--&gt;</span></span><br><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"warn"</span> <span class="attr">name</span>=<span class="string">"MyApp"</span> <span class="attr">packages</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Property</span> <span class="attr">name</span>=<span class="string">"baseDir"</span>&gt;</span>logs<span class="tag">&lt;/<span class="name">Property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Properties</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"RollingFile"</span> <span class="attr">fileName</span>=<span class="string">"$&#123;baseDir&#125;/app.log"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">filePattern</span>=<span class="string">"$&#123;baseDir&#125;/$$&#123;date:yyyy-MM&#125;/app-%d&#123;yyyy-MM-dd&#125;.log.gz"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"%d %p %c&#123;1.&#125; [%t] %m%n"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">CronTriggeringPolicy</span> <span class="attr">schedule</span>=<span class="string">"0 0 0 * * ?"</span>/&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">DefaultRolloverStrategy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Delete</span> <span class="attr">basePath</span>=<span class="string">"$&#123;baseDir&#125;"</span> <span class="attr">maxDepth</span>=<span class="string">"2"</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">IfFileName</span> <span class="attr">glob</span>=<span class="string">"*/app-*.log.gz"</span> /&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">IfLastModified</span> <span class="attr">age</span>=<span class="string">"60d"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Delete</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">DefaultRolloverStrategy</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"error"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"RollingFile"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>IfAccumulatedFileCount 条件属性：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">exceeds</td>
+<td align="center">int</td>
+<td><code>(必须)</code>指定一个<code>文件总数上限值</code>。如果文件数超过了该上限值则删除文件</td>
+</tr>
+<tr>
+<td align="center">nestedConditions</td>
+<td align="center">PathCondition[]</td>
+<td>可选的内嵌 PathCondition 结合。</td>
+</tr>
+</tbody></table>
+<ul>
+<li>IfAccumulatedFileSize 条件属性：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">exceeds</td>
+<td align="center">int</td>
+<td><code>(必须)</code>指定一个<code>文件总大小上限值</code>。如果文件累计总大小超过了该上限值则删除文件。该值可以通过 KB、MB 或 GB 等后缀来指定，例如 50GB。</td>
+</tr>
+<tr>
+<td align="center">nestedConditions</td>
+<td align="center">PathCondition[]</td>
+<td>可选的内嵌 PathCondition 结合。</td>
+</tr>
+</tbody></table>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 使用基于时间和文件大小的触发规则，每天最多生成100个归档日志文件，使用gzip压缩，存放在当前年月目录，</span></span><br><span class="line"><span class="comment">	每小时都会滚动。每次滚动都会删除匹配 */app-*.log.gz 达到或超过30天的文件，但会保留最近100GB的文件或</span></span><br><span class="line"><span class="comment">	最近的1000个文件（这两个条件哪个先满足就使用哪一个条件） --&gt;</span></span><br><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"warn"</span> <span class="attr">name</span>=<span class="string">"MyApp"</span> <span class="attr">packages</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Property</span> <span class="attr">name</span>=<span class="string">"baseDir"</span>&gt;</span>logs<span class="tag">&lt;/<span class="name">Property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Properties</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"RollingFile"</span> <span class="attr">fileName</span>=<span class="string">"$&#123;baseDir&#125;/app.log"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">filePattern</span>=<span class="string">"$&#123;baseDir&#125;/$$&#123;date:yyyy-MM&#125;/app-%d&#123;yyyy-MM-dd-HH&#125;-%i.log.gz"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"%d %p %c&#123;1.&#125; [%t] %m%n"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Policies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">TimeBasedTriggeringPolicy</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">"250 MB"</span>/&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">Policies</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">DefaultRolloverStrategy</span> <span class="attr">max</span>=<span class="string">"100"</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">        Nested conditions: the inner condition is only evaluated on files</span></span><br><span class="line"><span class="comment">        for which the outer conditions are true.</span></span><br><span class="line"><span class="comment">        --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Delete</span> <span class="attr">basePath</span>=<span class="string">"$&#123;baseDir&#125;"</span> <span class="attr">maxDepth</span>=<span class="string">"2"</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">IfFileName</span> <span class="attr">glob</span>=<span class="string">"*/app-*.log.gz"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">IfLastModified</span> <span class="attr">age</span>=<span class="string">"30d"</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">IfAccumulatedFileSize</span> <span class="attr">exceeds</span>=<span class="string">"100 GB"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">IfAccumulatedFileCount</span> <span class="attr">exceeds</span>=<span class="string">"1000"</span> /&gt;</span></span><br><span class="line">              <span class="tag">&lt;/<span class="name">IfAny</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">IfLastModified</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">IfFileName</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Delete</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">DefaultRolloverStrategy</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"error"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"RollingFile"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="PosixViewAttribute-归档自定义文件属性"><a href="#PosixViewAttribute-归档自定义文件属性" class="headerlink" title="PosixViewAttribute(归档自定义文件属性)"></a>PosixViewAttribute(归档自定义文件属性)</h6><p>Log4j 2.9 引入了一个PosixViewAttribute动作，<code>用户可以更好地控制选择文件的属主、属组、权限等属性中的哪一个来作为滚动依据</code>。PosixViewAttribute动作让用户配置一个或多个条件来筛选相对于基准目录的文件。</p>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">basePath</td>
+<td align="center">String</td>
+<td><code>(必选)</code>的用于扫描文件的基本目录。</td>
+</tr>
+<tr>
+<td align="center">maxDepth</td>
+<td align="center">int</td>
+<td><code>指定扫描的目录的最大层级</code>。0值表示仅能访问基准目录（安全限制不能访问的情况除外）。Integer.MAX_VALUE 值表示可以访问所有层级。默认值为1，表示仅扫描基准目录下的文件。</td>
+</tr>
+<tr>
+<td align="center">followLinks</td>
+<td align="center">boolean</td>
+<td>设置是否跟随符号链接。默认为 false。</td>
+</tr>
+<tr>
+<td align="center">pathConditions</td>
+<td align="center">PathCondition[]</td>
+<td>参考DeletePathCondition。</td>
+</tr>
+<tr>
+<td align="center">filePermissions</td>
+<td align="center">String</td>
+<td><code>设置每当创建文件时所用的 POSIX 格式的文件属性权限</code>。底层文件系统应该支持POSIX格式的文件属性视图。如： rw——- 或 rw-rw-rw- 等。</td>
+</tr>
+<tr>
+<td align="center">fileOwner</td>
+<td align="center">String</td>
+<td><code>指定每次创建文件的属主</code>。由于权限原因，可能不允许更改文件属主，这时会抛出 IOException 。仅当有效的目标用户 ID 和文件的用户 ID 相同，或目标用户 ID 具有修改文件属主的权限（如果 _POSIX_CHOWN_RESTRICTED在日志文件路径下有效）时才会处理。底层文件系统应该支持 owner 文件属性视图。</td>
+</tr>
+<tr>
+<td align="center">fileGroup</td>
+<td align="center">String</td>
+<td><code>指定每次创建文件的属组</code>。底层文件系统应该支持POSIX格式的文件属性视图。</td>
+</tr>
+</tbody></table>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 为当前和已滚动日志文件定义了不同的 POSIX 文件属性视图 --&gt;</span></span><br><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"trace"</span> <span class="attr">name</span>=<span class="string">"MyApp"</span> <span class="attr">packages</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Property</span> <span class="attr">name</span>=<span class="string">"baseDir"</span>&gt;</span>logs<span class="tag">&lt;/<span class="name">Property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Properties</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"RollingFile"</span> <span class="attr">fileName</span>=<span class="string">"$&#123;baseDir&#125;/app.log"</span></span></span><br><span class="line"><span class="tag">                 <span class="attr">filePattern</span>=<span class="string">"$&#123;baseDir&#125;/$$&#123;date:yyyy-MM&#125;/app-%d&#123;yyyyMMdd&#125;.log.gz"</span></span></span><br><span class="line"><span class="tag">                 <span class="attr">filePermissions</span>=<span class="string">"rw-------"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"%d %p %c&#123;1.&#125; [%t] %m%n"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">CronTriggeringPolicy</span> <span class="attr">schedule</span>=<span class="string">"0 0 0 * * ?"</span>/&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">DefaultRolloverStrategy</span> <span class="attr">stopCustomActionsOnError</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">PosixViewAttribute</span> <span class="attr">basePath</span>=<span class="string">"$&#123;baseDir&#125;/$$&#123;date:yyyy-MM&#125;"</span> <span class="attr">filePermissions</span>=<span class="string">"r--r--r--"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">IfFileName</span> <span class="attr">glob</span>=<span class="string">"*.gz"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">PosixViewAttribute</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">DefaultRolloverStrategy</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">  <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"error"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"RollingFile"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="RollingRandomAccessFileAppender"><a href="#RollingRandomAccessFileAppender" class="headerlink" title="RollingRandomAccessFileAppender"></a>RollingRandomAccessFileAppender</h3><p>RollingRandomAccessFileAppender基本上与RollingFileAppender相同，只是<code>RollingRandomAccessFileAppender的缓冲是不可关闭的</code>，它<code>使用ByteBuffer + RandomAccessFile来代替BufferedOutputStream</code>。实际测试表明，使用 <code>RollingRandomAccessFileAppender 比使用设置了 bufferedIO=true 的RollingFileAppender 有提高 20-200% 的性能提升</code>。</p>
+<h3 id="JDBCAppender"><a href="#JDBCAppender" class="headerlink" title="JDBCAppender"></a>JDBCAppender</h3><p><code>JDBCAppender 可以使用标准的JDBC将日志事件写入关系型数据库表中</code>。</p>
+<blockquote>
+<ul>
+<li>可以通过使用JNDI数据源或自定义的工厂方法（都支持数据库连接池）来获取 JDBC 连接。</li>
+<li>如果配置的 JDBC 驱动支持批处理语句（batch statement），且bufferSize设置为一个正数，日志事件就可以分批处理。</li>
+</ul>
+</blockquote>
+<p>从 Log4j 2.8 开始，有两种配置日志事件的数据列映射：</p>
+<blockquote>
+<ul>
+<li>仅允许字符串和时间戳的原始<code>ColumnConfig风格</code></li>
+<li>使用Log4j内置的类型转换（支持更多数据类型）的新的 <code>ColumnMapping 插件</code></li>
+</ul>
+</blockquote>
+<h4 id="操作实例"><a href="#操作实例" class="headerlink" title="操作实例"></a>操作实例</h4><ul>
+<li><p>web.xml 配置<br>log4j2.xml这个名字是默认的，放在resource目录下的，如果你是采用默认的，那么web.xml里就不需要配置。如果需要自定义路径记得在web.xml里如下配置</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">context-param</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>log4j2ConfigLocation<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>classpath:config/log4j2.xml<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">context-param</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>SpringBoot 配置<br>如果自定义了文件名，需要在application.yml中配置</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">logging:</span><br><span class="line">  config: xxxx.xml</span><br><span class="line">  level:</span><br><span class="line">    cn.jay.repository: trace</span><br></pre></td></tr></table></figure>
+<p>默认名<code>log4j2-spring.xml放在resource目录下</code>，就省下了在application.yml中配置</p>
+</li>
+<li><p>log4j2配置内容</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 配置了两个输出方式，Console和JDBC也就是控制台和数据库，其中com.amayadream.webchat.listener.</span></span><br><span class="line"><span class="comment">	PoolManager是一个连接池管理类，getConnection方法是获取Connection对象，代码会在下面贴出.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">	数据库名为syslog，一共六个字段分别为id，class，function，message，leavl，time，类型都是varchar2，id为</span></span><br><span class="line"><span class="comment">	主键，默认值为sys_guid()</span></span><br><span class="line"><span class="comment">	</span></span><br><span class="line"><span class="comment">	tableName是数据库中日志表的表名，Column是数据库的字段，pattern是字段的值，因为我用的是oracle数据库，id</span></span><br><span class="line"><span class="comment">	用的是sys_guid()，所以在这里省略以实现不重复的主键效果 --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"INFO"</span> <span class="attr">monitorInterval</span>=<span class="string">"1800"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appenders</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Console</span> <span class="attr">name</span>=<span class="string">"consolePrint"</span> <span class="attr">target</span>=<span class="string">"SYSTEM_OUT"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"%d&#123;HH:mm:ss&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Console</span>&gt;</span></span><br><span class="line">        </span><br><span class="line">        <span class="tag">&lt;<span class="name">JDBC</span> <span class="attr">name</span>=<span class="string">"databaseAppender"</span> <span class="attr">tableName</span>=<span class="string">"SYSLOG"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">ConnectionFactory</span> <span class="attr">class</span>=<span class="string">"com.amayadream.webchat.listener.PoolManager"</span> <span class="attr">method</span>=<span class="string">"getConnection"</span> /&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--&lt;Column name="ID" pattern=""/&gt;--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Column</span> <span class="attr">name</span>=<span class="string">"CLASS"</span> <span class="attr">pattern</span>=<span class="string">"%C"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Column</span> <span class="attr">name</span>=<span class="string">"FUNCTION"</span> <span class="attr">pattern</span>=<span class="string">"%M"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Column</span> <span class="attr">name</span>=<span class="string">"MESSAGE"</span> <span class="attr">pattern</span>=<span class="string">"%m"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Column</span> <span class="attr">name</span>=<span class="string">"LEAVL"</span> <span class="attr">pattern</span>=<span class="string">"%level"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Column</span> <span class="attr">name</span>=<span class="string">"TIME"</span> <span class="attr">pattern</span>=<span class="string">"%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125;"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">JDBC</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appenders</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;<span class="name">loggers</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">root</span> <span class="attr">level</span>=<span class="string">"info"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"consolePrint"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"databaseAppender"</span> <span class="attr">level</span>=<span class="string">"INFO"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Connection获取</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.FileNotFoundException;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="keyword">import</span> java.sql.*;</span><br><span class="line"><span class="keyword">import</span> java.util.Properties;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.commons.dbcp.ConnectionFactory;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.dbcp.DriverManagerConnectionFactory;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.dbcp.PoolableConnectionFactory;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.dbcp.PoolingDriver;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.pool.ObjectPool;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.pool.impl.GenericObjectPool;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PoolManager</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String driver = <span class="string">"oracle.jdbc.driver.OracleDriver"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String url = <span class="string">"jdbc:oracle:thin:@localhost:1521:SYSLOG"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String Name = <span class="string">"*****"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String Password = <span class="string">"*****"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Class driverClass = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ObjectPool connectionPool = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PoolManager</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 装配配置文件</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loadProperties</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            InputStream stream = PoolManager.class.getClassLoader().getResourceAsStream("jdbc.properties");</span><br><span class="line">            Properties props = <span class="keyword">new</span> Properties();</span><br><span class="line">            props.load(stream);</span><br><span class="line">            driver = props.getProperty(<span class="string">"driver"</span>);</span><br><span class="line">            url = props.getProperty(<span class="string">"url"</span>);</span><br><span class="line">            Name = props.getProperty(<span class="string">"username"</span>);</span><br><span class="line">            Password = props.getProperty(<span class="string">"password"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">            System.out.println(<span class="string">"读取配置文件异常"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span>(IOException ie)&#123;</span><br><span class="line">            System.out.println(<span class="string">"读取配置文件时IO异常"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 初始化数据源</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">initDataSource</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (driverClass == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                driverClass = Class.forName(driver);</span><br><span class="line">            &#125;<span class="keyword">catch</span> (ClassNotFoundException e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 连接池启动</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">startPool</span><span class="params">()</span></span>&#123;</span><br><span class="line">        loadProperties();</span><br><span class="line">        initDataSource();</span><br><span class="line">        <span class="keyword">if</span> (connectionPool != <span class="keyword">null</span>) &#123;</span><br><span class="line">            destroyPool();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            connectionPool = <span class="keyword">new</span> GenericObjectPool(<span class="keyword">null</span>);</span><br><span class="line">            ConnectionFactory connectionFactory = <span class="keyword">new</span> DriverManagerConnectionFactory(url, Name, Password);</span><br><span class="line">            PoolableConnectionFactory poolableConnectionFactory = <span class="keyword">new</span> PoolableConnectionFactory(connectionFactory, connectionPool, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">            Class.forName(<span class="string">"org.apache.commons.dbcp.PoolingDriver"</span>);</span><br><span class="line">            PoolingDriver driver = (PoolingDriver) DriverManager.getDriver(<span class="string">"jdbc:apache:commons:dbcp:"</span>);</span><br><span class="line">            driver.registerPool(<span class="string">"dbpool"</span>, connectionPool);</span><br><span class="line">            System.out.println(<span class="string">"装配连接池OK"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">destroyPool</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            PoolingDriver driver = (PoolingDriver) DriverManager.getDriver(<span class="string">"jdbc:apache:commons:dbcp:"</span>);</span><br><span class="line">            driver.closePool(<span class="string">"dbpool"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 取得连接池中的连接</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Connection <span class="title">getConnection</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Connection conn = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span>(connectionPool == <span class="keyword">null</span>)</span><br><span class="line">            startPool();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            conn = DriverManager.getConnection(<span class="string">"jdbc:apache:commons:dbcp:dbpool"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> conn;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取连接</span></span><br><span class="line"><span class="comment">     * getConnection</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> name</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Connection <span class="title">getConnection</span><span class="params">(String name)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> getConnection();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 释放连接</span></span><br><span class="line"><span class="comment">     * freeConnection</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> conn</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">freeConnection</span><span class="params">(Connection conn)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(conn != <span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                conn.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 释放连接</span></span><br><span class="line"><span class="comment">     * freeConnection</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> name</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> con</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">freeConnection</span> <span class="params">(String name,Connection con)</span></span>&#123;</span><br><span class="line">        freeConnection(con);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Connection conn = PoolManager.getConnection();</span><br><span class="line">            <span class="keyword">if</span>(conn != <span class="keyword">null</span>)&#123;</span><br><span class="line">                Statement statement = conn.createStatement();</span><br><span class="line">                ResultSet rs = statement.executeQuery(<span class="string">"select * from syslog"</span>);</span><br><span class="line">                <span class="keyword">int</span> c = rs.getMetaData().getColumnCount();</span><br><span class="line">                <span class="keyword">while</span>(rs.next())&#123;</span><br><span class="line">                    System.out.println();</span><br><span class="line">                    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=c;i++)&#123;</span><br><span class="line">                        System.out.print(rs.getObject(i));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                rs.close();</span><br><span class="line">            &#125;</span><br><span class="line">            PoolManager.freeConnection(conn);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>jdbc.properties</p>
+<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="attr">driver</span>=<span class="string">oracle.jdbc.driver.OracleDriver</span></span><br><span class="line"><span class="attr">url</span>=<span class="string">jdbc:oracle:thin:@localhost:1521:SYSLOG</span></span><br><span class="line"><span class="attr">username</span>=<span class="string">*****</span></span><br><span class="line"><span class="attr">password</span>=<span class="string">*****</span></span><br><span class="line"><span class="comment">#定义初始连接数</span></span><br><span class="line"><span class="attr">initialSize</span>=<span class="string">0</span></span><br><span class="line"><span class="comment">#定义最大连接数</span></span><br><span class="line"><span class="attr">maxActive</span>=<span class="string">20</span></span><br><span class="line"><span class="comment">#定义最大空闲</span></span><br><span class="line"><span class="attr">maxIdle</span>=<span class="string">20</span></span><br><span class="line"><span class="comment">#定义最小空闲</span></span><br><span class="line"><span class="attr">minIdle</span>=<span class="string">1</span></span><br><span class="line"><span class="comment">#定义最长等待时间</span></span><br><span class="line"><span class="attr">maxWait</span>=<span class="string">60000</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h4 id="属性详解"><a href="#属性详解" class="headerlink" title="属性详解"></a>属性详解</h4><table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">name</td>
+<td align="center">String</td>
+<td><code>(必选)</code> Appender 的名称。</td>
+</tr>
+<tr>
+<td align="center">ignoreExceptions</td>
+<td align="center">boolean</td>
+<td><code>默认为 true ，表示当输出事件时出现的异常将会被内部记录而忽略</code>。 当设置为 false 时，则会将异常传播给调用者。当将该 Appender 包装成 FailoverAppender 时，必须设置为 false 。</td>
+</tr>
+<tr>
+<td align="center">filter</td>
+<td align="center">Filter</td>
+<td><code>指定一个过滤器来决定是否将日志事件传递给 Appender 处理</code>。可以指定为一个 CompositeFilter 来使用多个过滤器。</td>
+</tr>
+<tr>
+<td align="center">bufferSize</td>
+<td align="center">int</td>
+<td>如果设置的整数值大于 0，Appender 将会缓冲日志事件，当缓冲区达到指定大小时 flush。</td>
+</tr>
+<tr>
+<td align="center">connectionSource</td>
+<td align="center">ConnectionSource</td>
+<td><code>(必选)</code> 设置获取数据库连接的连接源。</td>
+</tr>
+<tr>
+<td align="center">tableName</td>
+<td align="center">String</td>
+<td><code>(必选)</code> 设置写入日期事件的数据库表。</td>
+</tr>
+<tr>
+<td align="center">columnConfigs</td>
+<td align="center">ColumnConfig[]</td>
+<td><code>(必选)</code> 通过多个Column元素来设置写入日志数据的数据列以及如何写入日志数据。</td>
+</tr>
+<tr>
+<td align="center">columnMappings</td>
+<td align="center">ColumnMapping[]</td>
+<td><code>(必选)</code> <code>设置数据列映射列表</code>。每一列必须指定一个列名，每一列都可以通过指定全限定类名来设置转换类型。<br/><br/>如果配置的类型是<code>ReadOnlyStringMap / ThreadContextMap或ThreadContextStack赋值兼容的（assignment-compatib），那么该列将会分别使用 MDC 或 NDC （取决于数据库如何处理 Map 或 List 类型的值）来填充</code>。<br/><br/>如果配置的类型是 <code>java.util.Date 类型赋值兼容的，那么日志时间戳将转换为配置的日期类型</code>。<br/><br/>如果配置的类型是 <code>java.sql.Clob 或 java.sql.NClob 兼容的，那么格式化的事件将分别设置为 Clob 或 NClob（与传统的 ColumnConfig 插件类似）</code>。<br/><br/><code>如果指定了 literal 属性，那么其值将会被用于 INSERT 查询而不会转译。否则，指定的布局或模式（layout 或 pattern）将会转换为配置的类型，存储在该列中。</code></td>
+</tr>
+</tbody></table>
+<p>当配置了 JDBCAppender，必须指定一个 ConnectionSource 实现来获取 JDBC 连接。必须指定以下<code>某个</code>内嵌元素：</p>
+<blockquote>
+<p>DataSource：使用 JNDI；<br>ConnectionFactory：<code>(常用)</code>指向提供 JDBC 连接的类方法对；<br>DriverManager：不使用连接池，这是一种快速但不推荐的脏方法；<br>PoolingDriver：使用 Apache Commons DBCP 提供连接池。</p>
+</blockquote>
+<ul>
+<li>DataSource 元素属性</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">jndiName</td>
+<td align="center">String</td>
+<td><code>(必选)</code> 设置 javax.sql.DataSource 绑定的完整 JNDI 前缀，比如 java:/comp/env/jdbc/LoggingDatabase 。<code>DataSource 必须支持连接池，否则，日志记录会很慢。</code></td>
+</tr>
+</tbody></table>
+<ul>
+<li>ConnectionFactory 元素属性</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">class</td>
+<td align="center">Class</td>
+<td><code>(必选)</code> 设置一个全限定类名，该类含有一个获取 JDBC 连接的静态工厂方法。</td>
+</tr>
+<tr>
+<td align="center">method</td>
+<td align="center">Method</td>
+<td><code>(必选)</code> 设置获取 JDBC 连接的静态工厂方法名。该方法不能有参数，且其返回值必须得是 java.sql.Connection 或 DataSource 。如果该方法返回的是数据库连接，那么数据库连接必须是连接池提供的，不然日志记录就会很慢。<code>如果该方法返回的是数据源，那么该数据源只需要获取一次，出于同样的原因，该数据源也需要支持连接池。</code></td>
+</tr>
+</tbody></table>
+<ul>
+<li>DriverManager 元素属性</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">connectionString</td>
+<td align="center">String</td>
+<td><code>(必选)</code> 设置基于特定驱动的 JDBC 连接字符串。</td>
+</tr>
+<tr>
+<td align="center">userName</td>
+<td align="center">String</td>
+<td>数据库<code>用户名</code>。不能同时中指定 properties 属性和用户名或密码。</td>
+</tr>
+<tr>
+<td align="center">password</td>
+<td align="center">String</td>
+<td>数据库<code>密码</code>。不能同时指定 properties 属性和用户名或密码。</td>
+</tr>
+<tr>
+<td align="center">driverClassName</td>
+<td align="center">String</td>
+<td><code>JDBC 驱动类名</code>。某些老的 JDBC 驱动只能显式通过类名来加载。</td>
+</tr>
+<tr>
+<td align="center">properties</td>
+<td align="center">Property[]</td>
+<td><code>属性列表</code>。 不能同时指定 properties 属性和用户名或密码。</td>
+</tr>
+</tbody></table>
+<ul>
+<li>PoolingDriver（Apache Commons DBCP） 元素属性</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">DriverManager parameters</td>
+<td align="center">DriverManager parameters</td>
+<td>连接源从 DriverManager 连接源继承来所有参数。</td>
+</tr>
+<tr>
+<td align="center">poolName</td>
+<td align="center">String</td>
+<td><code>JDBC 连接池的名称</code>。默认为 example。可以使用 JDBC 连接前缀 jdbc:apache:commons:dbcp:（Apache Commons DBCP） 后面跟上连接池的名称，例如： jdbc:apache:commons:dbcp:example。</td>
+</tr>
+<tr>
+<td align="center">PoolableConnectionFactory</td>
+<td align="center">PoolableConnectionFactory</td>
+<td>定义一个 PoolableConnectionFactory。</td>
+</tr>
+</tbody></table>
+<ul>
+<li>Column 元素属性</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">name</td>
+<td align="center">String</td>
+<td><code>(必选)</code>数据库表的列名。</td>
+</tr>
+<tr>
+<td align="center">pattern</td>
+<td align="center">String</td>
+<td><code>此属性可以通过使用 PatternLayout 模式在本列中插入一个或多个来自日志事件的值</code>。 只需在此属性中指定任何合法模式。<code>必须指定这个属性或 literal 或 isEventTimestamp=&quot;true&quot;，但不能多于一个。</code></td>
+</tr>
+<tr>
+<td align="center">literal</td>
+<td align="center">String</td>
+<td><code>使用该属性为该列插入一个文本值</code>。该值将直接包含在 Insert SQL 语句中，不包含任何引号（这意味着如果你想将其作为字符串，你的值应该包含像这样的单引号：literal=”‘Literal String’”）。 这<code>对于不支持自动生成主键值的数据库特别有用。 比如，如果你使用 Oracle，你可以指定 literal=&quot;NAME_OF_YOUR_SEQUENCE.NEXTVAL&quot; 在主键列中插入一个唯一的 ID</code>。 必须指定这个属性或 pattern 或 isEventTimestamp=”true”，但不能多于一个。</td>
+</tr>
+<tr>
+<td align="center">parameter</td>
+<td align="center">String</td>
+<td>使用此属性在这一列里插入一个带有 ? 参数的表达式。该值将直接包含在 Insert SQL 语句中，不包含任何引号（这意味着如果你想将其作为字符串，你的值应该包含像这样的单引号：<ColumnMapping name="instant" parameter="TIMESTAMPADD('MILLISECOND', ?, TIMESTAMP '1970-01-01')"/>。<code>只能指定 literal 或 parameter 中的一个</code>。</td>
+</tr>
+<tr>
+<td align="center">isEventTimestamp</td>
+<td align="center">boolean</td>
+<td><code>使用此属性将事件时间戳插入到此列中，该列应该是一个 SQL 日期时间</code>。该值将按照 java.sql.Types.TIMESTAMP 类型插入。必须指定这个属性或 literal 或 pattern，但不能多于一个。</td>
+</tr>
+<tr>
+<td align="center">isUnicode</td>
+<td align="center">boolean</td>
+<td><code>除非指定了 pattern ，否则该属性将被忽略</code>。 如果 true 或省略（默认false），该值将按 Unicode 插入（setNString 或 setNClob），否则，该值将会以非 Unicode 插入（setString 或 setClob）。</td>
+</tr>
+<tr>
+<td align="center">isClob</td>
+<td align="center">boolean</td>
+<td><code>除非指定了 pattern ，否则该属性将被忽略</code>。使用该属性表明该列是否用来存储 Character Large Objects（CLOBs）。如果设置为 true，该值将被插入为 CLOB（setClob 或 setNClob），如果设置为 false 或忽略（默认false），该值将被插入为 VARCHAR 或 NVARCHAR（setString 或 setNString）。</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><code>注：JDBCAppender 使用带有占位符的PreparedStatement 来插入 SQL 记录。</code></p>
+</blockquote>
+<ul>
+<li>ColumnMapping 元素属性</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">属性名</th>
+<th align="center">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">name</td>
+<td align="center">String</td>
+<td><code>(必选)</code>数据库表的列名。</td>
+</tr>
+<tr>
+<td align="center">pattern</td>
+<td align="center">String</td>
+<td><code>此属性可以通过使用 PatternLayout 模式在本列中插入一个或多个来自日志事件的值</code>。 只需在此属性中指定任何合法模式。<code>必须指定这个属性或 literal 或 isEventTimestamp=&quot;true&quot;，但不能多于一个。</code></td>
+</tr>
+<tr>
+<td align="center">literal</td>
+<td align="center">String</td>
+<td><code>使用该属性为该列插入一个文本值</code>。该值将直接包含在 Insert SQL 语句中，不包含任何引号（这意味着如果你想将其作为字符串，你的值应该包含像这样的单引号：literal=”‘Literal String’”）。 这<code>对于不支持自动生成主键值的数据库特别有用。 比如，如果你使用 Oracle，你可以指定 literal=&quot;NAME_OF_YOUR_SEQUENCE.NEXTVAL&quot; 在主键列中插入一个唯一的 ID</code>。 必须指定这个属性或 pattern 或 isEventTimestamp=”true”，但不能多于一个。</td>
+</tr>
+<tr>
+<td align="center">layout</td>
+<td align="center">layout</td>
+<td>用来格式化 LogEvent 的 Layout。</td>
+</tr>
+<tr>
+<td align="center">type</td>
+<td align="center">String</td>
+<td><code>转换类型名称</code>，是一个全限定名。</td>
+</tr>
+</tbody></table>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"debug"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Console</span> <span class="attr">name</span>=<span class="string">"STDOUT"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"%C&#123;1.&#125; %m %level MDC%X%n"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Console</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Jdbc</span> <span class="attr">name</span>=<span class="string">"databaseAppender"</span> <span class="attr">tableName</span>=<span class="string">"dsLogEntry"</span> <span class="attr">ignoreExceptions</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">DataSource</span> <span class="attr">jndiName</span>=<span class="string">"java:/comp/env/jdbc/TestDataSourceAppender"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ColumnMapping</span> <span class="attr">name</span>=<span class="string">"Id"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ColumnMapping</span> <span class="attr">name</span>=<span class="string">"ColumnA"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ColumnMapping</span> <span class="attr">name</span>=<span class="string">"ColumnB"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">MessageLayout</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Jdbc</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">  <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"org.apache.logging.log4j.core.appender.db"</span> <span class="attr">level</span>=<span class="string">"debug"</span> <span class="attr">additivity</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"databaseAppender"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Logger</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"fatal"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"STDOUT"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Layout"><a href="#Layout" class="headerlink" title="Layout"></a>Layout</h3><p>Appender 在将日志数据写入目标位置之前，一般会将日志数据通过 Layout 进行格式化。</p>
+<blockquote>
+<ul>
+<li>Layout 也可以通过特定的 Layout 插件名或 layout 元素（带有指定 Layout 插件名的 type 属性）来配置。</li>
+<li>Log4j 提供了多种不同的Layout来适用于多种形式的输出，如JSON、XML、HTML 和 Syslog (包括最新的 RFC 5424 版本).</li>
+</ul>
+</blockquote>
+<p>PatternLayout 可以使用与C语言printf函数类似的转换模式来指定输出格式，PatternLayout 可以<code>使用一些%开头的转换说明符（ conversion specifier ），每个转换说明符包含一个可选的格式修饰符（format modifier）和一个转换字符（conversion character）来格式化日志事件的数据输出</code>。</p>
+<blockquote>
+<ul>
+<li><code>格式修饰符（format modifier）用于指定字段宽度、填充、左右对齐</code>等。 “%-5p [%t]: %m%n”表明日志级别（%p）是向左对齐，宽度为5个字符，可能的日志输出内容为：</li>
+</ul>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">DEBUG [main]: Message <span class="number">1</span></span><br><span class="line">WARN  [main]: Message <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p><code>常用的转换说明符如下：</code></p>
+<ul>
+<li>%c{precision}，%logger{precision}<br>logger的名称，precision可以是一个正整数、负整数、“1.”、“1.1..”、“.”等格式，<code>用于指定输出的logger的名称的层级和详细程度</code>。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">转换模式</th>
+<th align="center">日志名字</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">%c{1}</td>
+<td align="center">org.apache.commons.Foo</td>
+<td>Foo</td>
+</tr>
+<tr>
+<td align="center">%c{2}</td>
+<td align="center">org.apache.commons.Foo</td>
+<td>commons.Foo</td>
+</tr>
+<tr>
+<td align="center">%c{10}</td>
+<td align="center">org.apache.commons.Foo</td>
+<td>org.apache.commons.Foo</td>
+</tr>
+<tr>
+<td align="center">%c{-1}</td>
+<td align="center">org.apache.commons.Foo</td>
+<td>apache.commons.Foo</td>
+</tr>
+<tr>
+<td align="center">%c{-2}</td>
+<td align="center">org.apache.commons.Foo</td>
+<td>commons.Foo</td>
+</tr>
+<tr>
+<td align="center">%c{-10}</td>
+<td align="center">org.apache.commons.Foo</td>
+<td>org.apache.commons.Foo</td>
+</tr>
+<tr>
+<td align="center">%c{1.}</td>
+<td align="center">org.apache.commons.Foo</td>
+<td>o.a.c.Foo</td>
+</tr>
+<tr>
+<td align="center">%c{1.1..}</td>
+<td align="center">org.apache.commons.Foo</td>
+<td>o.a…Foo</td>
+</tr>
+<tr>
+<td align="center">%c{.}</td>
+<td align="center">org.apache.commons.Foo</td>
+<td>….Foo</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>%C{precision}，%class{precision}<br>输出调用者的权限定类名，precision的规则与logger名称的用法相同。<code>Log4j在输出类名时会检查堆栈信息，是耗时的操作，建议使用%c{precision}或%logger{precision}代替</code>。</p>
+</li>
+<li><p>%d{pattern}，%date{pattern}<br><code>输出日志事件的时间</code>，pattern经常包含若干对包含时间/日期格式（SimpleDateFormat）的花括号。</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>范例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>%d{DEFAULT} <code>(默认)</code></td>
+<td>2012-11-02 14:34:02,123</td>
+</tr>
+<tr>
+<td>%d{DEFAULT_MICROS}</td>
+<td>2012-11-02 14:34:02,123456</td>
+</tr>
+<tr>
+<td>%d{DEFAULT_NANOS}</td>
+<td>2012-11-02 14:34:02,123456789</td>
+</tr>
+<tr>
+<td>%d{ISO8601}</td>
+<td>2012-11-02T14:34:02,781</td>
+</tr>
+<tr>
+<td>%d{ISO8601_BASIC}</td>
+<td>20121102T143402,781</td>
+</tr>
+<tr>
+<td>%d{ISO8601_OFFSET_DATE_TIME_HH}</td>
+<td>2012-11-02’T’14:34:02,781-07</td>
+</tr>
+<tr>
+<td>%d{ISO8601_OFFSET_DATE_TIME_HHMM}</td>
+<td>2012-11-02’T’14:34:02,781-0700</td>
+</tr>
+<tr>
+<td>%d{ISO8601_OFFSET_DATE_TIME_HHCMM}</td>
+<td>2012-11-02’T’14:34:02,781-07:00</td>
+</tr>
+<tr>
+<td>%d{ABSOLUTE}</td>
+<td>14:34:02,781</td>
+</tr>
+<tr>
+<td>%d{ABSOLUTE_MICROS}</td>
+<td>14:34:02,123456</td>
+</tr>
+<tr>
+<td>%d{ABSOLUTE_NANOS}</td>
+<td>14:34:02,123456789</td>
+</tr>
+<tr>
+<td>%d{DATE}</td>
+<td>02 Nov 2012 14:34:02,781</td>
+</tr>
+<tr>
+<td>%d{COMPACT}</td>
+<td>20121102143402700</td>
+</tr>
+<tr>
+<td>%d{UNIX}</td>
+<td>1351866842</td>
+</tr>
+<tr>
+<td>%d{UNIX_MILLIS}</td>
+<td>1351866842781</td>
+</tr>
+</tbody></table>
+<p><code>花括号里的内容也可以设置为包含特定时区Id（ java.util.TimeZone.getTimeZone ）的日期/时间模式的字符串</code></p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>范例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>%d{HH:mm:ss,SSS}</td>
+<td>14:34:02,123</td>
+</tr>
+<tr>
+<td>%d{HH:mm:ss,nnnn}</td>
+<td>14:34:02,1234</td>
+</tr>
+<tr>
+<td>%d{HH:mm:ss,nnnnnnnnn}</td>
+<td>14:34:02,123456789</td>
+</tr>
+<tr>
+<td>%d{dd MMM yyyy HH:mm:ss,SSS}</td>
+<td>02 Nov 2012 14:34:02,123</td>
+</tr>
+<tr>
+<td>%d{dd MMM yyyy HH:mm:ss,nnnn}</td>
+<td>02 Nov 2012 14:34:02,1234</td>
+</tr>
+<tr>
+<td>%d{dd MMM yyyy HH:mm:ss,nnnnnnnnn}</td>
+<td>Nov 2012 14:34:02,123456789</td>
+</tr>
+<tr>
+<td>%d{HH:mm:ss}{GMT+0}</td>
+<td>18:34:02</td>
+</tr>
+<tr>
+<td>%d{yyyy-MM-dd HH:mm:ss.SSS}</td>
+<td>2020-4-20 23:30</td>
+</tr>
+</tbody></table>
+<ul>
+<li>%L，%line<br><code>显示日志输出的代码所在的行数</code>。Log4j在输出行号时会检查堆栈信息，是耗时的操作；</li>
+<li>%m，%msg<br>输出应用中自定义的<code>日志内容</code>；</li>
+<li>%M，%method<br><code>输出方法名</code>。Log4j在输出行号时会检查堆栈信息，是耗时的操作；</li>
+<li>%n<br><code>输出当前运行平台所用的换行符</code>，一般放在末尾；</li>
+<li>%p|level{level=label,level=label,…}，%p|level{length=n}，%p|level{lowerCase=true|false}<br><code>输出日志的级别</code>。可以每个日志级别指定别名，如%level{WARN=W, DEBUG=D, ERROR=E, TRACE=T,INFO=I}，%level{length=1}也可以实现同样的效果，如果length的值超过了日志级别的名称，那么使用正常的日志级别名称。level=label和length=n可以组合使用，如%level{ERROR=Error,length=2}为ERROR级别指定了别名，为其他日志级别限定了长度。此外，还可以指定级别的大小写；</li>
+<li>%T，%tid，%threadId<br><code>输出日志的线程号</code>，非常有必要；</li>
+<li>%t，%tn，%thread，%threadName<br><code>输出日志的线程名称</code>，类似于线程号作用相同，可选择其中一个；</li>
+<li>%%<br>用于<code>输出一个%</code>。</li>
+</ul>
+<h3 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a>Filter</h3><p>log4j2走过滤器的逻辑后，会返回对应的过滤结果，以控制是否记录日志、怎样记录日志。过滤器的结果有：</p>
+<ul>
+<li>Accept：表示日志事件会被立即处理，不会调用其他 Filter；</li>
+<li>Deny：表示日志事件被立即忽略并不再经过其他过滤器；</li>
+<li>Neutral：表示日志事件将传递给其他Filter，如果没有其他Filter，则事件将会被处理。</li>
+</ul>
+<blockquote>
+<p><code>注：log4j2的此机制与logback是一样的。</code></p>
+</blockquote>
+<h4 id="内置过滤器"><a href="#内置过滤器" class="headerlink" title="内置过滤器"></a>内置过滤器</h4><table>
+<thead>
+<tr>
+<th align="center">过滤器</th>
+<th>说明</th>
+<th align="center">是否常用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">StringMatchFilter</td>
+<td>如果格式化后(即：最终)的<code>日志信息中包含\${指定的字符串}</code>，则onMatch，否则onMismatch。即<code>：msg.contains(this.text) ? onMatch : onMismatch;</code></td>
+<td align="center">是</td>
+</tr>
+<tr>
+<td align="center">LevelRangeFilter</td>
+<td>若<code>\${maxLevel} &lt;= 日志级别 &lt;= \${minLevel}</code>， 则onMatch，否则onMismatch。如： 即为只记录日志info及warn级别的日志。</td>
+<td align="center">是</td>
+</tr>
+<tr>
+<td align="center">RegexFilter</td>
+<td>如果日志信息匹配<code>\${指定的正则表达式}</code>，则onMatch，否则onMismatch。注：可通过useRawMsg属性来控制这个日志信息是格式化处理后(即：最终)的日志信息，还是格式化处理前(即：代码中输入)的日志信息。</td>
+<td align="center">是</td>
+</tr>
+<tr>
+<td align="center">ThresholdFilter</td>
+<td>若<code>日志级别 &gt;= \${指定的日志级别}</code>， 则onMatch，否则onMismatch</td>
+<td align="center">是</td>
+</tr>
+<tr>
+<td align="center">LevelMatchFilter</td>
+<td>如果<code>日志级别等于\${指定的日志级别}</code>，则onMatch，否则onMismatch</td>
+<td align="center">是</td>
+</tr>
+<tr>
+<td align="center">ThreadContextMapFilter</td>
+<td><code>通过context(可以理解为一个Map)中对应的key-value值进行过滤</code>。注：上下文默认是ThreadContext，也可以自定义使用ContextDataInjectorFactory配置ContextDataInjector来指定。”</td>
+<td align="center">是</td>
+</tr>
+<tr>
+<td align="center">DynamicThresholdFilter</td>
+<td>若上下文中包含指定的key，则触发DynamicThresholdFilter生效；若该key对应的value值等于任意一个我们指定的值，那么针对本条日志，可记录日志级别的约束下限调整为指定的级别。注：上下文默认是ThreadContext，也可以自定义使用ContextDataInjectorFactory配置ContextDataInjector来指定。<br/>示例说明：<code>&lt;DynamicThresholdFilter key=&quot;&quot;loginRole&quot;&quot; defaultThreshold=&quot;&quot;ERROR&quot;&quot; onMatch=&quot;&quot;ACCEPT&quot;&quot; onMismatch=&quot;&quot;NEUTRAL&quot;&quot;&gt;&lt;KeyValuePair key=&quot;&quot;admin&quot;&quot; value=&quot;&quot;DEBUG&quot;&quot;/&gt;&lt;KeyValuePair key=&quot;&quot;user&quot;&quot; value=&quot;&quot;warn&quot;&quot;/&gt;&lt;/DynamicThresholdFilter&gt;</code>配置，有以下情况：<br/><code>情况一：</code>存在键loginRole，假设从上下文(可以理解为一个Map)中取出来的对应的值为user,那么此时,对于日志级别大于等于warn的日志，会走onMatch;其它的日志级别走onMismatch。<br/><code>情况二：</code>存在键loginRole，假设从context(可以理解为一个Map)中取出来的对应的值为admin,那么此时,对于日志级别大于等于debug的日志，会走onMatch;其它的日志级别走onMismatch。<br/><code>情况三：</code>【上下文(可以理解为一个Map)中，不存在键loginRole】或【存在键loginRole，但从日志上下文中取出来的值(假设)为abc, 没有对应的KeyValuePair配置】，那么此时<code>&lt;DynamicThresholdFilter key=&quot;&quot;userRole&quot;&quot; defaultThreshold=&quot;&quot;AAA&quot;&quot; onMatch=&quot;&quot;BBB&quot;&quot; onMismatch=&quot;&quot;CCC&quot;&quot;&gt;等价于&lt;LevelMatchFilter level=&quot;&quot;AAA&quot;&quot; onMatch=&quot;&quot;BBB&quot;&quot; onMismatch=&quot;&quot;CCC&quot;&quot;&gt;。</code></td>
+<td align="center">是</td>
+</tr>
+<tr>
+<td align="center">CompositeFilter</td>
+<td><code>组合过滤器</code>，即：按照xml配置中的配置，一个过滤器一个过滤器的走，如果在这过程中，任意一个过滤器ACCEPT或DENY了，那么就不会往后走了，直接返回对应的结果。</td>
+<td align="center">是</td>
+</tr>
+<tr>
+<td align="center">TimeFilter</td>
+<td>如果记录日志时的当前<code>时间落在每天指定的时间范围[start, end]内</code>，则onMatch，否则onMismatch。如：<code>&lt;TimeFilter start=&quot;&quot;05:00:00&quot;&quot; end=&quot;&quot;05:30:00&quot;&quot; onMatch=&quot;&quot;ACCEPT&quot;&quot; onMismatch=&quot;&quot;DENY&quot;&quot;/&gt;。</code></td>
+<td align="center">否</td>
+</tr>
+<tr>
+<td align="center">ScriptFilter</td>
+<td>是否匹配取决于指定的脚本返回值是否为true</td>
+<td align="center">否</td>
+</tr>
+<tr>
+<td align="center">DenyAllFilter</td>
+<td>此过滤器将导致删除所有日志事件</td>
+<td align="center">否</td>
+</tr>
+<tr>
+<td align="center">BurstFilter</td>
+<td>对<code>低于或等于\${指定日志级别}的日志</code>，进行限流控制</td>
+<td align="center">否</td>
+</tr>
+<tr>
+<td align="center">NoMarkerFilter</td>
+<td>如果从对应事件对象获取(LogEvent#getMarker)到的marker为null， 则onMatch，否则onMismatch</td>
+<td align="center">否</td>
+</tr>
+<tr>
+<td align="center">MarkerFilter</td>
+<td>如果从对应事件对象获取(LogEvent#getMarker)到的<code>marker的name值为等于\${指定的值}</code>， 则onMatch，否则onMismatch</td>
+<td align="center">否</td>
+</tr>
+<tr>
+<td align="center">MapFilter</td>
+<td>MapFilter允许对MapMessage中的数据元素进行过滤。注：需要使用org.apache.logging.log4j.Logger进行记录，且记录org.apache.logging.log4j.message.MapMessage日志，才会生效。注：因为暂时不兼容Slf4j这里不多作说明</td>
+<td align="center">否</td>
+</tr>
+<tr>
+<td align="center">StructuredDataFilter</td>
+<td>StructuredDataFilter是一个MapFilter，它也允许过滤事件id、类型和消息。注：需要使用org.apache.logging.log4j.Logger进行记录，且记录org.apache.logging.log4j.core.filter.StructuredDataFilter日志，才会生效。注：因为暂时不兼容Slf4j这里不多作说明</td>
+<td align="center">否</td>
+</tr>
+</tbody></table>
+<h4 id="作用范围"><a href="#作用范围" class="headerlink" title="作用范围"></a>作用范围</h4><p>log4j2在处理日志时，各个Filter会组成过滤链，越靠前的Filter越先过滤，自然影响范围就越大。在log4j2的xml配置文件中，Filter可以配置在四个位置，由全局到局部依次是Context-wide、Logger和Appender、AppenderReference， 图示说明：<br><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/szarmVqfBci7GR6.png" alt=""></p>
+<h4 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h4><ul>
+<li>StringMatchFilter<br><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/PS1eGUWjoI3XAYL.png" alt=""></li>
+</ul>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/QyLHVYlsChFmKXr.png" alt=""></p>
+<ul>
+<li>LevelRangeFilter<br><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/hfmIXJ8ctwGFViK.png" alt=""></li>
+</ul>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/QqXuftoWF9PNTw4.png" alt=""></p>
+<ul>
+<li>RegexFilter<br><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/7dnarTF1Hv29ubK.png" alt=""></li>
+</ul>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/9sXL56jzJmSwFRY.png" alt=""></p>
+<ul>
+<li>ThresholdFilter<br><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/esZ328SahvyVqT9.png" alt=""></li>
+</ul>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/86kgh2KOovsJCMH.png" alt=""></p>
+<ul>
+<li>LevelMatchFilter<br><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/tsoe1wlqDPLFAfp.png" alt=""></li>
+</ul>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/mdf4Tw19PyvpqZ5.png" alt=""></p>
+<ul>
+<li>ThreadContextMapFilter</li>
+</ul>
+<p><code>示例一：</code><br><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/gRyoH9OzeuBJiKh.png" alt=""></p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/4DOytZh3VxgA95J.png" alt=""></p>
+<p><code>示例二：</code><br><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/HlfEIMYNOhxXciv.png" alt=""></p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/uGaRD1KfOZWe5UF.png" alt=""></p>
+<ul>
+<li>DynamicThresholdFilter<br><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/V1ET83XICrnGDvy.png" alt=""></li>
+</ul>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/uwQxP8hVAEoH7b3.png" alt=""></p>
+<ul>
+<li>CompositeFilter<br><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/FgW79RGaCMIbdPw.png" alt=""></li>
+</ul>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2021/12/06/Ty5HEGMzV9frbCI.png" alt=""></p>
+<blockquote>
+<p>log4j2官方提供的过滤器已足够使用，<code>如需自定义过滤器，可以继承AbstractFilter，或者直接实现Filter。</code></p>
+</blockquote>
+<h2 id="Loggers"><a href="#Loggers" class="headerlink" title="Loggers"></a>Loggers</h2><h3 id="LoggerConfig"><a href="#LoggerConfig" class="headerlink" title="LoggerConfig"></a>LoggerConfig</h3><p>LoggerConfig 通过 Logger 元素进行配置。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"druid.sql.Statement"</span> <span class="attr">level</span>=<span class="string">"debug"</span> <span class="attr">additivity</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"DruidSqlRollingFile"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Logger</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Logger 元素可用属性如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">属性</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">name</td>
+<td><code>(必选)</code>用于标识该 logger ；</td>
+</tr>
+<tr>
+<td align="center">level</td>
+<td>可选，<code>用来设置日志级别</code>。其值可以为TRACE、DEBUG、INFO、WARN、ERROR、ALL 或者OFF。如果没有指定该属性，则默认为 ERROR；</td>
+</tr>
+<tr>
+<td align="center">additivity</td>
+<td>可选的布尔值，<code>用来设置相加性</code>。如果没有指定该属性，则<code>默认为 true</code>。</td>
+</tr>
+</tbody></table>
+<p>LoggerConfig（包括 root LoggerConfig）可以通过属性来配置，这些属性将会添加到 ThreadContextMap 中的属性复本中。Appender、Filter、 Layout 等可以引用这些属性，就好像这些属性是 ThreadContextMap 中的属性一样。这些属性中的变量可以在解析（parse）配置或动态输出打印日志时计算（resolve）出来。</p>
+<p><code>LoggerConfig 也可以通过一个或多个 AppenderRef 元素来配置，每个 Appender 的引用将会关联到特定的 LoggerConfig</code>。如果一个 LoggerConfig 配置了多个 Appender，那么其中的每个 Appender 都会等价地处理日志事件。</p>
+<h3 id="root"><a href="#root" class="headerlink" title="root"></a>root</h3><p>每个配置都必须要有一个 root Logger，如果没有显式配置 root LoggerConfig，那么<code>默认的 root LoggerConfig 的日志级别为 ERROR、Appender 为 Console</code> 。root Logger 和其他 Logger 的不同主要在于以下两点：</p>
+<blockquote>
+<ul>
+<li>root Logger <code>没有 name 属性</code>；</li>
+<li>root Logger <code>不支持 additivity 属性</code>，因为它没有 parent。</li>
+</ul>
+</blockquote>
+<h3 id="Additivity"><a href="#Additivity" class="headerlink" title="Additivity"></a>Additivity</h3><p><code>某个 Logger 所允许的每条日志打印请求都会传递给其 LoggerConfig 中的所有 Appender，也会传递给该 LoggerConfig 的 parent LoggerConfig 中的 Appender，这种现象称为相加性（Additivity）</code>。也就是说，Appender 会从 LoggerConfig 的继承中继承相加性。这种特性可以用来汇整某几个 logger 的输出，可以在声明 Logger 的配置文件中<code>设置 additivity=&quot;false&quot; 来禁用这种叠加继承。</code></p>
+<blockquote>
+<ul>
+<li>如果一个 ConsoleAppender 添加到 root Logger中，那么所有允许的日志打印请求将至少输出到控制台，如果一个文件 Appender 添加到一个LoggerConfigC中，C和C的children允许的日志打印请求将会输出到文件和控制台。</li>
+<li>如果 LoggerConfig C 中有一个 Logger L，那么 Logger L 的一条日志打印语句将输出到 L 关联的 LoggerConfig C 中的所有 Appender 以及该 LoggerConfig 的所有 ancestor。</li>
+<li>然而，如果LoggerConfig C一个ancestor P的叠加标志设置为了false，那么，L 的输出将直接指向 C 中的所有 Appender 以及 C 的 ancestor 直到 P（包括 P），不会指向到 P 的所有 ancestor 中的 Appender。</li>
+</ul>
+</blockquote>
+<p>Logger 的叠加标识默<code>认为 true</code>，表示叠加父级的 Appender。</p>
+<blockquote>
+<p><code>日志级别的继承是指父级 LoggerConfig 的日志级别会被子级 LoggerConfig 所继承，而相加性是指子级Logger的日志时间会传递给父级Logger，两者刚好相反。</code></p>
+</blockquote>
+<p>假如你想忽略除了 com.foo.Bar以外的所有TRACE日志，仅更改日志级别无法达到目的，解决办法是在配置文件中新建一个 logger 定义：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"WARN"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Console</span> <span class="attr">name</span>=<span class="string">"Console"</span> <span class="attr">target</span>=<span class="string">"SYSTEM_OUT"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Console</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 新建一个指定名称和指定级别的 logger --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"com.foo.Bar"</span> <span class="attr">level</span>=<span class="string">"TRACE"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"ERROR"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"Console"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>结果如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="number">13</span>:<span class="number">12</span>:<span class="number">24.917</span> [main] TRACE com.foo.Bar - entry</span><br><span class="line"><span class="number">13</span>:<span class="number">12</span>:<span class="number">24.918</span> [main] ERROR com.foo.Bar - Did it again!</span><br><span class="line"><span class="number">13</span>:<span class="number">12</span>:<span class="number">24.918</span> [main] TRACE com.foo.Bar - exit</span><br><span class="line"><span class="number">13</span>:<span class="number">12</span>:<span class="number">24.918</span> [main] ERROR com.foo.MyApp - Didn<span class="string">'t do it.</span></span><br></pre></td></tr></table></figure>
+
+<p>上面的配置记录了 com.foo.Bar 中的所有级别的日志事件，但其他所有组件的日志事件中只有 ERROR 级别的才会被记录。</p>
+<p>如果我们为 com.foo.Bar 的 logger 配置了 Appender，如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"WARN"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Console</span> <span class="attr">name</span>=<span class="string">"Console"</span> <span class="attr">target</span>=<span class="string">"SYSTEM_OUT"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Console</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 为新建 logger 指定 Appender --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"com.foo.Bar"</span> <span class="attr">level</span>=<span class="string">"TRACE"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"Console"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Logger</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"ERROR"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"Console"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="number">13</span>:<span class="number">25</span>:<span class="number">55.391</span> [main] TRACE com.foo.Bar - entry</span><br><span class="line"><span class="number">13</span>:<span class="number">25</span>:<span class="number">55.391</span> [main] TRACE com.foo.Bar - entry</span><br><span class="line"><span class="number">13</span>:<span class="number">25</span>:<span class="number">55.392</span> [main] ERROR com.foo.Bar - Did it again!</span><br><span class="line"><span class="number">13</span>:<span class="number">25</span>:<span class="number">55.392</span> [main] ERROR com.foo.Bar - Did it again!</span><br><span class="line"><span class="number">13</span>:<span class="number">25</span>:<span class="number">55.393</span> [main] TRACE com.foo.Bar - exit</span><br><span class="line"><span class="number">13</span>:<span class="number">25</span>:<span class="number">55.393</span> [main] TRACE com.foo.Bar - exit</span><br><span class="line"><span class="number">13</span>:<span class="number">25</span>:<span class="number">55.393</span> [main] ERROR com.foo.MyApp - Didn<span class="string">'t do it.</span></span><br></pre></td></tr></table></figure>
+
+<p>com.foo.Bar 类中的 TRACE 级别及以上的日志竟然输出了两遍！这是<code>由于名为 com.foo.Bar 的 logger 会将其打印事件传递给其 parent logger（这里为 Root ），在 Root logger 中再次执行了打印操作</code>。</p>
+<p>而案例 2 中的没有重复打印是<code>由于名为 com.foo.Bar 的 logger 没有设置 Appender</code>，它仅负责记录的打印事件，然后将其传递给了 Root logger，所以仅 Root logger 有打印操作。</p>
+<p><code>在配置文件中设置 additivity=&quot;false&quot; 来禁用这种叠加继承</code>。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"WARN"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Console</span> <span class="attr">name</span>=<span class="string">"Console"</span> <span class="attr">target</span>=<span class="string">"SYSTEM_OUT"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Console</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 设置新建 logger 的相加性为 false --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"com.foo.Bar"</span> <span class="attr">level</span>=<span class="string">"TRACE"</span> <span class="attr">additivity</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"Console"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Logger</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"ERROR"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"Console"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以发现日志不会重复打印了：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="number">13</span>:<span class="number">46</span>:<span class="number">27.869</span> [main] TRACE com.foo.Bar - entry</span><br><span class="line"><span class="number">13</span>:<span class="number">46</span>:<span class="number">27.871</span> [main] ERROR com.foo.Bar - Did it again!</span><br><span class="line"><span class="number">13</span>:<span class="number">46</span>:<span class="number">27.871</span> [main] TRACE com.foo.Bar - exit</span><br><span class="line"><span class="number">13</span>:<span class="number">46</span>:<span class="number">27.871</span> [main] ERROR com.foo.MyApp - Didn<span class="string">'t do it.</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="属性替换"><a href="#属性替换" class="headerlink" title="属性替换"></a>属性替换</h2><p><code>Log4j 2 支持使用特定符号来引用其他地方定义的属性</code>。某些属性在翻译配置文件时计算（resolve）出来，某些属性传递到组件（component，比如 Logger 、Appender 等元素）中在运行时求值（evaluate）。Log4j 使用 Apache Commons Lang 的 StrSubstitutor 和 StrLookup 类来实现这一功能。<code>与 Ant 或 Maven 相似的方式，允许使用 ${name} 形式的变量来计算配置中声明（通过 Property 元素）的属性</code>。例如，下面的例子演示了如何声明和使用 RollingFile Appender 所用的日志输出文件名属性。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"debug"</span> <span class="attr">name</span>=<span class="string">"RoutingTest"</span> <span class="attr">packages</span>=<span class="string">"org.apache.logging.log4j.test"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Property</span> <span class="attr">name</span>=<span class="string">"filename"</span>&gt;</span>target/rolling1/rollingtest-$$&#123;sd:type&#125;.log<span class="tag">&lt;/<span class="name">Property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Properties</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ThresholdFilter</span> <span class="attr">level</span>=<span class="string">"debug"</span>/&gt;</span></span><br><span class="line"> </span><br><span class="line">  <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Console</span> <span class="attr">name</span>=<span class="string">"STDOUT"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"%m%n"</span>/&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ThresholdFilter</span> <span class="attr">level</span>=<span class="string">"debug"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Console</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Routing</span> <span class="attr">name</span>=<span class="string">"Routing"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Routes</span> <span class="attr">pattern</span>=<span class="string">"$$&#123;sd:type&#125;"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Route</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"Rolling-$&#123;sd:type&#125;"</span> <span class="attr">fileName</span>=<span class="string">"$&#123;filename&#125;"</span></span></span><br><span class="line"><span class="tag">                       <span class="attr">filePattern</span>=<span class="string">"target/rolling1/test1-$&#123;sd:type&#125;.%i.log.gz"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>%d %p %c&#123;1.&#125; [%t] %m%n<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">"500"</span> /&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Route</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Route</span> <span class="attr">ref</span>=<span class="string">"STDOUT"</span> <span class="attr">key</span>=<span class="string">"Audit"</span>/&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">Routes</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Routing</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">  <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">name</span>=<span class="string">"EventLogger"</span> <span class="attr">level</span>=<span class="string">"info"</span> <span class="attr">additivity</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"Routing"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Logger</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"error"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"STDOUT"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>Log4j 也支持 \${prefix:name} 格式的语法，其中 prefix 标识告诉 Log4j 该变量应该在特定的上下文中求值（evaluate）</code>。Log4j 内置的上下文如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">前缀</th>
+<th>上下文</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">bundle</td>
+<td>Resource bundle 。格式为${bundle:BundleName:BundleKey} 。其中，bundle name 遵循包名转换，例如，${bundle:com.domain.Messages:MyKey} 。</td>
+</tr>
+<tr>
+<td align="center">ctx</td>
+<td>Thread Context Map (MDC)</td>
+</tr>
+<tr>
+<td align="center">date</td>
+<td>使用特定的格式<code>插入当前日期和/或时间</code></td>
+</tr>
+<tr>
+<td align="center">env</td>
+<td><code>系统环境变量</code>。格式为${env:ENV_NAME}和${env:ENV_NAME:-default_value}</td>
+</tr>
+<tr>
+<td align="center">jndi</td>
+<td><code>默认 JNDI Context 中设置的值</code></td>
+</tr>
+<tr>
+<td align="center">jvmrunargs</td>
+<td><code>通过 JMX 访问的 JVM 输出参数，但不是主参数</code>。参考 RuntimeMXBean.getInputArguments() 。 <code>Android 上不可用</code>。</td>
+</tr>
+<tr>
+<td align="center">log4j</td>
+<td><code>Log4j 的配置属性</code>。表达式${log4j:configLocation}和${log4j:configParentLocation} 分别额提供log4j 配置文件的绝对路径和其父文件夹。</td>
+</tr>
+<tr>
+<td align="center">main</td>
+<td>通过MapLookup.setMainArguments(String[]) 设置的一个值。</td>
+</tr>
+<tr>
+<td align="center">map</td>
+<td>MapMessage 中的一个值。</td>
+</tr>
+<tr>
+<td align="center">sd</td>
+<td>StructuredDataMessage 中的一个值。id 键将返回没有企业号（enterprise number）的 StructuredDataId 名。type 键将返回消息类型。其他键将获取 Map 中独立的元素。</td>
+</tr>
+<tr>
+<td align="center">sys</td>
+<td><code>系统属性</code>。格式为${sys:some.property}和${sys:some.property:-default_value}</td>
+</tr>
+</tbody></table>
+<p>可以在配置文件中声明一个默认的属性映射。如果一个值在特定查找中无法定位到，那么将会使用默认属性映射中的值。默认属性映射预填充了一个表示当前系统主机名和 IP 的 hostName 属性 ，以及一个表示当前日志上下文的名为 contextName 属性。</p>
+<p>当一个变量引用的开头为多个 $ 的字符时，StrLookup 将会去除前面的 $ 字符。在前面的例子中，Routes 元素能够在运行时计算（resolve）出 $${sd:type} 变量应用中的变量 sd:type 。该变量的前缀为两个 $ 字符，配置文件第一次处理时会去掉第一个 $ 字符，Routes 元素在运行时能够求出声明为 ${sd:type} 的变量，就会检查事件的 StructuredDataMessage ，如果存在，则其 type 属性将用作 routing key 。并不是所有的元素都可以在运行时计算（resolve）变量。</p>
+<p>如果在前缀关联的 Lookup 中没有找到对应的键值，那么将会使用配置文件里属性声明中的键值。如果没有找到值，则将变量声明作为值返回。配置文件中的默认值可以这样声明：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Property</span> <span class="attr">name</span>=<span class="string">"type"</span>&gt;</span>Audit<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Properties</span>&gt;</span></span><br><span class="line">  ...</span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>注：在处理配置文件时，并不会对 RollingFile Appender 声明中的变量求值。这是因为整个 RollingFile 元素的解析会推迟到出现匹配时。</code></p>
+</blockquote>
+<h2 id="XInclude"><a href="#XInclude" class="headerlink" title="XInclude"></a>XInclude</h2><p><code>XML 配置文件通过 XInclude 来引用其他文件</code>。下面演示了 log4j2.xml 文件引用了其他两个文件。</p>
+<ul>
+<li>log4j2.xml 文件内容如下：</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">configuration</span> <span class="attr">xmlns:xi</span>=<span class="string">"http://www.w3.org/2001/XInclude"</span> <span class="attr">status</span>=<span class="string">"warn"</span> <span class="attr">name</span>=<span class="string">"XIncludeDemo"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"filename"</span>&gt;</span>xinclude-demo.log<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ThresholdFilter</span> <span class="attr">level</span>=<span class="string">"debug"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">xi:include</span> <span class="attr">href</span>=<span class="string">"log4j-xinclude-appenders.xml"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">xi:include</span> <span class="attr">href</span>=<span class="string">"log4j-xinclude-loggers.xml"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>log4j-xinclude-appenders.xml 文件内容如下：</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">appenders</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Console</span> <span class="attr">name</span>=<span class="string">"STDOUT"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"%m%n"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Console</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">File</span> <span class="attr">name</span>=<span class="string">"File"</span> <span class="attr">fileName</span>=<span class="string">"$&#123;filename&#125;"</span> <span class="attr">bufferedIO</span>=<span class="string">"true"</span> <span class="attr">immediateFlush</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>%d %p %C&#123;1.&#125; [%t] %m%n<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">File</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">appenders</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>log4j-xinclude-loggers.xml 文件内容如下：</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">loggers</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">"org.apache.logging.log4j.test1"</span> <span class="attr">level</span>=<span class="string">"debug"</span> <span class="attr">additivity</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ThreadContextMapFilter</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">KeyValuePair</span> <span class="attr">key</span>=<span class="string">"test"</span> <span class="attr">value</span>=<span class="string">"123"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">ThreadContextMapFilter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"STDOUT"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">logger</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">  <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">"org.apache.logging.log4j.test2"</span> <span class="attr">level</span>=<span class="string">"debug"</span> <span class="attr">additivity</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"File"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">logger</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">  <span class="tag">&lt;<span class="name">root</span> <span class="attr">level</span>=<span class="string">"error"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"STDOUT"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">loggers</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="后述"><a href="#后述" class="headerlink" title="后述"></a>后述</h1><p>Log4j2在用于Java EE Web应用时有一些额外事项需要注意。要确保日志资源在容器关闭或 Web 应用取消部署时能恰当地清理。为了做到这一点，需要在 Web 应用中添加 log4j-web 的依赖，可以从 Maven 仓库中找到该依赖。</p>
+<p>Log4j 2 只能运行在支持 Servlet 3.0 及以上版本的Web应用中，它可以在应用部署时和关闭时随之自动启动和关闭。</p>
+<blockquote>
+<p><code>注：有些容器会忽略不含 TLD 文件的 jar 文件</code></p>
+</blockquote>
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/log4j2/">log4j2</a><a class="post-meta__tags" href="/tags/LogBack/">LogBack</a><a class="post-meta__tags" href="/tags/slf4j/">slf4j</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/11/03/nqg3uNJbt7dZvfY.jpg" data-sites="wechat,weibo,qq,facebook,twitter"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"/><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js"></script></div></div><div class="post-reward"><button class="reward-button" type="button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><img class="post-qr-code__img" src="/file/wechat.jpg" alt="微信" onclick="window.open('/file/wechat.jpg')"/><div class="post-qr-code__desc">微信</div></li></ul></div></button></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2021/11/03/Apifox%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E4%B8%80%E4%BD%93%E5%8C%96%E5%8D%8F%E4%BD%9C%E5%B9%B3%E5%8F%B0/"><img class="next-cover" data-src="https://i.loli.net/2021/11/03/nqg3uNJbt7dZvfY.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Apifox自动化测试一体化协作平台</div></div></a></div></nav><hr><div id="post-comment"><div class="comment-head"><div class="comment-headling"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div class="comments-items-1" data-name="Valine"><div class="vcomment" id="vcomment"></div><script>function loadvaline () {  
+  var requestSetting = function (from,set) {
+    var from = from
+    var setting = set.split(',').filter(function(item){
+    return from.indexOf(item) > -1
+    });
+    setting = setting.length == 0 ? from :setting;
+    return setting
+  }
+
+  var guestInfo = requestSetting(['nick','mail','link'],'nick,mail,link')
+  var requiredFields = requestSetting(['nick','mail'],'nick,mail')
+
+  function initValine () {
+    window.valine = new Valine({
+      el:'#vcomment',
+      appId: 'eKp2wzPKybiFid4KXcVFcyMX-gzGzoHsz',
+      appKey: 'RSA7FDJfrFwpawTfG1vE6R71',
+      placeholder: 'minkeyto@qq.com',
+      avatar: 'monsterid',
+      meta: guestInfo,
+      pageSize: '10',
+      lang: 'zh-CN',
+      recordIP: false,
+      serverURLs: '',
+      emojiCDN: '',
+      emojiMaps: "",
+      enableQQ: false,
+      requiredFields: requiredFields
+    });
+  }
+  loadScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js', initValine)
+}
+
+if ('Valine' === 'Valine' || false) {
+  window.addEventListener('load', loadvaline)
+}
+else {
+  function loadOtherComment () {
+    loadvaline()
+  }
+}</script></div></div></div></article></main><footer id="footer" style="background-image: url(https://s2.loli.net/2021/12/07/ktehZuTXwYJrM9E.jpg)" data-type="photo"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2021 By 灵熙云</div><div class="framework-info"><span>Copyright Ⓒ 灵熙云工作室. All rights reserved.</span></div><div class="footer_custom_text">Hi, welcome to my blog !</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a href="https://github.com/wzpan/hexo-generator-search" target="_blank" rel="noopener" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div class="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script defer id="ribbon" src="/js/third-party/canvas-ribbon.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="true"></script><script id="ribbon_piao" mobile="false" src="/js/third-party/piao.js"></script><script src="/js/third-party/activate-power-mode.js"></script><script>POWERMODE.colorful = false;
+POWERMODE.shake = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="/js/search/local-search.js"></script><script>if (document.getElementsByClassName('mermaid').length) {
+  loadScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js',function () {
+    mermaid.initialize({
+      theme: 'default',
+  })
+})
+}</script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script></body></html>
