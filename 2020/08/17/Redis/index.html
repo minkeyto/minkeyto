@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Redis 教程 | 灵熙云工作室</title><meta name="robots" content="noindex"><meta name="description" content="Redis概述什么是Redis　　Redis是用C语言开发的一个开源的高性能键值对（key-value）非关系性数据库，官方提供测试数据，50个并发执行100000个请求,读的速度是110000次&#x2F;s,写的速度是81000次&#x2F;s，且Redis通过提供多种键值数据类型来适应不同场景下的存储需求，目前为止Redis支持的键值数据类型如下：   字符串类型 string 散列类型 hash 列表类型 l"><meta name="keywords" content="Redis,缓存,非关系性数据库"><meta name="author" content="灵熙云,minkeyto@qq.com"><meta name="copyright" content="灵熙云"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/file/favicon.png"><link rel="canonical" href="http://www.goitman.cn/2020/08/17/Redis/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preconnect" href="//zz.bdstatic.com"/><meta property="og:type" content="article"><meta property="og:title" content="Redis 教程"><meta property="og:url" content="http://www.goitman.cn/2020/08/17/Redis/"><meta property="og:site_name" content="灵熙云工作室"><meta property="og:description" content="Redis概述什么是Redis　　Redis是用C语言开发的一个开源的高性能键值对（key-value）非关系性数据库，官方提供测试数据，50个并发执行100000个请求,读的速度是110000次&#x2F;s,写的速度是81000次&#x2F;s，且Redis通过提供多种键值数据类型来适应不同场景下的存储需求，目前为止Redis支持的键值数据类型如下：   字符串类型 string 散列类型 hash 列表类型 l"><meta property="og:image" content="https://s2.loli.net/2021/12/08/Xx7Fw6ApNDICcsz.jpg"><meta property="article:published_time" content="2020-08-17T03:17:39.048Z"><meta property="article:modified_time" content="2022-01-04T07:59:01.624Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Redis 教程 | 灵熙云工作室</title><meta name="robots" content="noindex"><meta name="description" content="Redis概述什么是Redis　　Redis是用C语言开发的一个开源的高性能键值对（key-value）非关系性数据库，官方提供测试数据，50个并发执行100000个请求,读的速度是110000次&#x2F;s,写的速度是81000次&#x2F;s，且Redis通过提供多种键值数据类型来适应不同场景下的存储需求，目前为止Redis支持的键值数据类型如下：   字符串类型 string 散列类型 hash 列表类型 l"><meta name="keywords" content="Redis,缓存,非关系性数据库"><meta name="author" content="灵熙云,minkeyto@qq.com"><meta name="copyright" content="灵熙云"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/file/favicon.png"><link rel="canonical" href="http://www.goitman.cn/2020/08/17/Redis/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preconnect" href="//zz.bdstatic.com"/><meta property="og:type" content="article"><meta property="og:title" content="Redis 教程"><meta property="og:url" content="http://www.goitman.cn/2020/08/17/Redis/"><meta property="og:site_name" content="灵熙云工作室"><meta property="og:description" content="Redis概述什么是Redis　　Redis是用C语言开发的一个开源的高性能键值对（key-value）非关系性数据库，官方提供测试数据，50个并发执行100000个请求,读的速度是110000次&#x2F;s,写的速度是81000次&#x2F;s，且Redis通过提供多种键值数据类型来适应不同场景下的存储需求，目前为止Redis支持的键值数据类型如下：   字符串类型 string 散列类型 hash 列表类型 l"><meta property="og:image" content="https://s2.loli.net/2021/12/08/Xx7Fw6ApNDICcsz.jpg"><meta property="article:published_time" content="2020-08-17T03:17:39.048Z"><meta property="article:modified_time" content="2022-01-06T08:18:05.879Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
   document.documentElement.setAttribute('data-theme', 'dark')
   if (document.querySelector('meta[name="theme-color"]') !== null) {
     document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
@@ -96,7 +96,7 @@ if (autoChangeMode === '1') {
   isHome: false,
   isHighlightShrink: false,
   isSidebar: true,
-  postUpdate: '2022-01-04 15:59:01'
+  postUpdate: '2022-01-06 16:18:05'
 }</script><noscript><style>
 #nav {
   opacity: 1
@@ -104,7 +104,7 @@ if (autoChangeMode === '1') {
 .justified-gallery img{
   opacity: 1
 }
-</style></noscript><link rel="stylesheet" href="/css/effect.css"><meta name="generator" content="Hexo 4.2.1"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/file/head.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">24</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">73</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">14</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-file"></i><span> 专题笔记</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/2020/08/17/Redis/"><i class="fa-fw fa fa-book"></i><span> Redis</span></a></li><li><a class="site-page" href="/2021/12/06/Log4j2/"><i class="fa-fw fa fa-book"></i><span> Log4j2</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div></div></div><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis概述"><span class="toc-number">1.</span> <span class="toc-text">Redis概述</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是Redis"><span class="toc-number">1.1.</span> <span class="toc-text">什么是Redis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis的应用场景"><span class="toc-number">1.2.</span> <span class="toc-text">Redis的应用场景</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis的通用命令"><span class="toc-number">2.</span> <span class="toc-text">Redis的通用命令</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#连接远程Redis服务器"><span class="toc-number">2.1.</span> <span class="toc-text">连接远程Redis服务器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#密码设置"><span class="toc-number">2.1.1.</span> <span class="toc-text">密码设置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#keys-pattern"><span class="toc-number">2.2.</span> <span class="toc-text">keys pattern</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#del-key1-key2…"><span class="toc-number">2.3.</span> <span class="toc-text">del key1 key2…</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#exists-key"><span class="toc-number">2.4.</span> <span class="toc-text">exists key</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#type-key"><span class="toc-number">2.5.</span> <span class="toc-text">type key</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#select-切换数据库"><span class="toc-number">2.6.</span> <span class="toc-text">select 切换数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#move移key到其他数据库"><span class="toc-number">2.7.</span> <span class="toc-text">move移key到其他数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#info-获取-redis-服务器的统计信息"><span class="toc-number">2.8.</span> <span class="toc-text">info 获取 redis 服务器的统计信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Help"><span class="toc-number">2.9.</span> <span class="toc-text">Help</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis的数据类型"><span class="toc-number">3.</span> <span class="toc-text">Redis的数据类型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis的5种数据类型"><span class="toc-number">3.1.</span> <span class="toc-text">Redis的5种数据类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串类型string"><span class="toc-number">3.2.</span> <span class="toc-text">字符串类型string</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#概述"><span class="toc-number">3.2.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用命令"><span class="toc-number">3.2.2.</span> <span class="toc-text">常用命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#哈希类型hash"><span class="toc-number">3.3.</span> <span class="toc-text">哈希类型hash</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#概述-1"><span class="toc-number">3.3.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用命令-1"><span class="toc-number">3.3.2.</span> <span class="toc-text">常用命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#列表类型list"><span class="toc-number">3.4.</span> <span class="toc-text">列表类型list</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#概述-2"><span class="toc-number">3.4.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用命令-2"><span class="toc-number">3.4.2.</span> <span class="toc-text">常用命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#无序集合set"><span class="toc-number">3.5.</span> <span class="toc-text">无序集合set</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#概述-3"><span class="toc-number">3.5.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用命令-3"><span class="toc-number">3.5.2.</span> <span class="toc-text">常用命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#有序集合sorted-set"><span class="toc-number">3.6.</span> <span class="toc-text">有序集合sorted set</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#概述-4"><span class="toc-number">3.6.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#有序集合和列表类型区别："><span class="toc-number">3.6.2.</span> <span class="toc-text">有序集合和列表类型区别：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用命令-4"><span class="toc-number">3.6.3.</span> <span class="toc-text">常用命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">3.7.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis的持久化"><span class="toc-number">4.</span> <span class="toc-text">Redis的持久化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#持久化概述"><span class="toc-number">4.1.</span> <span class="toc-text">持久化概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RDB持久化机制"><span class="toc-number">4.2.</span> <span class="toc-text">RDB持久化机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#优点"><span class="toc-number">4.2.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缺点"><span class="toc-number">4.2.2.</span> <span class="toc-text">缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置"><span class="toc-number">4.2.3.</span> <span class="toc-text">配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AOF持久化机制"><span class="toc-number">4.3.</span> <span class="toc-text">AOF持久化机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#优点-1"><span class="toc-number">4.3.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缺点-1"><span class="toc-number">4.3.2.</span> <span class="toc-text">缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置-1"><span class="toc-number">4.3.3.</span> <span class="toc-text">配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#开启AOF持久化"><span class="toc-number">4.3.3.1.</span> <span class="toc-text">开启AOF持久化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AOF持久化时机"><span class="toc-number">4.3.3.2.</span> <span class="toc-text">AOF持久化时机</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#过期与淘汰策略"><span class="toc-number">5.</span> <span class="toc-text">过期与淘汰策略</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#设置占用内存"><span class="toc-number">5.1.</span> <span class="toc-text">设置占用内存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#过期策略"><span class="toc-number">5.2.</span> <span class="toc-text">过期策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#淘汰策略"><span class="toc-number">5.3.</span> <span class="toc-text">淘汰策略</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置文件设置"><span class="toc-number">5.3.1.</span> <span class="toc-text">配置文件设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#命令修改"><span class="toc-number">5.3.2.</span> <span class="toc-text">命令修改</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LRU算法"><span class="toc-number">5.3.3.</span> <span class="toc-text">LRU算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#在Redis中的实现"><span class="toc-number">5.3.3.1.</span> <span class="toc-text">在Redis中的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#近似LRU算法"><span class="toc-number">5.3.3.1.1.</span> <span class="toc-text">近似LRU算法</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Redis3-0的优化"><span class="toc-number">5.3.3.1.2.</span> <span class="toc-text">Redis3.0的优化</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LFU算法"><span class="toc-number">5.3.4.</span> <span class="toc-text">LFU算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LRU与LFU的区别"><span class="toc-number">5.3.5.</span> <span class="toc-text">LRU与LFU的区别</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#缓存设计"><span class="toc-number">6.</span> <span class="toc-text">缓存设计</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#缓存穿透"><span class="toc-number">6.1.</span> <span class="toc-text">缓存穿透</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是缓存穿透"><span class="toc-number">6.1.1.</span> <span class="toc-text">什么是缓存穿透</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#有什么解决方案来防止缓存穿透"><span class="toc-number">6.1.2.</span> <span class="toc-text">有什么解决方案来防止缓存穿透</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结-1"><span class="toc-number">6.1.3.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#缓存击穿"><span class="toc-number">6.2.</span> <span class="toc-text">缓存击穿</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是缓存击穿"><span class="toc-number">6.2.1.</span> <span class="toc-text">什么是缓存击穿</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题排查"><span class="toc-number">6.2.2.</span> <span class="toc-text">问题排查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解决方案"><span class="toc-number">6.2.3.</span> <span class="toc-text">解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#使用互斥锁-mutex-key"><span class="toc-number">6.2.3.1.</span> <span class="toc-text">使用互斥锁(mutex key)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#提前使用互斥锁-mutex-key"><span class="toc-number">6.2.3.2.</span> <span class="toc-text">提前使用互斥锁(mutex key)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#永远不过期"><span class="toc-number">6.2.3.3.</span> <span class="toc-text">永远不过期</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#资源保护"><span class="toc-number">6.2.3.4.</span> <span class="toc-text">资源保护</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结-2"><span class="toc-number">6.2.4.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#缓存雪崩"><span class="toc-number">6.3.</span> <span class="toc-text">缓存雪崩</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是缓存雪崩"><span class="toc-number">6.3.1.</span> <span class="toc-text">什么是缓存雪崩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缓存雪崩问题排查"><span class="toc-number">6.3.2.</span> <span class="toc-text">缓存雪崩问题排查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#有什么解决方案来防止缓存雪崩？"><span class="toc-number">6.3.3.</span> <span class="toc-text">有什么解决方案来防止缓存雪崩？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结-3"><span class="toc-number">6.3.4.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#缓存预热"><span class="toc-number">6.4.</span> <span class="toc-text">缓存预热</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是缓存预热"><span class="toc-number">6.4.1.</span> <span class="toc-text">什么是缓存预热</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题排查-1"><span class="toc-number">6.4.2.</span> <span class="toc-text">问题排查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#有什么解决方案"><span class="toc-number">6.4.3.</span> <span class="toc-text">有什么解决方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结-4"><span class="toc-number">6.4.4.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#缓存降级"><span class="toc-number">6.5.</span> <span class="toc-text">缓存降级</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#高可用"><span class="toc-number">7.</span> <span class="toc-text">高可用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#主从复制"><span class="toc-number">7.1.</span> <span class="toc-text">主从复制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#概述-5"><span class="toc-number">7.1.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#搭建"><span class="toc-number">7.1.2.</span> <span class="toc-text">搭建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#原理"><span class="toc-number">7.1.3.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#主从库第一次全量复制"><span class="toc-number">7.1.3.1.</span> <span class="toc-text">主从库第一次全量复制</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#建立连接"><span class="toc-number">7.1.3.1.1.</span> <span class="toc-text">建立连接</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#主库同步数据给从库"><span class="toc-number">7.1.3.1.2.</span> <span class="toc-text">主库同步数据给从库</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#发送新写命令到从库"><span class="toc-number">7.1.3.1.3.</span> <span class="toc-text">发送新写命令到从库</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#增量复制"><span class="toc-number">7.1.3.2.</span> <span class="toc-text">增量复制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#基于长连接的命令传播"><span class="toc-number">7.1.3.3.</span> <span class="toc-text">基于长连接的命令传播</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#相关问题"><span class="toc-number">7.1.4.</span> <span class="toc-text">相关问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结论"><span class="toc-number">7.1.5.</span> <span class="toc-text">结论</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#哨兵机制"><span class="toc-number">7.2.</span> <span class="toc-text">哨兵机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是哨兵（Sentinel）"><span class="toc-number">7.2.1.</span> <span class="toc-text">什么是哨兵（Sentinel）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#主要任务"><span class="toc-number">7.2.2.</span> <span class="toc-text">主要任务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#监控"><span class="toc-number">7.2.2.1.</span> <span class="toc-text">监控</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#主观下线"><span class="toc-number">7.2.2.1.1.</span> <span class="toc-text">主观下线</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#客观下线"><span class="toc-number">7.2.2.1.2.</span> <span class="toc-text">客观下线</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#主观下线与客观下线的区别"><span class="toc-number">7.2.2.1.3.</span> <span class="toc-text">主观下线与客观下线的区别</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#自动切换主库"><span class="toc-number">7.2.2.2.</span> <span class="toc-text">自动切换主库</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#筛选条件"><span class="toc-number">7.2.2.2.1.</span> <span class="toc-text">筛选条件</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#打分"><span class="toc-number">7.2.2.2.2.</span> <span class="toc-text">打分</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#通知"><span class="toc-number">7.2.2.3.</span> <span class="toc-text">通知</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#哨兵的主要任务与实现目标"><span class="toc-number">7.2.2.4.</span> <span class="toc-text">哨兵的主要任务与实现目标</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#工作原理"><span class="toc-number">7.2.3.</span> <span class="toc-text">工作原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#pub-sub-实现哨兵间通信和发现-slave"><span class="toc-number">7.2.3.1.</span> <span class="toc-text">pub&#x2F;sub 实现哨兵间通信和发现 slave</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#选择哨兵执行主从切换"><span class="toc-number">7.2.3.2.</span> <span class="toc-text">选择哨兵执行主从切换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#通过-pub-sub-实现客户端事件通知"><span class="toc-number">7.2.3.3.</span> <span class="toc-text">通过 pub&#x2F;sub 实现客户端事件通知</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注意事项与配置说明"><span class="toc-number">7.2.4.</span> <span class="toc-text">注意事项与配置说明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#集群"><span class="toc-number">7.3.</span> <span class="toc-text">集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么需要-Cluster"><span class="toc-number">7.3.1.</span> <span class="toc-text">为什么需要 Cluster</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是-Cluster-集群"><span class="toc-number">7.3.2.</span> <span class="toc-text">什么是 Cluster 集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#节点间的握手"><span class="toc-number">7.3.3.</span> <span class="toc-text">节点间的握手</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现原理"><span class="toc-number">7.3.4.</span> <span class="toc-text">实现原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#将数据分成多份存在不同实例上"><span class="toc-number">7.3.4.1.</span> <span class="toc-text">将数据分成多份存在不同实例上</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#哈希槽与-Redis-实例映射"><span class="toc-number">7.3.4.2.</span> <span class="toc-text">哈希槽与 Redis 实例映射</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#复制与故障转移"><span class="toc-number">7.3.4.3.</span> <span class="toc-text">复制与故障转移</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#故障检测"><span class="toc-number">7.3.4.3.1.</span> <span class="toc-text">故障检测</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#故障转移"><span class="toc-number">7.3.4.3.2.</span> <span class="toc-text">故障转移</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#选主流程"><span class="toc-number">7.3.4.3.3.</span> <span class="toc-text">选主流程</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#用表保存键值对和实例的关联关系可行么"><span class="toc-number">7.3.4.4.</span> <span class="toc-text">用表保存键值对和实例的关联关系可行么</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#客户端如何定位数据所在实例"><span class="toc-number">7.3.5.</span> <span class="toc-text">客户端如何定位数据所在实例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#重新分配哈希槽"><span class="toc-number">7.3.5.1.</span> <span class="toc-text">重新分配哈希槽</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#MOVED-错误"><span class="toc-number">7.3.5.1.1.</span> <span class="toc-text">MOVED 错误</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#ASK-错误"><span class="toc-number">7.3.5.1.2.</span> <span class="toc-text">ASK 错误</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#集群可以设置多大"><span class="toc-number">7.3.6.</span> <span class="toc-text">集群可以设置多大</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Gossip-消息"><span class="toc-number">7.3.6.1.</span> <span class="toc-text">Gossip 消息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#实例的通信频率"><span class="toc-number">7.3.6.2.</span> <span class="toc-text">实例的通信频率</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#环境搭建"><span class="toc-number">8.</span> <span class="toc-text">环境搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Window"><span class="toc-number">8.1.</span> <span class="toc-text">Window</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis-单机"><span class="toc-number">8.1.1.</span> <span class="toc-text">Redis 单机</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#安装"><span class="toc-number">8.1.1.1.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#目录结构"><span class="toc-number">8.1.1.2.</span> <span class="toc-text">目录结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#启动与关闭"><span class="toc-number">8.1.1.3.</span> <span class="toc-text">启动与关闭</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用"><span class="toc-number">8.1.1.4.</span> <span class="toc-text">使用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis-集群"><span class="toc-number">8.1.2.</span> <span class="toc-text">Redis 集群</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#环境准备"><span class="toc-number">8.1.2.1.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#准备6个实例"><span class="toc-number">8.1.2.2.</span> <span class="toc-text">准备6个实例</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#配置文件"><span class="toc-number">8.1.2.2.1.</span> <span class="toc-text">配置文件</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#安装redis服务"><span class="toc-number">8.1.2.2.2.</span> <span class="toc-text">安装redis服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#卸载redis服务"><span class="toc-number">8.1.2.2.3.</span> <span class="toc-text">卸载redis服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#启动redis服务"><span class="toc-number">8.1.2.2.4.</span> <span class="toc-text">启动redis服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#停止redis服务"><span class="toc-number">8.1.2.2.5.</span> <span class="toc-text">停止redis服务</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#redis-trib-rb创建集群"><span class="toc-number">8.1.2.3.</span> <span class="toc-text">redis-trib.rb创建集群</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sentinel哨兵配置"><span class="toc-number">8.1.2.4.</span> <span class="toc-text">sentinel哨兵配置</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#创建sentinel-conf"><span class="toc-number">8.1.2.4.1.</span> <span class="toc-text">创建sentinel.conf</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#启动哨兵服务"><span class="toc-number">8.1.2.4.2.</span> <span class="toc-text">启动哨兵服务</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#查看主从变化"><span class="toc-number">8.1.2.5.</span> <span class="toc-text">查看主从变化</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux"><span class="toc-number">8.2.</span> <span class="toc-text">Linux</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis-单机-1"><span class="toc-number">8.2.1.</span> <span class="toc-text">Redis 单机</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#环境准备-1"><span class="toc-number">8.2.1.1.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装-1"><span class="toc-number">8.2.1.2.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#启动"><span class="toc-number">8.2.1.3.</span> <span class="toc-text">启动</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#前端启动（不推荐）"><span class="toc-number">8.2.1.3.1.</span> <span class="toc-text">前端启动（不推荐）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#后台启动"><span class="toc-number">8.2.1.3.2.</span> <span class="toc-text">后台启动</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#连接"><span class="toc-number">8.2.1.4.</span> <span class="toc-text">连接</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#使用redis-cli客户端连接"><span class="toc-number">8.2.1.4.1.</span> <span class="toc-text">使用redis-cli客户端连接</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#图形化界面连接"><span class="toc-number">8.2.1.4.2.</span> <span class="toc-text">图形化界面连接</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis-集群（重点）"><span class="toc-number">8.2.2.</span> <span class="toc-text">Redis 集群（重点）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#准备6个实例-1"><span class="toc-number">8.2.2.1.</span> <span class="toc-text">准备6个实例</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#复制实例"><span class="toc-number">8.2.2.1.1.</span> <span class="toc-text">复制实例</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#修改端口号"><span class="toc-number">8.2.2.1.2.</span> <span class="toc-text">修改端口号</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#同时启动6个实例"><span class="toc-number">8.2.2.1.3.</span> <span class="toc-text">同时启动6个实例</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装环境"><span class="toc-number">8.2.2.2.</span> <span class="toc-text">安装环境</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#创建redis集群"><span class="toc-number">8.2.2.3.</span> <span class="toc-text">创建redis集群</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#配置集群节点"><span class="toc-number">8.2.2.3.1.</span> <span class="toc-text">配置集群节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#集群启动"><span class="toc-number">8.2.2.3.2.</span> <span class="toc-text">集群启动</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#节点的增删查改"><span class="toc-number">8.2.2.4.</span> <span class="toc-text">节点的增删查改</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#增加主节点"><span class="toc-number">8.2.2.4.1.</span> <span class="toc-text">增加主节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#增加从节点"><span class="toc-number">8.2.2.4.2.</span> <span class="toc-text">增加从节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#删除主节点"><span class="toc-number">8.2.2.4.3.</span> <span class="toc-text">删除主节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#删除从节点"><span class="toc-number">8.2.2.4.4.</span> <span class="toc-text">删除从节点</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sentinel哨兵配置-1"><span class="toc-number">8.2.2.5.</span> <span class="toc-text">sentinel哨兵配置</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#修改文件配置"><span class="toc-number">8.2.2.5.1.</span> <span class="toc-text">修改文件配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#启动sentinel"><span class="toc-number">8.2.2.5.2.</span> <span class="toc-text">启动sentinel</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Redis集群连接"><span class="toc-number">8.2.2.6.</span> <span class="toc-text">Redis集群连接</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#工具连接"><span class="toc-number">8.2.2.6.1.</span> <span class="toc-text">工具连接</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#代码连接"><span class="toc-number">8.2.2.6.2.</span> <span class="toc-text">代码连接</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置详情"><span class="toc-number">8.3.</span> <span class="toc-text">配置详情</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#redis-conf"><span class="toc-number">8.3.1.</span> <span class="toc-text">redis.conf</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#redis-sentinel-conf"><span class="toc-number">8.3.2.</span> <span class="toc-text">redis-sentinel.conf</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用规范"><span class="toc-number">9.</span> <span class="toc-text">使用规范</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#键值对使用规范"><span class="toc-number">9.1.</span> <span class="toc-text">键值对使用规范</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#key-命名规范"><span class="toc-number">9.1.1.</span> <span class="toc-text">key 命名规范</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#不要使用-bigkey"><span class="toc-number">9.1.2.</span> <span class="toc-text">不要使用 bigkey</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用高效序列化和压缩方法"><span class="toc-number">9.1.3.</span> <span class="toc-text">使用高效序列化和压缩方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用整数对象共享池"><span class="toc-number">9.1.4.</span> <span class="toc-text">使用整数对象共享池</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#命令使用规范"><span class="toc-number">9.2.</span> <span class="toc-text">命令使用规范</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#生产禁用的指令"><span class="toc-number">9.2.1.</span> <span class="toc-text">生产禁用的指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#慎用-MONITOR-命令"><span class="toc-number">9.2.2.</span> <span class="toc-text">慎用 MONITOR 命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#慎用全量操作命令"><span class="toc-number">9.2.3.</span> <span class="toc-text">慎用全量操作命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据保存规范"><span class="toc-number">9.3.</span> <span class="toc-text">数据保存规范</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#冷热数据分离"><span class="toc-number">9.3.1.</span> <span class="toc-text">冷热数据分离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#业务数据隔离"><span class="toc-number">9.3.2.</span> <span class="toc-text">业务数据隔离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#设置过期时间"><span class="toc-number">9.3.3.</span> <span class="toc-text">设置过期时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#控制单实例的内存容量"><span class="toc-number">9.3.4.</span> <span class="toc-text">控制单实例的内存容量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#防止缓存雪崩"><span class="toc-number">9.3.5.</span> <span class="toc-text">防止缓存雪崩</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#运维规范"><span class="toc-number">9.4.</span> <span class="toc-text">运维规范</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Jedis的基本使用"><span class="toc-number">10.</span> <span class="toc-text">Jedis的基本使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#介绍"><span class="toc-number">10.1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本操作"><span class="toc-number">10.2.</span> <span class="toc-text">基本操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#常用API"><span class="toc-number">10.2.1.</span> <span class="toc-text">常用API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码操作"><span class="toc-number">10.2.2.</span> <span class="toc-text">代码操作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#连接池的使用"><span class="toc-number">10.3.</span> <span class="toc-text">连接池的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本概念"><span class="toc-number">10.3.1.</span> <span class="toc-text">基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#常用API-1"><span class="toc-number">10.3.1.1.</span> <span class="toc-text">常用API</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码操作-1"><span class="toc-number">10.3.2.</span> <span class="toc-text">代码操作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#连接池工具类"><span class="toc-number">10.4.</span> <span class="toc-text">连接池工具类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置文件-1"><span class="toc-number">10.4.1.</span> <span class="toc-text">配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#工具类"><span class="toc-number">10.4.2.</span> <span class="toc-text">工具类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#测试代码"><span class="toc-number">10.4.3.</span> <span class="toc-text">测试代码</span></a></li></ol></li></ol></li></ol></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://s2.loli.net/2021/12/08/Xx7Fw6ApNDICcsz.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">灵熙云工作室</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-file"></i><span> 专题笔记</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/2020/08/17/Redis/"><i class="fa-fw fa fa-book"></i><span> Redis</span></a></li><li><a class="site-page" href="/2021/12/06/Log4j2/"><i class="fa-fw fa fa-book"></i><span> Log4j2</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Redis 教程</div></div><div id="post-meta"><div class="meta-firstline"><time class="post-meta__date"><span class="post-meta__date-created" title="发表于 2020-08-17 11:17:39"><i class="far fa-calendar-alt fa-fw"></i> 发表于 2020-08-17</span><span class="post-meta__separator">|</span><span class="post-meta__date-updated" title="更新于 2022-01-04 15:59:01"><i class="fas fa-history fa-fw"></i> 更新于 2022-01-04</span></time><span class="post-meta__categories"><span class="post-meta__separator">|</span><i class="fas fa-inbox fa-fw post-meta__icon"></i><a class="post-meta__categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"> <span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta__icon"></i><span>字数总计:</span><span class="word-count">36k</span><span class="post-meta__separator">|</span><i class="far fa-clock fa-fw post-meta__icon"></i><span>阅读时长: 127 分钟</span></span></div><div class="meta-thirdline"><span class="post-meta-pv-cv"><span class="post-meta__separator">|</span><i class="far fa-eye fa-fw post-meta__icon"></i><span>阅读量:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-commentcount"></span><span class="post-meta__separator">|</span><i class="far fa-comments fa-fw post-meta__icon"></i><span>评论数:</span><a href="/2020/08/17/Redis/#post-comment" itemprop="discussionUrl"><span class="valine-comment-count comment-count" data-xid="/2020/08/17/Redis/" itemprop="commentCount"></span></a></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h1 id="Redis概述"><a href="#Redis概述" class="headerlink" title="Redis概述"></a>Redis概述</h1><h2 id="什么是Redis"><a href="#什么是Redis" class="headerlink" title="什么是Redis"></a>什么是Redis</h2><p>　　Redis是用C语言开发的一个开源的高性能键值对（key-value）非关系性数据库，官方提供测试数据，50个并发执行100000个请求,读的速度是110000次/s,写的速度是81000次/s，且Redis通过提供多种键值数据类型来适应不同场景下的存储需求，目前为止Redis支持的键值数据类型如下：</p>
+</style></noscript><link rel="stylesheet" href="/css/effect.css"><meta name="generator" content="Hexo 4.2.1"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/file/head.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">24</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">73</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">14</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-file"></i><span> 专题笔记</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/2020/08/17/Redis/"><i class="fa-fw fa fa-book"></i><span> Redis</span></a></li><li><a class="site-page" href="/2021/12/06/Log4j2/"><i class="fa-fw fa fa-book"></i><span> Log4j2</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div></div></div><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis概述"><span class="toc-number">1.</span> <span class="toc-text">Redis概述</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是Redis"><span class="toc-number">1.1.</span> <span class="toc-text">什么是Redis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis的应用场景"><span class="toc-number">1.2.</span> <span class="toc-text">Redis的应用场景</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis的通用命令"><span class="toc-number">2.</span> <span class="toc-text">Redis的通用命令</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#连接远程Redis服务器"><span class="toc-number">2.1.</span> <span class="toc-text">连接远程Redis服务器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#密码设置"><span class="toc-number">2.1.1.</span> <span class="toc-text">密码设置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#keys-pattern"><span class="toc-number">2.2.</span> <span class="toc-text">keys pattern</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#del-key1-key2…"><span class="toc-number">2.3.</span> <span class="toc-text">del key1 key2…</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#exists-key"><span class="toc-number">2.4.</span> <span class="toc-text">exists key</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#type-key"><span class="toc-number">2.5.</span> <span class="toc-text">type key</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#select-切换数据库"><span class="toc-number">2.6.</span> <span class="toc-text">select 切换数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#move移key到其他数据库"><span class="toc-number">2.7.</span> <span class="toc-text">move移key到其他数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#info-获取-redis-服务器的统计信息"><span class="toc-number">2.8.</span> <span class="toc-text">info 获取 redis 服务器的统计信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Help"><span class="toc-number">2.9.</span> <span class="toc-text">Help</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis的数据类型"><span class="toc-number">3.</span> <span class="toc-text">Redis的数据类型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis的5种数据类型"><span class="toc-number">3.1.</span> <span class="toc-text">Redis的5种数据类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串类型string"><span class="toc-number">3.2.</span> <span class="toc-text">字符串类型string</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#概述"><span class="toc-number">3.2.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用命令"><span class="toc-number">3.2.2.</span> <span class="toc-text">常用命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#哈希类型hash"><span class="toc-number">3.3.</span> <span class="toc-text">哈希类型hash</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#概述-1"><span class="toc-number">3.3.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用命令-1"><span class="toc-number">3.3.2.</span> <span class="toc-text">常用命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#列表类型list"><span class="toc-number">3.4.</span> <span class="toc-text">列表类型list</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#概述-2"><span class="toc-number">3.4.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用命令-2"><span class="toc-number">3.4.2.</span> <span class="toc-text">常用命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#无序集合set"><span class="toc-number">3.5.</span> <span class="toc-text">无序集合set</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#概述-3"><span class="toc-number">3.5.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用命令-3"><span class="toc-number">3.5.2.</span> <span class="toc-text">常用命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#有序集合sorted-set"><span class="toc-number">3.6.</span> <span class="toc-text">有序集合sorted set</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#概述-4"><span class="toc-number">3.6.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#有序集合和列表类型区别："><span class="toc-number">3.6.2.</span> <span class="toc-text">有序集合和列表类型区别：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用命令-4"><span class="toc-number">3.6.3.</span> <span class="toc-text">常用命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">3.7.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis的持久化"><span class="toc-number">4.</span> <span class="toc-text">Redis的持久化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#持久化概述"><span class="toc-number">4.1.</span> <span class="toc-text">持久化概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RDB持久化机制"><span class="toc-number">4.2.</span> <span class="toc-text">RDB持久化机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#优点"><span class="toc-number">4.2.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缺点"><span class="toc-number">4.2.2.</span> <span class="toc-text">缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置"><span class="toc-number">4.2.3.</span> <span class="toc-text">配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AOF持久化机制"><span class="toc-number">4.3.</span> <span class="toc-text">AOF持久化机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#优点-1"><span class="toc-number">4.3.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缺点-1"><span class="toc-number">4.3.2.</span> <span class="toc-text">缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置-1"><span class="toc-number">4.3.3.</span> <span class="toc-text">配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#开启AOF持久化"><span class="toc-number">4.3.3.1.</span> <span class="toc-text">开启AOF持久化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AOF持久化时机"><span class="toc-number">4.3.3.2.</span> <span class="toc-text">AOF持久化时机</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#过期与淘汰策略"><span class="toc-number">5.</span> <span class="toc-text">过期与淘汰策略</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#设置占用内存"><span class="toc-number">5.1.</span> <span class="toc-text">设置占用内存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#过期策略"><span class="toc-number">5.2.</span> <span class="toc-text">过期策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#淘汰策略"><span class="toc-number">5.3.</span> <span class="toc-text">淘汰策略</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置文件设置"><span class="toc-number">5.3.1.</span> <span class="toc-text">配置文件设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#命令修改"><span class="toc-number">5.3.2.</span> <span class="toc-text">命令修改</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LRU算法"><span class="toc-number">5.3.3.</span> <span class="toc-text">LRU算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#在Redis中的实现"><span class="toc-number">5.3.3.1.</span> <span class="toc-text">在Redis中的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#近似LRU算法"><span class="toc-number">5.3.3.1.1.</span> <span class="toc-text">近似LRU算法</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Redis3-0的优化"><span class="toc-number">5.3.3.1.2.</span> <span class="toc-text">Redis3.0的优化</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LFU算法"><span class="toc-number">5.3.4.</span> <span class="toc-text">LFU算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LRU与LFU的区别"><span class="toc-number">5.3.5.</span> <span class="toc-text">LRU与LFU的区别</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#缓存设计"><span class="toc-number">6.</span> <span class="toc-text">缓存设计</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#缓存穿透"><span class="toc-number">6.1.</span> <span class="toc-text">缓存穿透</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是缓存穿透"><span class="toc-number">6.1.1.</span> <span class="toc-text">什么是缓存穿透</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#有什么解决方案来防止缓存穿透"><span class="toc-number">6.1.2.</span> <span class="toc-text">有什么解决方案来防止缓存穿透</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结-1"><span class="toc-number">6.1.3.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#缓存击穿"><span class="toc-number">6.2.</span> <span class="toc-text">缓存击穿</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是缓存击穿"><span class="toc-number">6.2.1.</span> <span class="toc-text">什么是缓存击穿</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题排查"><span class="toc-number">6.2.2.</span> <span class="toc-text">问题排查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解决方案"><span class="toc-number">6.2.3.</span> <span class="toc-text">解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#使用互斥锁-mutex-key"><span class="toc-number">6.2.3.1.</span> <span class="toc-text">使用互斥锁(mutex key)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#提前使用互斥锁-mutex-key"><span class="toc-number">6.2.3.2.</span> <span class="toc-text">提前使用互斥锁(mutex key)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#永远不过期"><span class="toc-number">6.2.3.3.</span> <span class="toc-text">永远不过期</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#资源保护"><span class="toc-number">6.2.3.4.</span> <span class="toc-text">资源保护</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结-2"><span class="toc-number">6.2.4.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#缓存雪崩"><span class="toc-number">6.3.</span> <span class="toc-text">缓存雪崩</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是缓存雪崩"><span class="toc-number">6.3.1.</span> <span class="toc-text">什么是缓存雪崩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缓存雪崩问题排查"><span class="toc-number">6.3.2.</span> <span class="toc-text">缓存雪崩问题排查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#有什么解决方案来防止缓存雪崩？"><span class="toc-number">6.3.3.</span> <span class="toc-text">有什么解决方案来防止缓存雪崩？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结-3"><span class="toc-number">6.3.4.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#缓存预热"><span class="toc-number">6.4.</span> <span class="toc-text">缓存预热</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是缓存预热"><span class="toc-number">6.4.1.</span> <span class="toc-text">什么是缓存预热</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题排查-1"><span class="toc-number">6.4.2.</span> <span class="toc-text">问题排查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#有什么解决方案"><span class="toc-number">6.4.3.</span> <span class="toc-text">有什么解决方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结-4"><span class="toc-number">6.4.4.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#缓存降级"><span class="toc-number">6.5.</span> <span class="toc-text">缓存降级</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#高可用"><span class="toc-number">7.</span> <span class="toc-text">高可用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#主从复制"><span class="toc-number">7.1.</span> <span class="toc-text">主从复制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#概述-5"><span class="toc-number">7.1.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#搭建"><span class="toc-number">7.1.2.</span> <span class="toc-text">搭建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#原理"><span class="toc-number">7.1.3.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#主从库第一次全量复制"><span class="toc-number">7.1.3.1.</span> <span class="toc-text">主从库第一次全量复制</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#建立连接"><span class="toc-number">7.1.3.1.1.</span> <span class="toc-text">建立连接</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#主库同步数据给从库"><span class="toc-number">7.1.3.1.2.</span> <span class="toc-text">主库同步数据给从库</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#发送新写命令到从库"><span class="toc-number">7.1.3.1.3.</span> <span class="toc-text">发送新写命令到从库</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#增量复制"><span class="toc-number">7.1.3.2.</span> <span class="toc-text">增量复制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#基于长连接的命令传播"><span class="toc-number">7.1.3.3.</span> <span class="toc-text">基于长连接的命令传播</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#相关问题"><span class="toc-number">7.1.4.</span> <span class="toc-text">相关问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结论"><span class="toc-number">7.1.5.</span> <span class="toc-text">结论</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#哨兵机制"><span class="toc-number">7.2.</span> <span class="toc-text">哨兵机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是哨兵（Sentinel）"><span class="toc-number">7.2.1.</span> <span class="toc-text">什么是哨兵（Sentinel）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#主要任务"><span class="toc-number">7.2.2.</span> <span class="toc-text">主要任务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#监控"><span class="toc-number">7.2.2.1.</span> <span class="toc-text">监控</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#主观下线"><span class="toc-number">7.2.2.1.1.</span> <span class="toc-text">主观下线</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#客观下线"><span class="toc-number">7.2.2.1.2.</span> <span class="toc-text">客观下线</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#主观下线与客观下线的区别"><span class="toc-number">7.2.2.1.3.</span> <span class="toc-text">主观下线与客观下线的区别</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#自动切换主库"><span class="toc-number">7.2.2.2.</span> <span class="toc-text">自动切换主库</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#筛选条件"><span class="toc-number">7.2.2.2.1.</span> <span class="toc-text">筛选条件</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#打分"><span class="toc-number">7.2.2.2.2.</span> <span class="toc-text">打分</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#通知"><span class="toc-number">7.2.2.3.</span> <span class="toc-text">通知</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#哨兵的主要任务与实现目标"><span class="toc-number">7.2.2.4.</span> <span class="toc-text">哨兵的主要任务与实现目标</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#工作原理"><span class="toc-number">7.2.3.</span> <span class="toc-text">工作原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#pub-sub-实现哨兵间通信和发现-slave"><span class="toc-number">7.2.3.1.</span> <span class="toc-text">pub&#x2F;sub 实现哨兵间通信和发现 slave</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#选择哨兵执行主从切换"><span class="toc-number">7.2.3.2.</span> <span class="toc-text">选择哨兵执行主从切换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#通过-pub-sub-实现客户端事件通知"><span class="toc-number">7.2.3.3.</span> <span class="toc-text">通过 pub&#x2F;sub 实现客户端事件通知</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注意事项与配置说明"><span class="toc-number">7.2.4.</span> <span class="toc-text">注意事项与配置说明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#集群"><span class="toc-number">7.3.</span> <span class="toc-text">集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么需要-Cluster"><span class="toc-number">7.3.1.</span> <span class="toc-text">为什么需要 Cluster</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是-Cluster-集群"><span class="toc-number">7.3.2.</span> <span class="toc-text">什么是 Cluster 集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#节点间的握手"><span class="toc-number">7.3.3.</span> <span class="toc-text">节点间的握手</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现原理"><span class="toc-number">7.3.4.</span> <span class="toc-text">实现原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#将数据分成多份存在不同实例上"><span class="toc-number">7.3.4.1.</span> <span class="toc-text">将数据分成多份存在不同实例上</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#哈希槽与-Redis-实例映射"><span class="toc-number">7.3.4.2.</span> <span class="toc-text">哈希槽与 Redis 实例映射</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#复制与故障转移"><span class="toc-number">7.3.4.3.</span> <span class="toc-text">复制与故障转移</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#故障检测"><span class="toc-number">7.3.4.3.1.</span> <span class="toc-text">故障检测</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#故障转移"><span class="toc-number">7.3.4.3.2.</span> <span class="toc-text">故障转移</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#选主流程"><span class="toc-number">7.3.4.3.3.</span> <span class="toc-text">选主流程</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#用表保存键值对和实例的关联关系可行么"><span class="toc-number">7.3.4.4.</span> <span class="toc-text">用表保存键值对和实例的关联关系可行么</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#客户端如何定位数据所在实例"><span class="toc-number">7.3.5.</span> <span class="toc-text">客户端如何定位数据所在实例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#重新分配哈希槽"><span class="toc-number">7.3.5.1.</span> <span class="toc-text">重新分配哈希槽</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#MOVED-错误"><span class="toc-number">7.3.5.1.1.</span> <span class="toc-text">MOVED 错误</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#ASK-错误"><span class="toc-number">7.3.5.1.2.</span> <span class="toc-text">ASK 错误</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#集群可以设置多大"><span class="toc-number">7.3.6.</span> <span class="toc-text">集群可以设置多大</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Gossip-消息"><span class="toc-number">7.3.6.1.</span> <span class="toc-text">Gossip 消息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#实例的通信频率"><span class="toc-number">7.3.6.2.</span> <span class="toc-text">实例的通信频率</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#环境搭建"><span class="toc-number">8.</span> <span class="toc-text">环境搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Window"><span class="toc-number">8.1.</span> <span class="toc-text">Window</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis-单机"><span class="toc-number">8.1.1.</span> <span class="toc-text">Redis 单机</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#安装"><span class="toc-number">8.1.1.1.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#目录结构"><span class="toc-number">8.1.1.2.</span> <span class="toc-text">目录结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#启动与关闭"><span class="toc-number">8.1.1.3.</span> <span class="toc-text">启动与关闭</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用"><span class="toc-number">8.1.1.4.</span> <span class="toc-text">使用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis-集群"><span class="toc-number">8.1.2.</span> <span class="toc-text">Redis 集群</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#环境准备"><span class="toc-number">8.1.2.1.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#准备6个实例"><span class="toc-number">8.1.2.2.</span> <span class="toc-text">准备6个实例</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#配置文件"><span class="toc-number">8.1.2.2.1.</span> <span class="toc-text">配置文件</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#安装redis服务"><span class="toc-number">8.1.2.2.2.</span> <span class="toc-text">安装redis服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#卸载redis服务"><span class="toc-number">8.1.2.2.3.</span> <span class="toc-text">卸载redis服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#启动redis服务"><span class="toc-number">8.1.2.2.4.</span> <span class="toc-text">启动redis服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#停止redis服务"><span class="toc-number">8.1.2.2.5.</span> <span class="toc-text">停止redis服务</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#redis-trib-rb创建集群"><span class="toc-number">8.1.2.3.</span> <span class="toc-text">redis-trib.rb创建集群</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sentinel哨兵配置"><span class="toc-number">8.1.2.4.</span> <span class="toc-text">sentinel哨兵配置</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#创建sentinel-conf"><span class="toc-number">8.1.2.4.1.</span> <span class="toc-text">创建sentinel.conf</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#启动哨兵服务"><span class="toc-number">8.1.2.4.2.</span> <span class="toc-text">启动哨兵服务</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#查看主从变化"><span class="toc-number">8.1.2.5.</span> <span class="toc-text">查看主从变化</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux"><span class="toc-number">8.2.</span> <span class="toc-text">Linux</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis-单机-1"><span class="toc-number">8.2.1.</span> <span class="toc-text">Redis 单机</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#环境准备-1"><span class="toc-number">8.2.1.1.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装-1"><span class="toc-number">8.2.1.2.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#启动"><span class="toc-number">8.2.1.3.</span> <span class="toc-text">启动</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#前端启动（不推荐）"><span class="toc-number">8.2.1.3.1.</span> <span class="toc-text">前端启动（不推荐）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#后台启动"><span class="toc-number">8.2.1.3.2.</span> <span class="toc-text">后台启动</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#连接"><span class="toc-number">8.2.1.4.</span> <span class="toc-text">连接</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#使用redis-cli客户端连接"><span class="toc-number">8.2.1.4.1.</span> <span class="toc-text">使用redis-cli客户端连接</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#图形化界面连接"><span class="toc-number">8.2.1.4.2.</span> <span class="toc-text">图形化界面连接</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis-集群（重点）"><span class="toc-number">8.2.2.</span> <span class="toc-text">Redis 集群（重点）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#准备6个实例-1"><span class="toc-number">8.2.2.1.</span> <span class="toc-text">准备6个实例</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#复制实例"><span class="toc-number">8.2.2.1.1.</span> <span class="toc-text">复制实例</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#修改端口号"><span class="toc-number">8.2.2.1.2.</span> <span class="toc-text">修改端口号</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#同时启动6个实例"><span class="toc-number">8.2.2.1.3.</span> <span class="toc-text">同时启动6个实例</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装环境"><span class="toc-number">8.2.2.2.</span> <span class="toc-text">安装环境</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#创建redis集群"><span class="toc-number">8.2.2.3.</span> <span class="toc-text">创建redis集群</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#配置集群节点"><span class="toc-number">8.2.2.3.1.</span> <span class="toc-text">配置集群节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#集群启动"><span class="toc-number">8.2.2.3.2.</span> <span class="toc-text">集群启动</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#节点的增删查改"><span class="toc-number">8.2.2.4.</span> <span class="toc-text">节点的增删查改</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#增加主节点"><span class="toc-number">8.2.2.4.1.</span> <span class="toc-text">增加主节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#增加从节点"><span class="toc-number">8.2.2.4.2.</span> <span class="toc-text">增加从节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#删除主节点"><span class="toc-number">8.2.2.4.3.</span> <span class="toc-text">删除主节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#删除从节点"><span class="toc-number">8.2.2.4.4.</span> <span class="toc-text">删除从节点</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sentinel哨兵配置-1"><span class="toc-number">8.2.2.5.</span> <span class="toc-text">sentinel哨兵配置</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#修改文件配置"><span class="toc-number">8.2.2.5.1.</span> <span class="toc-text">修改文件配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#启动sentinel"><span class="toc-number">8.2.2.5.2.</span> <span class="toc-text">启动sentinel</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Redis集群连接"><span class="toc-number">8.2.2.6.</span> <span class="toc-text">Redis集群连接</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#工具连接"><span class="toc-number">8.2.2.6.1.</span> <span class="toc-text">工具连接</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#代码连接"><span class="toc-number">8.2.2.6.2.</span> <span class="toc-text">代码连接</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置详情"><span class="toc-number">8.3.</span> <span class="toc-text">配置详情</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#redis-conf"><span class="toc-number">8.3.1.</span> <span class="toc-text">redis.conf</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#redis-sentinel-conf"><span class="toc-number">8.3.2.</span> <span class="toc-text">redis-sentinel.conf</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用规范"><span class="toc-number">9.</span> <span class="toc-text">使用规范</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#键值对使用规范"><span class="toc-number">9.1.</span> <span class="toc-text">键值对使用规范</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#key-命名规范"><span class="toc-number">9.1.1.</span> <span class="toc-text">key 命名规范</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#不要使用-bigkey"><span class="toc-number">9.1.2.</span> <span class="toc-text">不要使用 bigkey</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用高效序列化和压缩方法"><span class="toc-number">9.1.3.</span> <span class="toc-text">使用高效序列化和压缩方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用整数对象共享池"><span class="toc-number">9.1.4.</span> <span class="toc-text">使用整数对象共享池</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#命令使用规范"><span class="toc-number">9.2.</span> <span class="toc-text">命令使用规范</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#生产禁用的指令"><span class="toc-number">9.2.1.</span> <span class="toc-text">生产禁用的指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#慎用-MONITOR-命令"><span class="toc-number">9.2.2.</span> <span class="toc-text">慎用 MONITOR 命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#慎用全量操作命令"><span class="toc-number">9.2.3.</span> <span class="toc-text">慎用全量操作命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据保存规范"><span class="toc-number">9.3.</span> <span class="toc-text">数据保存规范</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#冷热数据分离"><span class="toc-number">9.3.1.</span> <span class="toc-text">冷热数据分离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#业务数据隔离"><span class="toc-number">9.3.2.</span> <span class="toc-text">业务数据隔离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#设置过期时间"><span class="toc-number">9.3.3.</span> <span class="toc-text">设置过期时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#控制单实例的内存容量"><span class="toc-number">9.3.4.</span> <span class="toc-text">控制单实例的内存容量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#防止缓存雪崩"><span class="toc-number">9.3.5.</span> <span class="toc-text">防止缓存雪崩</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#运维规范"><span class="toc-number">9.4.</span> <span class="toc-text">运维规范</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#监控指标"><span class="toc-number">10.</span> <span class="toc-text">监控指标</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#性能指标-Performance"><span class="toc-number">10.1.</span> <span class="toc-text">性能指标 Performance</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#内存指标-Memory"><span class="toc-number">10.2.</span> <span class="toc-text">内存指标 Memory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本活动指标-Basic-activity"><span class="toc-number">10.3.</span> <span class="toc-text">基本活动指标 Basic activity</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#持久性指标-Persistence"><span class="toc-number">10.4.</span> <span class="toc-text">持久性指标 Persistence</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#错误指标-Error"><span class="toc-number">10.5.</span> <span class="toc-text">错误指标 Error</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#监控方式"><span class="toc-number">10.6.</span> <span class="toc-text">监控方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#redis-benchmark"><span class="toc-number">10.6.1.</span> <span class="toc-text">redis-benchmark</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#redis-stat"><span class="toc-number">10.6.2.</span> <span class="toc-text">redis-stat</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#redis-faina"><span class="toc-number">10.6.3.</span> <span class="toc-text">redis-faina</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#redislive"><span class="toc-number">10.6.4.</span> <span class="toc-text">redislive</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#redis-cli"><span class="toc-number">10.6.5.</span> <span class="toc-text">redis-cli</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#slowlog"><span class="toc-number">10.6.5.1.</span> <span class="toc-text">slowlog</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#info"><span class="toc-number">10.6.5.2.</span> <span class="toc-text">info</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Jedis的基本使用"><span class="toc-number">11.</span> <span class="toc-text">Jedis的基本使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#介绍"><span class="toc-number">11.1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本操作"><span class="toc-number">11.2.</span> <span class="toc-text">基本操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#常用API"><span class="toc-number">11.2.1.</span> <span class="toc-text">常用API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码操作"><span class="toc-number">11.2.2.</span> <span class="toc-text">代码操作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#连接池的使用"><span class="toc-number">11.3.</span> <span class="toc-text">连接池的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本概念"><span class="toc-number">11.3.1.</span> <span class="toc-text">基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#常用API-1"><span class="toc-number">11.3.1.1.</span> <span class="toc-text">常用API</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码操作-1"><span class="toc-number">11.3.2.</span> <span class="toc-text">代码操作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#连接池工具类"><span class="toc-number">11.4.</span> <span class="toc-text">连接池工具类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置文件-1"><span class="toc-number">11.4.1.</span> <span class="toc-text">配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#工具类"><span class="toc-number">11.4.2.</span> <span class="toc-text">工具类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#测试代码"><span class="toc-number">11.4.3.</span> <span class="toc-text">测试代码</span></a></li></ol></li></ol></li></ol></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://s2.loli.net/2021/12/08/Xx7Fw6ApNDICcsz.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">灵熙云工作室</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-file"></i><span> 专题笔记</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/2020/08/17/Redis/"><i class="fa-fw fa fa-book"></i><span> Redis</span></a></li><li><a class="site-page" href="/2021/12/06/Log4j2/"><i class="fa-fw fa fa-book"></i><span> Log4j2</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Redis 教程</div></div><div id="post-meta"><div class="meta-firstline"><time class="post-meta__date"><span class="post-meta__date-created" title="发表于 2020-08-17 11:17:39"><i class="far fa-calendar-alt fa-fw"></i> 发表于 2020-08-17</span><span class="post-meta__separator">|</span><span class="post-meta__date-updated" title="更新于 2022-01-06 16:18:05"><i class="fas fa-history fa-fw"></i> 更新于 2022-01-06</span></time><span class="post-meta__categories"><span class="post-meta__separator">|</span><i class="fas fa-inbox fa-fw post-meta__icon"></i><a class="post-meta__categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"> <span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta__icon"></i><span>字数总计:</span><span class="word-count">40.6k</span><span class="post-meta__separator">|</span><i class="far fa-clock fa-fw post-meta__icon"></i><span>阅读时长: 145 分钟</span></span></div><div class="meta-thirdline"><span class="post-meta-pv-cv"><span class="post-meta__separator">|</span><i class="far fa-eye fa-fw post-meta__icon"></i><span>阅读量:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-commentcount"></span><span class="post-meta__separator">|</span><i class="far fa-comments fa-fw post-meta__icon"></i><span>评论数:</span><a href="/2020/08/17/Redis/#post-comment" itemprop="discussionUrl"><span class="valine-comment-count comment-count" data-xid="/2020/08/17/Redis/" itemprop="commentCount"></span></a></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h1 id="Redis概述"><a href="#Redis概述" class="headerlink" title="Redis概述"></a>Redis概述</h1><h2 id="什么是Redis"><a href="#什么是Redis" class="headerlink" title="什么是Redis"></a>什么是Redis</h2><p>　　Redis是用C语言开发的一个开源的高性能键值对（key-value）非关系性数据库，官方提供测试数据，50个并发执行100000个请求,读的速度是110000次/s,写的速度是81000次/s，且Redis通过提供多种键值数据类型来适应不同场景下的存储需求，目前为止Redis支持的键值数据类型如下：</p>
 <blockquote>
 <ol>
 <li>字符串类型 string</li>
@@ -1892,6 +1892,599 @@ if (autoChangeMode === '1') {
 <li>根据实际场景设置<code>合适的内存淘汰策略</code>。</li>
 <li>使用<code>连接池操作 Redis</code>。</li>
 </ol>
+<h1 id="监控指标"><a href="#监控指标" class="headerlink" title="监控指标"></a>监控指标</h1><p>监控指标包括<code>性能指标 Performance</code>、<code>内存指标 Memory</code>、<code>基本活动指标 Basic activity</code>、<code>持久性指标 Persistence</code>、<code>错误指标 Error</code>五类</p>
+<h2 id="性能指标-Performance"><a href="#性能指标-Performance" class="headerlink" title="性能指标 Performance"></a>性能指标 Performance</h2><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>latency</td>
+<td>Redis响应一个请求的时间</td>
+</tr>
+<tr>
+<td>instantaneous_ops_per_sec</td>
+<td>平均每秒处理请求总数</td>
+</tr>
+<tr>
+<td>hi rate(calculated)</td>
+<td>缓存命中率（计算出来的</td>
+</tr>
+</tbody></table>
+<h2 id="内存指标-Memory"><a href="#内存指标-Memory" class="headerlink" title="内存指标 Memory"></a>内存指标 Memory</h2><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>used_memory</td>
+<td>已使用内存</td>
+</tr>
+<tr>
+<td>mem_fragmentation_ratio</td>
+<td>内存碎片率</td>
+</tr>
+<tr>
+<td>evicted_keys</td>
+<td>由于最大内存限制被移除的key的数量</td>
+</tr>
+<tr>
+<td>blocked_clients</td>
+<td>由于BLPOP,BRPOP,or BRPOPLPUSH而备阻塞的客户端</td>
+</tr>
+</tbody></table>
+<h2 id="基本活动指标-Basic-activity"><a href="#基本活动指标-Basic-activity" class="headerlink" title="基本活动指标 Basic activity"></a>基本活动指标 Basic activity</h2><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>connected_clients</td>
+<td>客户端连接数</td>
+</tr>
+<tr>
+<td>conected_laves</td>
+<td>slave数量</td>
+</tr>
+<tr>
+<td>master_last_io_seconds_ago</td>
+<td>最近一次主从交互之后的秒数</td>
+</tr>
+<tr>
+<td>keyspace</td>
+<td>数据库中的key值总数</td>
+</tr>
+</tbody></table>
+<h2 id="持久性指标-Persistence"><a href="#持久性指标-Persistence" class="headerlink" title="持久性指标 Persistence"></a>持久性指标 Persistence</h2><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>rdb_last_save_time</td>
+<td>最后一次持久化保存磁盘的时间戳</td>
+</tr>
+<tr>
+<td>rdb_changes_sice_last_save</td>
+<td>自最后一次持久化以来数据库的更改数</td>
+</tr>
+</tbody></table>
+<h2 id="错误指标-Error"><a href="#错误指标-Error" class="headerlink" title="错误指标 Error"></a>错误指标 Error</h2><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ejected_connections</td>
+<td>由于达到maxclient限制而被拒绝的连接数</td>
+</tr>
+<tr>
+<td>keyspace_misses</td>
+<td>key值查找失败(没有命中)次数</td>
+</tr>
+<tr>
+<td>master_link_down_since_seconds</td>
+<td>主从断开的持续时间（以秒为单位)</td>
+</tr>
+</tbody></table>
+<h2 id="监控方式"><a href="#监控方式" class="headerlink" title="监控方式"></a>监控方式</h2><h3 id="redis-benchmark"><a href="#redis-benchmark" class="headerlink" title="redis-benchmark"></a>redis-benchmark</h3><p><code>Redis自带性能测试工具redis-benchmark</code>，基本命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">redis-benchmark [option] [option value]</span><br></pre></td></tr></table></figure>
+<p><code>注：该命令是在 redis 的目录下执行的，而不是 redis 客户端的内部指令。</code></p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/01/05/vyHsQAdVfcxERgi.png" alt=""></p>
+<p>可选参数如下所示：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-h</td>
+<td>指定服务器主机名</td>
+<td>127.0.0.1</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>指定服务器端口</td>
+<td>6379</td>
+</tr>
+<tr>
+<td>-s</td>
+<td>指定服务器socket</td>
+<td></td>
+</tr>
+<tr>
+<td>-c</td>
+<td>指定并发连接数</td>
+<td>50</td>
+</tr>
+<tr>
+<td>-n</td>
+<td>指定请求数</td>
+<td>10000</td>
+</tr>
+<tr>
+<td>-d</td>
+<td>以字节的形式指定 SET/GET 值的数据大小</td>
+<td>2</td>
+</tr>
+<tr>
+<td>-k</td>
+<td>1=keep alive 0=reconnect</td>
+<td>1</td>
+</tr>
+<tr>
+<td>-r</td>
+<td>SET/GET/INCR 使用随机 key, SADD 使用随机值</td>
+<td></td>
+</tr>
+<tr>
+<td>-P</td>
+<td>代表每个请求pipeline的数据量</td>
+<td>1</td>
+</tr>
+<tr>
+<td>-q</td>
+<td>仅仅显示每秒执行的请求信息。</td>
+<td></td>
+</tr>
+<tr>
+<td>–csv</td>
+<td>以 CSV 格式输出，便于后续处理， 如导出到Excel</td>
+<td></td>
+</tr>
+<tr>
+<td>-l（L 的小写字母）</td>
+<td>生成循环，永久执行测试</td>
+<td></td>
+</tr>
+<tr>
+<td>-t</td>
+<td>仅运行以逗号分隔的测试命令列表。</td>
+<td></td>
+</tr>
+<tr>
+<td>-I（i的大写字母）</td>
+<td>Idle 模式。仅打开 N 个 idle 连接并等待。</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>同时执行 10000 个请求来检测性能：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ redis-benchmark -n 10000  -q</span><br><span class="line"></span><br><span class="line">PING_INLINE: 141043.72 requests per second</span><br><span class="line">PING_BULK: 142857.14 requests per second</span><br><span class="line">SET: 141442.72 requests per second</span><br><span class="line">GET: 145348.83 requests per second</span><br><span class="line">INCR: 137362.64 requests per second</span><br><span class="line">LPUSH: 145348.83 requests per second</span><br><span class="line">LPOP: 146198.83 requests per second</span><br><span class="line">SADD: 146198.83 requests per second</span><br><span class="line">SPOP: 149253.73 requests per second</span><br><span class="line">LPUSH (needed to benchmark LRANGE): 148588.42 requests per second</span><br><span class="line">LRANGE_100 (first 100 elements): 58411.21 requests per second</span><br><span class="line">LRANGE_300 (first 300 elements): 21195.42 requests per second</span><br><span class="line">LRANGE_500 (first 450 elements): 14539.11 requests per second</span><br><span class="line">LRANGE_600 (first 600 elements): 10504.20 requests per second</span><br><span class="line">MSET (10 keys): 93283.58 requests per second</span><br></pre></td></tr></table></figure>
+
+<p>测试命令详解：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SET</td>
+<td>将字符串值value关联到key；</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>返回key所关联的字符串值，如果key存储的值不是字符串类型，返回一个错误；</td>
+</tr>
+<tr>
+<td>INCR</td>
+<td>将key中存储的数字值增一。不能转换为数字则报错；</td>
+</tr>
+<tr>
+<td>LPUSH</td>
+<td>将一个或多个值value插入到列表key的表头；</td>
+</tr>
+<tr>
+<td>RPUSH</td>
+<td>将一个或多个值value插入到列表key的表尾；</td>
+</tr>
+<tr>
+<td>LPOP</td>
+<td>移除并返回列表key的头元素；</td>
+</tr>
+<tr>
+<td>RPOP</td>
+<td>移除并返回列表key的尾元素；</td>
+</tr>
+<tr>
+<td>SADD</td>
+<td>将一个或多个member元素加入到集合set当中，已经存在于集合的member元素将被忽略；</td>
+</tr>
+<tr>
+<td>SPOP</td>
+<td>移除并返回集合中的一个随机元素；</td>
+</tr>
+<tr>
+<td>LPUSH</td>
+<td>将一个或多个value插入到列表key的表头；</td>
+</tr>
+<tr>
+<td>LRANGE_100</td>
+<td>返回列表key中指定区间内的元素，前100条元素；</td>
+</tr>
+<tr>
+<td>LRANGE_300</td>
+<td>返回列表key中指定区间内的元素，前300条元素；</td>
+</tr>
+<tr>
+<td>LRANGE_500</td>
+<td>返回列表key中指定区间内的元素，前500条元素；</td>
+</tr>
+<tr>
+<td>LRANGE_600</td>
+<td>返回列表key中指定区间内的元素，前600条元素；</td>
+</tr>
+<tr>
+<td>MSET</td>
+<td>同时设置一个或多个key-value对，value为字符串。</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><code>PING_INLINE 和 PING_BULK</code><br>在统一请求协议之前，Redis使用一个不同的协议来发送命令，这个协议仍然被支持因为通过telnet它很容易手写。在这个协议中存在两种命令：</p>
+<ul>
+<li>inline 命令：命令很简单，就是用空格把参数分隔开来的字符串。二进制安全是不可能的。</li>
+<li>bulk 命令：bulk命令和inline命令几乎是一样的，但是最后一个参数为了能够接受二进制安全的内容，所以需要以特殊的方式进行处理。</li>
+</ul>
+</blockquote>
+<ul>
+<li>实例分析</li>
+</ul>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/01/05/A451lGjp8okmIS3.png" alt=""></p>
+<table>
+<thead>
+<tr>
+<th align="center">场景</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td><code>单一</code>key，模拟50客户端，每秒的请求数</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td>随机key，模拟50客户端，每秒的请求数</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td>随机key，模拟100客户端，每秒的请求数</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td>随机key，模拟10客户端，每秒的请求数</td>
+</tr>
+<tr>
+<td align="center">5</td>
+<td>随机key，模拟50客户端，<code>并发执行</code>，每秒的请求数</td>
+</tr>
+</tbody></table>
+<p>从表格可看出： </p>
+<blockquote>
+<ol>
+<li>对于相同客户端的情况下，随机key的每秒请求数，SET和LPOP减少，GET、INCR、LPUSH、SADD、SPOP和LRANGE增加了；</li>
+<li>在随机生成key值的情况下，SET、SADD操作随着客户端数增加，每秒请求数减少；考虑到cache命中的情况，其他命令变化趋势没有规律；</li>
+<li>其他条件一致，并发执行情况下，各种命令都是有大幅度增加。</li>
+</ol>
+</blockquote>
+<p><code>结论：在真实环境下，应对大数据，大并发，可以通过增加缓存大小，并发执行来提高吞吐量。</code></p>
+<h3 id="redis-stat"><a href="#redis-stat" class="headerlink" title="redis-stat"></a>redis-stat</h3><p>可视化监控工具redis-stat，优缺点如下：</p>
+<blockquote>
+<p>优点：基于redis的INFO命令，较使用MONITOR的监控工具对redis服务器性能影响较小；<br>缺点：如果同时监控多个redis实例，不能单独显示每一个实例的数据信息，貌似是总和。</p>
+</blockquote>
+<p>官网提供了两种安装方式，一种是<code>通过Ruby gem安装</code>，第二种方式是<code>通过下载Jar包直接运行</code>，需要本地有Java环境。</p>
+<ul>
+<li>Ruby安装</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装ruby</span></span><br><span class="line">sudo yum install ruby</span><br><span class="line">sudo yum install ruby-devel</span><br><span class="line">gem update --system</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更换国内镜像地址</span></span><br><span class="line">gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/</span><br><span class="line">gem sources -l</span><br><span class="line">*** CURRENT SOURCES ***</span><br><span class="line"></span><br><span class="line">https://gems.ruby-china.org/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装</span></span><br><span class="line">gem install redis-stat</span><br></pre></td></tr></table></figure>
+
+<p>不出意外的话，就安装成功了。运行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-stat --server --daemon --auth&#x3D;redis密码（如果有的话）</span><br></pre></td></tr></table></figure>
+<p>就可以在后台启动redis-stat，浏览器输入如下地址访问：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;Redis IP:63790</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Jar包安装</li>
+</ul>
+<p>下载Jar包</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">https:&#x2F;&#x2F;github.com&#x2F;junegunn&#x2F;redis-stat&#x2F;releases&#x2F;download&#x2F;0.4.14&#x2F;redis-stat-0.4.14.jar</span><br></pre></td></tr></table></figure>
+<p>上传Jar包到需要监控的服务器后，运行如下命令(<code>注：服务器防火墙需要开放端口63790</code>)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java -jar redis-stat-0.4.14.jar --server --auth&#x3D;redis密码</span><br></pre></td></tr></table></figure>
+
+<p>最后浏览器输入访问地址即可</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;Redis IP:63790</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>用法与参数描述</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># redis-stat [HOST[:PORT][&#x2F;PASS] ...] [INTERVAL [COUNT]]</span><br><span class="line">.&#x2F;redis-stat localhost:6380  --server&#x3D;url:端口号 --verbose  1</span><br></pre></td></tr></table></figure>
+<p>选项参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-a, --auth&#x3D;PASSWORD             设置密码</span><br><span class="line">-v, --verbose                   显示更多信息</span><br><span class="line">    --style&#x3D;STYLE               输出编码类型: unicode|ascii</span><br><span class="line">    --no-color                  取消ANSI颜色编码</span><br><span class="line">    --csv&#x3D;OUTPUT_CSV_FILE_PATH  以CSV格式存储结果</span><br><span class="line">    --es&#x3D;ELASTICSEARCH_URL      把结果发送到 ElasticSearch: [http:&#x2F;&#x2F;]HOST[:PORT][&#x2F;INDEX]</span><br><span class="line">    --server[&#x3D;PORT]             运行redis-stat的web server (默认端口号: 63790)</span><br><span class="line">    --daemon                    使得redis-stat成为进程。必须使用 --server 选项      </span><br><span class="line">    --version                   显示版本号</span><br><span class="line">    --help                      显示帮助信息</span><br></pre></td></tr></table></figure>
+
+
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/01/05/ByW5q1Cj46hoR2H.png" alt=""></p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>time</td>
+<td>更新参数时间</td>
+</tr>
+<tr>
+<td>us（used_cpu_user）</td>
+<td>Redis 服务器使用的用户 CPU</td>
+</tr>
+<tr>
+<td>sy（used_cpu_sys）</td>
+<td>Redis 服务器使用的系统 CPU</td>
+</tr>
+<tr>
+<td>cl（connected_clients）</td>
+<td>客户端连接数（不包括从站的连接数）</td>
+</tr>
+<tr>
+<td>bcl（blocked_clients）</td>
+<td>阻塞呼叫中挂起的客户端数量（BLPOP，BRPOP，BRPOPLPUSH）</td>
+</tr>
+<tr>
+<td>mem（used_memory）</td>
+<td>Redis 使用其分配程序分配的字节总数（标准 libc，jemalloc 或替代分配程序，如 tcmalloc</td>
+</tr>
+<tr>
+<td>rss（used_memory_rss）</td>
+<td>从操作系统的角度，返回Redis已分配的内存总量（俗称常驻集大小）。这个值和top、ps等命令的输出一致，包含了used_memory和内存碎片,从系统角度,显示Redis进程占用的物理内存总量.</td>
+</tr>
+<tr>
+<td>keys</td>
+<td>保存的键大小</td>
+</tr>
+<tr>
+<td>cmd/s（total_commands_processed_per_ses）</td>
+<td>服务器已每秒执行的命令数量</td>
+</tr>
+<tr>
+<td>exp/s（expired_keys_per_second）</td>
+<td>因为过期而每秒被自动删除的数据库键数量</td>
+</tr>
+<tr>
+<td>evt/s（evicted_keys_per_second）</td>
+<td>因为最大内存容量限制而每秒被驱逐（evict）的键数量</td>
+</tr>
+<tr>
+<td>hit%/s（keyspace_hits_ratio_per_second）</td>
+<td>查找数据库键成功的次数比例</td>
+</tr>
+<tr>
+<td>hit/s（keyspace_hits_per_second）</td>
+<td>查找数据库键成功的次数</td>
+</tr>
+<tr>
+<td>mis/s（keyspace_misses_per_second）</td>
+<td>查找数据库键每秒失败的次数</td>
+</tr>
+<tr>
+<td>aofcs（aof_current_size）</td>
+<td>AOF 文件目前的大小</td>
+</tr>
+</tbody></table>
+<h3 id="redis-faina"><a href="#redis-faina" class="headerlink" title="redis-faina"></a>redis-faina</h3><p><code>使用redis自带命令monitor的输出结果做分析的python脚本</code>，在命令行下使用，可以做实时分析使用。</p>
+<ul>
+<li>安装</li>
+</ul>
+<p>该工具是用python写的，不需要安装什么依赖包，只需要将redis-faina.py下载即可：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;facebookarchive&#x2F;redis-faina.git</span><br></pre></td></tr></table></figure>
+
+<p>用法与选项参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># cd redis-faina&#x2F;</span><br><span class="line"># .&#x2F;redis-faina.py -h</span><br><span class="line">usage: redis-faina.py [-h] [--prefix-delimiter PREFIX_DELIMITER] [--redis-version REDIS_VERSION] [input]</span><br><span class="line"></span><br><span class="line">位置参数:</span><br><span class="line">  input                 文件解析</span><br><span class="line">可选参数:</span><br><span class="line">  -h, --help            显示帮助信息并退出</span><br><span class="line">  --prefix-delimiter PREFIX_DELIMITER</span><br><span class="line">                        统计前缀的key的数据</span><br><span class="line">  --redis-version REDIS_VERSION</span><br><span class="line">                        被监控的redis服务器的版本号</span><br></pre></td></tr></table></figure>
+
+<p>redis-faina的两种用法：</p>
+<ul>
+<li>通过redis MONITOR命令以及管道进行分析</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># redis-cli -p port MONITOR | head -n &lt;NUMBER OF LINES TO ANALYZE&gt; | ./redis-faina.py [options]</span></span><br><span class="line">redis-cli -p 6379 MONITOR | head -n &lt;10000&gt; | ./redis-faina.py --prefix-delimiter 前缀字符串</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>读取文件中MONITOR日志进行分析</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">redis-cli -p port MONITOR | head -n &lt;10000&gt; &gt; 导出的文件路径</span><br><span class="line">./redis-faina.py 导出的文件路径</span><br></pre></td></tr></table></figure>
+<p>输出如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Overall Stats</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">Lines Processed  10000      -- 总命令数</span><br><span class="line">Commands&#x2F;Sec     274.73     -- qps</span><br><span class="line">Top Prefixes   #按照key的前缀统计</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">testcache-rendsord-lang        1684(16.84%)</span><br><span class="line">testcache-inuanGoods-id        1090(10.90%)</span><br><span class="line">testcache-riceroup-cat_id      307 (3.07%)</span><br><span class="line">testcache-ategorynfo-id        190 (1.90%)</span><br><span class="line">testcache-ategoryey-lang       189 (1.89%)</span><br><span class="line">testcache-earchtrremplate-id  61  (0.61%)</span><br><span class="line">testcache-riceroup-id          15  (0.15%)</span><br><span class="line">testcache-otordata-lang       9   (0.09%)</span><br><span class="line">Top Keys     #请求最频繁的key</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">testcache-acebookhareandsave  2373(23.73%)</span><br><span class="line">testcache-hippingFee           2198(21.98%)</span><br><span class="line">testcache-rendsord-lang:en    1464(14.64%)</span><br><span class="line">testcache-ountryurrency       1181(11.81%)</span><br><span class="line">testcache-inuanoods          442 (4.42%)</span><br><span class="line">testcache-ategoryey-lang:     183 (1.83%)</span><br><span class="line">testcache-rendsord-lang:es    124 (1.24%)</span><br><span class="line">testcache-inuanoods-id:68    114 (1.14%)</span><br><span class="line">Top Commands     # 执行最频繁的命令</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">GET      9957(99.57%)</span><br><span class="line">AUTH     13  (0.13%)</span><br><span class="line">COMMAND  13  (0.13%)</span><br><span class="line">SADD     10  (0.10%)</span><br><span class="line">info     5   (0.05%)</span><br><span class="line">SET      1   (0.01%)</span><br><span class="line">Command Time (microsecs)    # 命令执行时长</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">Median  2309.0</span><br><span class="line">75%     4959.75</span><br><span class="line">90%     8447.0</span><br><span class="line">99%     18482.0</span><br><span class="line">Heaviest Commands (microsecs)    #耗时最多的命令</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">GET      36281717.75</span><br><span class="line">COMMAND  85269.25</span><br><span class="line">SADD     17985.75</span><br><span class="line">info     10698.5</span><br><span class="line">SET      3228.0</span><br><span class="line">AUTH     625.5</span><br><span class="line">Slowest Calls     #执行最慢的命令</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">179962.0  &quot;GET&quot; &quot;testcache-hippingee&quot;</span><br><span class="line">62659.0   &quot;GET&quot; &quot;testcache-romotionullateeduce&quot;</span><br><span class="line">44902.0   &quot;GET&quot; &quot;testcache-hippingee&quot;</span><br><span class="line">40305.25  &quot;GET&quot; &quot;testcache-hippingee&quot;</span><br><span class="line">39559.0   &quot;GET&quot; &quot;testcache-hippingee&quot;</span><br><span class="line">36831.25  &quot;GET&quot; &quot;testcache-hippingee&quot;</span><br><span class="line">33852.0   &quot;GET&quot; &quot;testcache-hippingee&quot;</span><br><span class="line">33501.0   &quot;GET&quot; &quot;testcache-hippingee&quot;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注：由于redis MONITOR输出的只有请求开始的时间，所以在一个非常繁忙的redis实例中，根据该请求的开始时间以及下一个请求的开始时间，可以大概估算出一个请求的执行时间。由此可以看出，<code>redis-faina统计的时间并不是十分精确的</code>，尤其在分析一个非常闲的redis实例时，分析的结果可能差的很多</p>
+</blockquote>
+<h3 id="redislive"><a href="#redislive" class="headerlink" title="redislive"></a>redislive</h3><p>RedisLive是由python编写的开源<code>图形化监控工具</code>，非常轻量级，核心服务部分只包含一个web服务和一个基于redis自带的info命令以及monitor命令的监控服务。</p>
+<p>工作原理基于 Redis 的 INFO 和 MONITOR 命令，通过向 Redis 实例发送 INFO 和 MONITOR 命令来获取Redis实例当前的运行数据。</p>
+<p>还支持多实例监控，切换方便，而且配置起来也非常容易。<code>监控信息支持redis存储和持久化存储(sqlite)两种方式</code>。</p>
+<ul>
+<li>安装pip工具</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install epel-release -y</span><br><span class="line">yum install python-pip -y</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>下载源码</li>
+</ul>
+<p>通过 Git 下载最新的 RedisLive 源代码：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/kumarnitin/RedisLive.git</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>安装python依赖包</li>
+</ul>
+<p>进入RedisLive 目录，查看requirements.txt 文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">argparse==1.2.1</span><br><span class="line">python-dateutil==1.5</span><br><span class="line">redis</span><br><span class="line">tornado==2.1.1</span><br></pre></td></tr></table></figure>
+<p>RedisLive 依赖的 Python 扩展包都已经写在 requirements.txt 文件中了。<code>指定豆瓣源来安装python依赖包</code></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>修改配置文件</li>
+</ul>
+<p>进入 RedisLive/src 目录，可以看到 redis-live.conf.example文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">"RedisServers"</span>:</span><br><span class="line">    [ </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"server"</span>: <span class="string">"154.17.59.99"</span>,</span><br><span class="line">            <span class="string">"port"</span> : 6379</span><br><span class="line">        &#125;,</span><br><span class="line"></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"server"</span>: <span class="string">"localhost"</span>,</span><br><span class="line">            <span class="string">"port"</span> : 6380,</span><br><span class="line">            <span class="string">"password"</span> : <span class="string">"some-password"</span></span><br><span class="line">        &#125;       </span><br><span class="line">    ],</span><br><span class="line"></span><br><span class="line">    <span class="string">"DataStoreType"</span> : <span class="string">"redis"</span>,</span><br><span class="line"></span><br><span class="line">    <span class="string">"RedisStatsServer"</span>:</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">"server"</span> : <span class="string">"ec2-184-72-166-144.compute-1.amazonaws.com"</span>,</span><br><span class="line">        <span class="string">"port"</span> : 6385</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="string">"SqliteStatsStore"</span> :</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">"path"</span>:  <span class="string">"to your sql lite file"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>RedisServers</td>
+<td>监控的 Redis 实例列表，RedisLive 支持同时监控多个 Redis 实例</td>
+</tr>
+<tr>
+<td>RedisStatsServer</td>
+<td>用来存储监控数据的 Redis 实例，此配置不同于 RedisServers，RedisLive 并不监控 RedisStatsServer，RedisStatsServer 只是用作存储监控数据使用</td>
+</tr>
+<tr>
+<td>DataStoreType</td>
+<td>监控数据的存储方案，可以配置为redis或者sqlite</td>
+</tr>
+<tr>
+<td>SqliteStatsStore</td>
+<td>存储监控数据的 sqlite 配置</td>
+</tr>
+</tbody></table>
+<p>复制redis-live.conf.example文件，并命名为redis-live.conf</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cp redis-live.conf.example redis-live.conf</span><br></pre></td></tr></table></figure>
+
+<p>编辑redis-live.conf文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">"RedisServers"</span>:        </span><br><span class="line">    [ 	<span class="comment"># 这里可以配置多个server</span></span><br><span class="line">        &#123;</span><br><span class="line">              <span class="string">"server"</span>: <span class="string">"127.0.0.1"</span>,                <span class="comment">#redis监听地址，此处为本机</span></span><br><span class="line">              <span class="string">"port"</span> : 6379,                        <span class="comment">#redis端口号</span></span><br><span class="line">              <span class="string">"password"</span> : <span class="string">"redispassword"</span>          <span class="comment">#redis认证密码</span></span><br><span class="line">        &#125;        </span><br><span class="line">    ],</span><br><span class="line">    <span class="comment"># 如果没有redis，可以换成sqlite</span></span><br><span class="line">    <span class="string">"DataStoreType"</span> : <span class="string">"redis"</span>,        </span><br><span class="line"></span><br><span class="line">    <span class="string">"RedisStatsServer"</span>:    </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">"server"</span> : <span class="string">"127.0.0.1"</span>,</span><br><span class="line">        <span class="string">"port"</span> : 6379,</span><br><span class="line">        <span class="string">"password"</span> : <span class="string">"redispassword"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    </span><br><span class="line">    <span class="string">"SqliteStatsStore"</span> :</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">"path"</span>:  <span class="string">"db/redislive.sqlite"</span>    <span class="comment">#redis数据文件</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>启动服务</li>
+</ul>
+<p>RedisLive 的运行包括两个部分（在 RedisLive/src 目录），<code>redis-monitor.py</code>用于向 Redis 实例发送 INFO 和 MONITOR 命令并获取其返回，<code>redis-live.py</code>用于运行 Web 服务器</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 启动监控，duration是心跳时间 &amp;放置在后台执行</span></span><br><span class="line">./redis-monitor.py --duration=30 &amp;    </span><br><span class="line"><span class="comment"># 启动web服务，默认监听8888端口，可以进行修改</span></span><br><span class="line">./redis-live.py</span><br></pre></td></tr></table></figure>
+
+<p>duration参数指定了监控脚本的运行持续时间，例如设置为 30 秒，即经过 30 秒后，监控脚本会自动退出，并在终端打印 shutting down… 的提示。可以采用 crontab 来定时执行脚本任务：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 每5分钟进入/RedisLive/src/目录，执行启动监控脚本，并设置心跳时间为 30 秒</span></span><br><span class="line">*/5 * * * * <span class="built_in">cd</span> /RedisLive/src/; ./redis-monitor.py --duration 30 &gt;/dev/null 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>&gt;/dev/null 2&gt;&amp;1</code>的含义？</p>
+<ul>
+<li><code>&gt;</code>符号为重定向；</li>
+<li><code>/dev/null</code>代表空设备文件；</li>
+<li><code>1</code> 表示标准输出，默认为1，所以 <code>&quot;&gt;/dev/null&quot;</code> 等同于 <code>&quot;1&gt;/dev/null&quot;</code>；</li>
+<li><code>2</code> 表示标准错误；</li>
+<li><code>&amp;</code>表示等同于的意思，<code>2&gt;&amp;1</code>表示2的输出重定向等同于1;</li>
+</ul>
+<p><code>&gt;/dev/null 2&gt;&amp;1</code>的意思就是：标准输出重定向到空设备文件，也就是<code>不输出任何信息到终端</code>；标准错误输出重定向等同于标准输出,因为之前标准输出已经重定向到了空设备文件，所以标准错误输出也重定向到空设备文件。</p>
+</blockquote>
+<p>打开浏览器，在地址栏输入 <code>http://localhost:8888/index.html</code>，便可以看到 Redis 实例的监控数据。</p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/01/05/4Ok5BsH7jqSUbtW.png" alt=""></p>
+<h3 id="redis-cli"><a href="#redis-cli" class="headerlink" title="redis-cli"></a>redis-cli</h3><h4 id="slowlog"><a href="#slowlog" class="headerlink" title="slowlog"></a>slowlog</h4><p>slowlog是redis用于记录记录慢查询执行时间的日志系统。由于slowlog只保存在内存中，因此slowlog的效率很高，完全不用担心会影响到redis的性能。Slowlog是Redis从2.2.12版本引入的一条命令。</p>
+<p>在redis.conf中有关于slowlog的设置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 只有query执行时间大于slowlog-log-slower-than的才会定义成慢查询，才被slowlog进行记录，单位：微秒，默认是10000微妙，也就是10ms </span><br><span class="line">slowlog-log-slower-than 10000</span><br><span class="line"># 表示慢查询最大的条数，当slowlog超过设定的最大值后，会将最早的slowlog删除，是个FIFO队列</span><br><span class="line">slowlog-max-len 100</span><br></pre></td></tr></table></figure>
+
+<p>用法：</p>
+<ul>
+<li>get：获取慢查询日志，也可以使用SLOWLOG GET N命令获取指定的条数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; SLOWLOG GET 1</span><br><span class="line">1) 1) (integer) 26            &#x2F;&#x2F; slowlog唯一编号id</span><br><span class="line">   2) (integer) 1440057815    &#x2F;&#x2F; 查询的时间戳</span><br><span class="line">   3) (integer) 47            &#x2F;&#x2F; 查询的耗时（微妙），如表示本条命令查询耗时47微秒</span><br><span class="line">   4) 1) &quot;SLOWLOG&quot;            &#x2F;&#x2F; 查询命令，完整命令为 SLOWLOG GET，slowlog最多保存前面的31个key和128字符</span><br><span class="line">      2) &quot;GET&quot;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>len：获取慢查询日志条目数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; SLOWLOG LEN</span><br><span class="line">(integer) 4</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>reset：重置慢查询日志</li>
+</ul>
+<h4 id="info"><a href="#info" class="headerlink" title="info"></a>info</h4><p>可以一次性获取所有的信息，也可以按块获取信息</p>
+<table>
+<thead>
+<tr>
+<th>块信息</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>server</td>
+<td>服务器运行的环境参数</td>
+</tr>
+<tr>
+<td>clients</td>
+<td>已连接客户端信息</td>
+</tr>
+<tr>
+<td>memory</td>
+<td>服务器运行内存统计数据</td>
+</tr>
+<tr>
+<td>persistence</td>
+<td>RDB 和 AOF 持久化的相关信息</td>
+</tr>
+<tr>
+<td>stats</td>
+<td>一般统计数据</td>
+</tr>
+<tr>
+<td>Replication</td>
+<td>主从复制相关信息</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>CPU使用情况</td>
+</tr>
+<tr>
+<td>cluster</td>
+<td>集群信息</td>
+</tr>
+<tr>
+<td>keyspace</td>
+<td>数据库相关的统计信息息</td>
+</tr>
+</tbody></table>
+<p>终端info命令使用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;redis-cli info 按块获取信息 | grep 需要过滤的参数</span><br></pre></td></tr></table></figure>
+
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/01/06/AsGgvfFMzdLEHjV.png" alt=""></p>
+<blockquote>
+<p>在理想情况下， <code>used_memory_rss 的值应该只比 used_memory稍微高一点儿</code>。</p>
+<ul>
+<li>当 <code>rss &gt; used</code> ，且两者的值相差较大时，表示存在（内部或外部的）内存碎片。内存碎片的比率可以通过 <code>mem_fragmentation_ratio</code> 的值看出。</li>
+<li>当 <code>used &gt; rss</code> 时，表示Redis的部分内存被操作系统换出到交换空间了，在这种情况下，<code>操作可能会产生明显的延迟</code>。</li>
+<li>当 Redis 释放内存时，分配器可能会，也可能不会，将内存返还给操作系统。如果 Redis 释放了内存，却没有将内存返还给操作系统，那么<code>used_memory</code>的值可能和操作系统显示的 Redis 内存占用并不一致。查看 <code>used_memory_peak</code> 的值可以验证这种情况是否发生。</li>
+</ul>
+</blockquote>
 <h1 id="Jedis的基本使用"><a href="#Jedis的基本使用" class="headerlink" title="Jedis的基本使用"></a>Jedis的基本使用</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>Redis不仅是使用命令来操作，现在基本上主流的语言都有客户端支持，比如java、C、C#、C++、php、Node.js、Go等。 在官方网站里列一些Java的客户端，有Jedis、Redisson、Jredis、JDBC-Redis、等其中官方推荐使用Jedis和Redisson。 在企业中用的最多的就是Jedis，Jedis同样也是托管在github上，地址：</p>
 <blockquote>
 <p><a href="https://github.com/xetorthio/jedis" target="_blank" rel="noopener">https://github.com/xetorthio/jedis</a></p>
