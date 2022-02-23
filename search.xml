@@ -13,7 +13,7 @@
       
       <categories>
           
-          <category> Java基础 </category>
+          <category> 数据库 </category>
           
       </categories>
       
@@ -611,9 +611,9 @@
       
         <tags>
             
-            <tag> sirongboot </tag>
+            <tag> SpringBoot </tag>
             
-            <tag> rabbitmq </tag>
+            <tag> RabbitMQ </tag>
             
             <tag> 延迟推送 </tag>
             
@@ -694,7 +694,7 @@
       
         <tags>
             
-            <tag> sirongboot </tag>
+            <tag> SpringBoot </tag>
             
             <tag> 接口加解密 </tag>
             
