@@ -4,6 +4,39 @@
   
     
     <entry>
+      <title>So easy Spring事务回滚机制</title>
+      <link href="/2022/04/27/So%20easy%20Spring%E4%BA%8B%E5%8A%A1%E5%9B%9E%E6%BB%9A%E6%9C%BA%E5%88%B6/"/>
+      <url>/2022/04/27/So%20easy%20Spring%E4%BA%8B%E5%8A%A1%E5%9B%9E%E6%BB%9A%E6%9C%BA%E5%88%B6/</url>
+      
+        <content type="html"><![CDATA[<h1 id="事务控制的3种方式"><a href="#事务控制的3种方式" class="headerlink" title="事务控制的3种方式"></a>事务控制的3种方式</h1><ol><li><code>编程式事务</code>：直接在代码里<code>手动开启事务，手动提交，手动回滚</code>。优点就是可以灵活控制，缺点就是<code>太麻烦了，太多重复的代码了</code>。</li><li><code>声明式事务</code>：就是使用<code>Spring Aop配置事务</code>，这种方式简化了编码。需要注意的是切入点表达式一定要写正确。</li><li><code>注解事务</code>：直接在Service层的方法上面加上<code>@Transactional注解</code>，最简单方便的方式。</li></ol><h1 id="伪代码"><a href="#伪代码" class="headerlink" title="伪代码"></a>伪代码</h1><p><code>排序往后的方法报错，导致排序前的方法不回滚</code>，如下：<code>updataFlag</code>方法出错，<code>analyseRedBall</code> 和 <code>analyseBlueBall</code> 方法不会回滚</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">statistics</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="comment">// 三个子方法中有操作数据库方法</span></span><br><span class="line">    analyseRedBall(periods, redBalls);</span><br><span class="line">    analyseBlueBall(periods, blueBalls);</span><br><span class="line"></span><br><span class="line">    updataFlag(periods);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h1 id="为什么不会滚呢"><a href="#为什么不会滚呢" class="headerlink" title="为什么不会滚呢"></a>为什么不会滚呢</h1><p><code>Spring默认情况</code>下是捕获到方法的<code>RuntimeException</code>异常，也就是说只要属于<code>RuntimeException</code>异常或<code>及其子类</code>都能回滚。不属于运行时异常时，事务不回滚的。</p><h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><h2 id="声明式事务"><a href="#声明式事务" class="headerlink" title="声明式事务"></a>声明式事务</h2><p><code>确保切入点表达式</code>书写正确，如在配置里面添加rollback-for</p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;tx:method name&#x3D;&quot;update*&quot; propagation&#x3D;&quot;REQUIRED&quot; rollback-for&#x3D;&quot;java.lang.Exception&quot;&#x2F;&gt;</span><br></pre></td></tr></table></figure><h2 id="注解事务"><a href="#注解事务" class="headerlink" title="注解事务"></a>注解事务</h2><h3 id="使用位置"><a href="#使用位置" class="headerlink" title="使用位置"></a>使用位置</h3><blockquote><ol><li><code>类上</code>：该类的所有<code>public 方法</code>将都具有务属性</li><li><code>方法上</code>：只能应用到 public 方法上，这是由Spring AOP的本质决定的，如果在 <code>protected、private</code> 或者<code>默认可见性的方法上</code>使用 @Transactional 注解，将被忽略，也不会抛出任何异常。</li><li><code>接口、接口方法上</code>：接口实现类或接口实现方法可继承事务属性，<code>Spring 建议不要在接口或者接口方法上使用该注解，因为这只有在使用基于接口的代理时它才会生效</code></li></ol></blockquote><h3 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h3><p>将Spring默认的<code>RuntimeException</code>异常修改为<code>Exception</code>异常，可以保证任何异常都可以回滚。</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Transactional</span>(rollbackFor = Exception<span class="class">.<span class="keyword">class</span>)</span></span><br></pre></td></tr></table></figure><p>或指定多个异常</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Transactional</span>(rollbackFor = &#123;Exception<span class="class">.<span class="keyword">class</span>, <span class="title">RuntimeException</span>.<span class="title">class</span>&#125;)</span></span><br></pre></td></tr></table></figure><p>如上述实例修改为</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Transactional</span>(rollbackFor = Exception<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">void</span> <span class="title">statistics</span>() </span>&#123;</span><br><span class="line"><span class="comment">// 在statistics 父方法上使用事务注解，即可保证发生异常后，三个子方法事务全部回滚(子方法上不再需要写上事务注解@Transactional)</span></span><br><span class="line">    analyseRedBall(periods, redBalls);</span><br><span class="line">    analyseBlueBall(periods, blueBalls);</span><br><span class="line"></span><br><span class="line">    updataFlag(periods);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h3 id="异常抛出"><a href="#异常抛出" class="headerlink" title="异常抛出"></a>异常抛出</h3><p>在catch语句中<code>抛出异常</code>，以便让<code>Aop捕获异常执行回滚事务</code>，如下伪代码</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Transactional</span>(rollbackFor = Exception<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">void</span> <span class="title">statistics</span>() </span>&#123;</span><br><span class="line">    analyseRedBall(periods, redBalls);</span><br><span class="line">    analyseBlueBall(periods, blueBalls);</span><br><span class="line"></span><br><span class="line">    updataFlag(periods);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">analyseRedBall</span><span class="params">(List&lt;Period&gt; periods, List&lt;RedBall&gt; redBalls)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="comment">// ...逻辑代码</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="手动事务"><a href="#手动事务" class="headerlink" title="手动事务"></a>手动事务</h2><p><code>配合事务注解@Transactional</code>，手动处理事务回滚</p><h3 id="设置回滚代码"><a href="#设置回滚代码" class="headerlink" title="设置回滚代码"></a>设置回滚代码</h3><p>在<code>catch语句中设置回滚代码</code>来实现回滚，此方法在抛出异常后也能return 返回值，适合需要拿到返回值的场景</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"> <span class="meta">@Transactional</span>(rollbackFor = Exception<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"> <span class="title">public</span> <span class="title">boolean</span> <span class="title">statistics</span>() </span>&#123;</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">analyseRedBall(periods, redBalls);</span><br><span class="line">     analyseBlueBall(periods, blueBalls);</span><br><span class="line"></span><br><span class="line">     updataFlag(periods);</span><br><span class="line">     &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">         <span class="comment">// 加上此句，则不再需要手动抛出指定异常</span></span><br><span class="line">         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); </span><br><span class="line">         <span class="keyword">return</span> fales; </span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure><h3 id="设置回滚点"><a href="#设置回滚点" class="headerlink" title="设置回滚点"></a>设置回滚点</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 方法返回的是object类型，o 为回滚点变量名</span></span><br><span class="line">Object o = TransactionAspectSupport.currentTransactionStatus().createSavepoint();</span><br><span class="line"><span class="comment">// ...逻辑代码</span></span><br><span class="line">TransactionAspectSupport.currentTransactionStatus().rollbackToSavepoint(o);</span><br></pre></td></tr></table></figure><h2 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h2><p><strong><code>到此之前，代码无误，那为什么 Spring 或 SpringBoot 的事务回滚还是没有任何效果呢？</code></strong></p><blockquote><p>数据库肯定是<code>MySQL</code>，那<code>表的存储引擎，也要支持事务安全才行</code>，最重要，也是最多人忽视的地方；<code>InnoDB 和 BDB 提供事务安全表，其他存储引擎都是非事务安全表</code></p></blockquote><p><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/img_convert/9b680b0fd18352905bc8a096da69d13d.png" alt="微信图片_20220427163024.png"></p><blockquote><p>注：<code>Oracleb不存在存储引擎的概念</code>，数据处理大致可以分成两大类：<code>联机事务处理OLTP</code>（on-line transaction processing）、<code>联机分析处理OLAP</code>（On-Line Analytical Processing）。</p><ul><li>OLTP是<code>传统的关系型数据库</code>的主要应用，主要是基本的、日常的事务处理，例如银行交易。<code>强调数据库内存效率，强调内存各种指标的命令率，强调绑定变量，强调并发操作</code></li><li>OLAP是<code>数据仓库系统</code>的主要应用，支持复杂的分析操作，侧重决策支持，并且提供直观易懂的查询结果。<code>强调数据分析，强调SQL执行市场，强调磁盘I/O，强调分区等</code></li></ul></blockquote>]]></content>
+      
+      
+      <categories>
+          
+          <category> 数据库 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 事务回滚 </tag>
+            
+            <tag> 编程式 </tag>
+            
+            <tag> 声明式 </tag>
+            
+            <tag> Transactional </tag>
+            
+            <tag> 存储引擎 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Caddy超越Nginx，下一代Web服务器？</title>
       <link href="/2022/04/11/Caddy%E8%B6%85%E8%B6%8ANginx%EF%BC%8C%E4%B8%8B%E4%B8%80%E4%BB%A3Web%E6%9C%8D%E5%8A%A1%E5%99%A8/"/>
       <url>/2022/04/11/Caddy%E8%B6%85%E8%B6%8ANginx%EF%BC%8C%E4%B8%8B%E4%B8%80%E4%BB%A3Web%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
@@ -224,13 +257,13 @@
       
         <tags>
             
+            <tag> Transactional </tag>
+            
             <tag> lock </tag>
             
             <tag> unlock </tag>
             
             <tag> Spring </tag>
-            
-            <tag> Transactional </tag>
             
             <tag> rollbackOnly </tag>
             
