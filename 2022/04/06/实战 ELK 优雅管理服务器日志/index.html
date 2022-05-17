@@ -1,110 +1,152 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>实战 ELK 优雅管理服务器日志 | 灵熙云工作室</title><meta name="description" content="简介在后端开发日常工作中，定位排查问题或是了解系统某些方面的情况时，会遇到以下的场景：   查询接口请求的日志。 查询服务的日志。 统计接口的每日调用数量以及时间分布。 统计接口每日的用户数量。   ELK（Elasticsearch + Logstash + Kibana）平台很好的完成了上述工作，并且提供了友好便利的用户界面，普遍应用于生产日志的查询分析中。ELK一句话概括：用Logstash"><meta name="keywords" content="Elasticsearch,Logstash,Kibana,Filebeat,集中式日志"><meta name="author" content="灵熙云,minkeyto@qq.com"><meta name="copyright" content="灵熙云"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/file/favicon.png"><link rel="canonical" href="http://www.goitman.cn/2022/04/06/%E5%AE%9E%E6%88%98%20ELK%20%E4%BC%98%E9%9B%85%E7%AE%A1%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%A5%E5%BF%97/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preconnect" href="//zz.bdstatic.com"/><meta property="og:type" content="article"><meta property="og:title" content="实战 ELK 优雅管理服务器日志"><meta property="og:url" content="http://www.goitman.cn/2022/04/06/%E5%AE%9E%E6%88%98%20ELK%20%E4%BC%98%E9%9B%85%E7%AE%A1%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%A5%E5%BF%97/"><meta property="og:site_name" content="灵熙云工作室"><meta property="og:description" content="简介在后端开发日常工作中，定位排查问题或是了解系统某些方面的情况时，会遇到以下的场景：   查询接口请求的日志。 查询服务的日志。 统计接口的每日调用数量以及时间分布。 统计接口每日的用户数量。   ELK（Elasticsearch + Logstash + Kibana）平台很好的完成了上述工作，并且提供了友好便利的用户界面，普遍应用于生产日志的查询分析中。ELK一句话概括：用Logstash"><meta property="og:image" content="https://s2.loli.net/2022/04/07/NOCjUTqIv1XhwkL.jpg"><meta property="article:published_time" content="2022-04-06T01:53:47.256Z"><meta property="article:modified_time" content="2022-04-15T09:00:32.534Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
-  document.documentElement.setAttribute('data-theme', 'dark')
-  if (document.querySelector('meta[name="theme-color"]') !== null) {
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
-  }
-}
-var activateLightMode = function () {
-  document.documentElement.setAttribute('data-theme', 'light')
-  if (document.querySelector('meta[name="theme-color"]') !== null) {
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
-  }
-}
-
-var getCookies = function (name) {
-  const value = `; ${document.cookie}`
-  const parts = value.split(`; ${name}=`)
-  if (parts.length === 2) return parts.pop().split(';').shift()
-}
-
-var autoChangeMode = 'false'
-var t = getCookies('theme')
-if (autoChangeMode === '1') {
-  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
-  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
-  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
-
-  if (t === undefined) {
-    if (isLightMode) activateLightMode()
-    else if (isDarkMode) activateDarkMode()
-    else if (isNotSpecified || hasNoSupport) {
-      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
-      var now = new Date()
-      var hour = now.getHours()
-      var isNight = hour <= 6 || hour >= 18
-      isNight ? activateDarkMode() : activateLightMode()
-    }
-    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
-      if (Cookies.get('theme') === undefined) {
-        e.matches ? activateDarkMode() : activateLightMode()
-      }
-    })
-  } else if (t === 'light') activateLightMode()
-  else activateDarkMode()
-} else if (autoChangeMode === '2') {
-  now = new Date()
-  hour = now.getHours()
-  isNight = hour <= 6 || hour >= 18
-  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
-  else if (t === 'light') activateLightMode()
-  else activateDarkMode()
-} else {
-  if (t === 'dark') activateDarkMode()
-  else if (t === 'light') activateLightMode()
-}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="prev" title="Supervisor安装与配置" href="http://www.goitman.cn/2022/04/07/Supervisor%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/"><link rel="next" title="用好SpringBoot内置工具类" href="http://www.goitman.cn/2022/03/22/%E7%94%A8%E5%A5%BDSpringBoot%E5%86%85%E7%BD%AE%E5%B7%A5%E5%85%B7%E7%B1%BB/"><script>var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?5c009f46ba6df7bc385f101477536214";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
-</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>实战 ELK 优雅管理服务器日志 | 灵熙云工作室</title><meta name="keywords" content="Elasticsearch,Logstash,Kibana,Filebeat,集中式日志"><meta name="author" content="灵熙云,minkeyto@qq.com"><meta name="copyright" content="灵熙云"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="简介在后端开发日常工作中，定位排查问题或是了解系统某些方面的情况时，会遇到以下的场景：   查询接口请求的日志。 查询服务的日志。 统计接口的每日调用数量以及时间分布。 统计接口每日的用户数量。   ELK（Elasticsearch + Logstash + Kibana）平台很好的完成了上述工作，并且提供了友好便利的用户界面，普遍应用于生产日志的查询分析中。ELK一句话概括：用Logstash">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实战 ELK 优雅管理服务器日志">
+<meta property="og:url" content="http://www.goitman.cn/2022/04/06/%E5%AE%9E%E6%88%98%20ELK%20%E4%BC%98%E9%9B%85%E7%AE%A1%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%A5%E5%BF%97/index.html">
+<meta property="og:site_name" content="灵熙云工作室">
+<meta property="og:description" content="简介在后端开发日常工作中，定位排查问题或是了解系统某些方面的情况时，会遇到以下的场景：   查询接口请求的日志。 查询服务的日志。 统计接口的每日调用数量以及时间分布。 统计接口每日的用户数量。   ELK（Elasticsearch + Logstash + Kibana）平台很好的完成了上述工作，并且提供了友好便利的用户界面，普遍应用于生产日志的查询分析中。ELK一句话概括：用Logstash">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2022/04/07/NOCjUTqIv1XhwkL.jpg">
+<meta property="article:published_time" content="2022-04-06T01:53:47.256Z">
+<meta property="article:modified_time" content="2022-04-15T09:00:32.534Z">
+<meta property="article:author" content="灵熙云">
+<meta property="article:tag" content="Elasticsearch">
+<meta property="article:tag" content="Logstash">
+<meta property="article:tag" content="Kibana">
+<meta property="article:tag" content="Filebeat">
+<meta property="article:tag" content="集中式日志">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2022/04/07/NOCjUTqIv1XhwkL.jpg"><link rel="shortcut icon" href="/file/favicon.png"><link rel="canonical" href="http://www.goitman.cn/2022/04/06/%E5%AE%9E%E6%88%98%20ELK%20%E4%BC%98%E9%9B%85%E7%AE%A1%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%A5%E5%BF%97/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
   root: '/',
   algolia: undefined,
-  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容:${query}"}},
+  localSearch: {"path":"/search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
   translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
   noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
   copy: {
     success: '复制成功',
     error: '复制错误',
     noSupport: '浏览器不支持'
   },
-  bookmark: {
-    message_prev: '按',
-    message_next: '键将本页加入书签'
+  relativeDate: {
+    homepage: false,
+    post: false
   },
-  runtime_unit: '天',
-  runtime: false,
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
   copyright: undefined,
-  ClickShowText: undefined,
-  medium_zoom: false,
-  fancybox: true,
-  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
-  justifiedGallery: {
-    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
-    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
   },
-  baiduPush: true,
-  highlightCopy: true,
-  highlightLang: true,
   isPhotoFigcaption: false,
   islazyload: true,
-  isanchor: false    
-}</script><script>var GLOBAL_CONFIG_SITE = { 
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '实战 ELK 优雅管理服务器日志',
   isPost: true,
   isHome: false,
   isHighlightShrink: false,
-  isSidebar: true,
+  isToc: false,
   postUpdate: '2022-04-15 17:00:32'
-}</script><noscript><style>
-#nav {
-  opacity: 1
-}
-.justified-gallery img{
-  opacity: 1
-}
-</style></noscript><link rel="stylesheet" href="/css/effect.css"><meta name="generator" content="Hexo 4.2.1"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/file/head.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">35</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">123</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">15</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-list"></i><span> 专题笔记</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/2020/08/17/Redis/"><i class="fa-fw fa fa-file"></i><span> Redis</span></a></li><li><a class="site-page" href="/2021/12/06/Log4j2/"><i class="fa-fw fa fa-file"></i><span> Log4j2</span></a></li><li><a class="site-page" href="/2022/02/08/Sharding-JDBC/"><i class="fa-fw fa fa-file"></i><span> Sharding-JDBC</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div></div></div><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#简介"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#常用架构"><span class="toc-number">2.</span> <span class="toc-text">常用架构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Logstash架构"><span class="toc-number">2.1.</span> <span class="toc-text">Logstash架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#单服务"><span class="toc-number">2.1.1.</span> <span class="toc-text">单服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多服务"><span class="toc-number">2.1.2.</span> <span class="toc-text">多服务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Beats架构"><span class="toc-number">2.2.</span> <span class="toc-text">Beats架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#消息队列架构"><span class="toc-number">2.3.</span> <span class="toc-text">消息队列架构</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#案例实操"><span class="toc-number">3.</span> <span class="toc-text">案例实操</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#软件安装"><span class="toc-number">3.1.</span> <span class="toc-text">软件安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#JDK安装"><span class="toc-number">3.1.1.</span> <span class="toc-text">JDK安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#项目部署"><span class="toc-number">3.1.2.</span> <span class="toc-text">项目部署</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Logstash安装"><span class="toc-number">3.1.3.</span> <span class="toc-text">Logstash安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Elasticsearch安装"><span class="toc-number">3.1.4.</span> <span class="toc-text">Elasticsearch安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kibana安装"><span class="toc-number">3.1.5.</span> <span class="toc-text">Kibana安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#filebeat安装"><span class="toc-number">3.1.6.</span> <span class="toc-text">filebeat安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Supervisor安装"><span class="toc-number">3.1.7.</span> <span class="toc-text">Supervisor安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Logstash单服务部署"><span class="toc-number">3.2.</span> <span class="toc-text">Logstash单服务部署</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Beats部署"><span class="toc-number">3.3.</span> <span class="toc-text">Beats部署</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx代理"><span class="toc-number">3.4.</span> <span class="toc-text">Nginx代理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#基础使用"><span class="toc-number">4.</span> <span class="toc-text">基础使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Filebeat"><span class="toc-number">4.1.</span> <span class="toc-text">Filebeat</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置多个日志路径"><span class="toc-number">4.1.1.</span> <span class="toc-text">配置多个日志路径</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Logstash"><span class="toc-number">4.2.</span> <span class="toc-text">Logstash</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#input"><span class="toc-number">4.2.1.</span> <span class="toc-text">input</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#文件"><span class="toc-number">4.2.1.1.</span> <span class="toc-text">文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#缓存"><span class="toc-number">4.2.1.2.</span> <span class="toc-text">缓存</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Redis-模式"><span class="toc-number">4.2.1.2.1.</span> <span class="toc-text">Redis 模式</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Kafka-模式"><span class="toc-number">4.2.1.2.2.</span> <span class="toc-text">Kafka 模式</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#消息队列"><span class="toc-number">4.2.1.3.</span> <span class="toc-text">消息队列</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Rabbitmq-模式"><span class="toc-number">4.2.1.3.1.</span> <span class="toc-text">Rabbitmq 模式</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#数据库"><span class="toc-number">4.2.1.4.</span> <span class="toc-text">数据库</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#filter"><span class="toc-number">4.2.2.</span> <span class="toc-text">filter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#output"><span class="toc-number">4.2.3.</span> <span class="toc-text">output</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Elasticsearch"><span class="toc-number">4.3.</span> <span class="toc-text">Elasticsearch</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#获取es信息"><span class="toc-number">4.3.1.</span> <span class="toc-text">获取es信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#搜索-Search"><span class="toc-number">4.3.2.</span> <span class="toc-text">搜索(Search)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#统计-Count"><span class="toc-number">4.3.3.</span> <span class="toc-text">统计(Count)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#聚合-Aggregation"><span class="toc-number">4.3.4.</span> <span class="toc-text">聚合(Aggregation)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kibana"><span class="toc-number">4.4.</span> <span class="toc-text">Kibana</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基础查询"><span class="toc-number">4.4.1.</span> <span class="toc-text">基础查询</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#两种过滤方式"><span class="toc-number">4.4.1.1.</span> <span class="toc-text">两种过滤方式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#单字段多词查询"><span class="toc-number">4.4.1.2.</span> <span class="toc-text">单字段多词查询</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#多过滤条件查询"><span class="toc-number">4.4.1.3.</span> <span class="toc-text">多过滤条件查询</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#高级查询"><span class="toc-number">4.4.2.</span> <span class="toc-text">高级查询</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#全文搜索"><span class="toc-number">4.4.2.1.</span> <span class="toc-text">全文搜索</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#字段搜索"><span class="toc-number">4.4.2.2.</span> <span class="toc-text">字段搜索</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#通配符"><span class="toc-number">4.4.2.3.</span> <span class="toc-text">通配符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#模糊搜索"><span class="toc-number">4.4.2.4.</span> <span class="toc-text">模糊搜索</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#近似搜索"><span class="toc-number">4.4.2.5.</span> <span class="toc-text">近似搜索</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#逻辑操作"><span class="toc-number">4.4.2.6.</span> <span class="toc-text">逻辑操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#范围搜索"><span class="toc-number">4.4.2.7.</span> <span class="toc-text">范围搜索</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#转义特殊字符"><span class="toc-number">4.4.2.8.</span> <span class="toc-text">转义特殊字符</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据统计"><span class="toc-number">4.4.3.</span> <span class="toc-text">数据统计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#趋势图绘制"><span class="toc-number">4.4.4.</span> <span class="toc-text">趋势图绘制</span></a></li></ol></li></ol></li></ol></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://s2.loli.net/2022/04/07/NOCjUTqIv1XhwkL.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">灵熙云工作室</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-list"></i><span> 专题笔记</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/2020/08/17/Redis/"><i class="fa-fw fa fa-file"></i><span> Redis</span></a></li><li><a class="site-page" href="/2021/12/06/Log4j2/"><i class="fa-fw fa fa-file"></i><span> Log4j2</span></a></li><li><a class="site-page" href="/2022/02/08/Sharding-JDBC/"><i class="fa-fw fa fa-file"></i><span> Sharding-JDBC</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">实战 ELK 优雅管理服务器日志</div></div><div id="post-meta"><div class="meta-firstline"><time class="post-meta__date"><span class="post-meta__date-created" title="发表于 2022-04-06 09:53:47"><i class="far fa-calendar-alt fa-fw"></i> 发表于 2022-04-06</span><span class="post-meta__separator">|</span><span class="post-meta__date-updated" title="更新于 2022-04-15 17:00:32"><i class="fas fa-history fa-fw"></i> 更新于 2022-04-15</span></time><span class="post-meta__categories"><span class="post-meta__separator">|</span><i class="fas fa-inbox fa-fw post-meta__icon"></i><a class="post-meta__categories" href="/categories/%E6%9C%8D%E5%8A%A1%E5%99%A8/">服务器</a></span></div><div class="meta-secondline"> <span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta__icon"></i><span>字数总计:</span><span class="word-count">8.6k</span><span class="post-meta__separator">|</span><i class="far fa-clock fa-fw post-meta__icon"></i><span>阅读时长: 34 分钟</span></span></div><div class="meta-thirdline"><span class="post-meta-pv-cv"><span class="post-meta__separator">|</span><i class="far fa-eye fa-fw post-meta__icon"></i><span>阅读量:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-commentcount"></span><span class="post-meta__separator">|</span><i class="far fa-comments fa-fw post-meta__icon"></i><span>评论数:</span><a href="/2022/04/06/%E5%AE%9E%E6%88%98%20ELK%20%E4%BC%98%E9%9B%85%E7%AE%A1%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%A5%E5%BF%97/#post-comment" itemprop="discussionUrl"><span class="valine-comment-count comment-count" data-xid="/2022/04/06/%E5%AE%9E%E6%88%98%20ELK%20%E4%BC%98%E9%9B%85%E7%AE%A1%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%A5%E5%BF%97/" itemprop="commentCount"></span></a></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>在后端开发日常工作中，定位排查问题或是了解系统某些方面的情况时，会遇到以下的场景：</p>
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/effect.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/file/head.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">35</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">123</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 专题笔记</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/Redis"><i class="fa-fw /2020/08/17/Redis/"></i><span> 0</span></a></li><li><a class="site-page child" href="/Log4j2"><i class="fa-fw /2021/12/06/Log4j2/"></i><span> 1</span></a></li><li><a class="site-page child" href="/Sharding-JDBC"><i class="fa-fw /2022/02/08/Sharding-JDBC/"></i><span> 2</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://s2.loli.net/2022/04/07/NOCjUTqIv1XhwkL.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">灵熙云工作室</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 专题笔记</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/Redis"><i class="fa-fw /2020/08/17/Redis/"></i><span> 0</span></a></li><li><a class="site-page child" href="/Log4j2"><i class="fa-fw /2021/12/06/Log4j2/"></i><span> 1</span></a></li><li><a class="site-page child" href="/Sharding-JDBC"><i class="fa-fw /2022/02/08/Sharding-JDBC/"></i><span> 2</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">实战 ELK 优雅管理服务器日志</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-04-06T01:53:47.256Z" title="发表于 2022-04-06 09:53:47">2022-04-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-04-15T09:00:32.534Z" title="更新于 2022-04-15 17:00:32">2022-04-15</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%9C%8D%E5%8A%A1%E5%99%A8/">服务器</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">8.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>33分钟</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>在后端开发日常工作中，定位排查问题或是了解系统某些方面的情况时，会遇到以下的场景：</p>
 <blockquote>
 <ol>
 <li>查询接口请求的日志。</li>
@@ -117,7 +159,7 @@ if (autoChangeMode === '1') {
 <ul>
 <li>Logstash</li>
 </ul>
-<p><code>Logstash</code>主要用于<code>收集服务器日志</code>，它是一个开源<code>数据收集引擎</code>，具有<code>实时管道功能</code>。Logstash可以动态地将来自不同数据源的数据统一起来，并将数据标准化到所选择的目的地。</p>
+<p><code>Logstash </code>主要用于<code>收集服务器日志</code>，它是一个开源<code>数据收集引擎</code>，具有<code>实时管道功能</code>。Logstash可以动态地将来自不同数据源的数据统一起来，并将数据标准化到所选择的目的地。</p>
 <blockquote>
 <p>Logstash 收集数据的过程主要分为以下三个部分：</p>
 <ol>
@@ -147,12 +189,12 @@ if (autoChangeMode === '1') {
 <ul>
 <li>Filebeat</li>
 </ul>
-<p>ELK 协议栈的<code>新成员</code>，一个轻量级开源<code>日志文件数据搜集器</code>，基于 Logstash-Forwarder 源代码开发，是对它的替代。在需要采集日志数据的服务器上安装 Filebeat，并指定·日志目录·或·日志文件·后，Filebeat 就能读取数据，迅速<code>发送到 Logstash</code>进行解析，亦或<code>直接发送到 Elasticsearch</code>(日志不需要Logstash过滤拆分时)进行集中式存储和分析。</p>
+<p>ELK 协议栈的<code>新成员</code>，一个轻量级开源<code>日志文件数据搜集器</code>，基于 Logstash-Forwarder 源代码开发，是对它的替代。在需要采集日志数据的服务器上安装 Filebeat，并指定·日志目录·或·日志文件·后，Filebeat 就能读取数据，迅速<code>发送到 Logstash </code>进行解析，亦或<code>直接发送到 Elasticsearch </code>(日志不需要Logstash过滤拆分时)进行集中式存储和分析。</p>
 <p>这四者都是开源软件，通常配合使用，而且又先后归于 <code>Elastic.co</code> 公司名下，所以被简称为 <code>ELK Stack</code>。根据 Google Trend 的信息显示，ELK Stack 已经成为目前最流行的集中式日志解决方案。</p>
-<h1 id="常用架构"><a href="#常用架构" class="headerlink" title="常用架构"></a>常用架构</h1><h2 id="Logstash架构"><a href="#Logstash架构" class="headerlink" title="Logstash架构"></a>Logstash架构</h2><h3 id="单服务"><a href="#单服务" class="headerlink" title="单服务"></a>单服务</h3><p><code>只有一个 Logstash、Elasticsearch 和 Kibana</code>实例。Logstash 通过输入插件从多种数据源（比如日志文件、标准输入 Stdin 等）获取数据，再经过滤插件加工数据，然后经 Elasticsearch 输出插件输出到 Elasticsearch，通过 Kibana 展示。</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/29/fFU7bjOKPz2ZGCA.png" alt=""></p>
+<h1 id="常用架构"><a href="#常用架构" class="headerlink" title="常用架构"></a>常用架构</h1><h2 id="Logstash架构"><a href="#Logstash架构" class="headerlink" title="Logstash架构"></a>Logstash架构</h2><h3 id="单服务"><a href="#单服务" class="headerlink" title="单服务"></a>单服务</h3><p><code>只有一个 Logstash、Elasticsearch 和 Kibana </code>实例。Logstash 通过输入插件从多种数据源（比如日志文件、标准输入 Stdin 等）获取数据，再经过滤插件加工数据，然后经 Elasticsearch 输出插件输出到 Elasticsearch，通过 Kibana 展示。</p>
+<p><img src="https://s2.loli.net/2022/03/29/fFU7bjOKPz2ZGCA.png"></p>
 <h3 id="多服务"><a href="#多服务" class="headerlink" title="多服务"></a>多服务</h3><p>把<code>一个 Logstash 数据搜集节点扩展到多个，分布于多台机器</code>，将解析好的数据发送到 Elasticsearch server 进行存储，最后在 Kibana 查询、生成日志报表等。</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/29/AabmykRZHfFoL2W.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/03/29/AabmykRZHfFoL2W.png"></p>
 <p>这种结构因为需要在各个服务器上部署 Logstash，而它<code>比较消耗 CPU 和内存资源</code>，所以比较适合计算资源丰富的服务器，否则容易造成服务器性能下降，甚至可能导致无法正常工作。</p>
 <h2 id="Beats架构"><a href="#Beats架构" class="headerlink" title="Beats架构"></a>Beats架构</h2><p>这种架构<code>引入 Beats 作为日志搜集器</code>。目前 Beats 包括四种：</p>
 <blockquote>
@@ -164,13 +206,13 @@ if (autoChangeMode === '1') {
 </ol>
 </blockquote>
 <p>Beats 将搜集到的数据发送到 Logstash，经 Logstash 解析、过滤后，将其发送到 Elasticsearch 存储，并由 Kibana 呈现给用户。</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/29/WH9TfmAsocQkEeC.png" alt=""></p>
-<p>这种架构<code>解决了 Logstash 在各服务器节点上占用系统资源高的问题</code>。相比 Logstash，Beats 所占系统的 CPU 和内存几乎可以忽略不计。另外，Beats 和 Logstash 之间支持 SSL/TLS <code>加密传输</code>，客户端和服务器双向认证，保证了通信安全。</p>
+<p><img src="https://s2.loli.net/2022/03/29/WH9TfmAsocQkEeC.png"></p>
+<p>这种架构<code>解决了 Logstash 在各服务器节点上占用系统资源高的问题</code>。相比 Logstash，Beats 所占系统的 CPU 和内存几乎可以忽略不计。另外，Beats 和 Logstash 之间支持 SSL&#x2F;TLS <code>加密传输</code>，客户端和服务器双向认证，保证了通信安全。</p>
 <p>因此这种架构适合<code>对数据安全性要求较高</code>，同时各服务器性能比较敏感的场景。</p>
 <h2 id="消息队列架构"><a href="#消息队列架构" class="headerlink" title="消息队列架构"></a>消息队列架构</h2><p><code>Beats 还不支持输出到消息队列</code>，所以在<code>消息队列两端只能是 Logstash 实例</code>。这种架构使用 Logstash 从各个数据源搜集数据，然后经消息队列输出插件输出到消息队列中。目前 <code>Logstash 支持 Kafka、Redis、RabbitMQ 等常见消息队列</code>。然后 Logstash 通过消息队列输入插件从队列中获取数据，分析过滤后经输出插件发送到 Elasticsearch，最后通过 Kibana 展示。</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/29/Guja13iBIkSXKTw.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/03/29/Guja13iBIkSXKTw.png"></p>
 <p>这种架构适合于日志规模比较庞大的情况。但由于 <code>Logstash 日志解析节点和 Elasticsearch 的负荷比较重</code>，可将他们配置为<code>集群模式</code>，以分担负荷。引入消息队列，<code>均衡了网络传输，从而降低了网络闭塞，尤其是丢失数据的可能性</code>，但依然<code>存在 Logstash 占用系统资源过多的问题</code>。</p>
-<h1 id="案例实操"><a href="#案例实操" class="headerlink" title="案例实操"></a>案例实操</h1><p>elastic 官网下载地址：<a href="https://www.elastic.co/cn/downloads/" target="_blank" rel="noopener">https://www.elastic.co/cn/downloads/</a></p>
+<h1 id="案例实操"><a href="#案例实操" class="headerlink" title="案例实操"></a>案例实操</h1><p>elastic 官网下载地址：<a target="_blank" rel="noopener" href="https://www.elastic.co/cn/downloads/">https://www.elastic.co/cn/downloads/</a></p>
 <blockquote>
 <p>安装环境及版本：</p>
 <ul>
@@ -188,15 +230,15 @@ if (autoChangeMode === '1') {
 <li>下载</li>
 </ul>
 <blockquote>
-<p>JDK <a href="https://www.oracle.com/java/technologies/downloads/#java8" target="_blank" rel="noopener">官网下载地址</a>，本文使用：<code>jdk-8u131-linux-x64.tar.gz</code></p>
+<p>JDK <a target="_blank" rel="noopener" href="https://www.oracle.com/java/technologies/downloads/#java8">官网下载地址</a>，本文使用：<code>jdk-8u131-linux-x64.tar.gz</code></p>
 </blockquote>
 <ul>
 <li>解压安装</li>
 </ul>
 <p>将JDK安装包上传到服务器，进行解压</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">tar -zxvf jdk-8u131-linux-x64.tar.gz</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tar -zxvf jdk-8u131-linux-x64.tar.gz</span><br></pre></td></tr></table></figure>
 
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/qUwD1P2dc6KYMyt.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/02/qUwD1P2dc6KYMyt.png"></p>
 <ul>
 <li>修改环境变量</li>
 </ul>
@@ -204,204 +246,202 @@ if (autoChangeMode === '1') {
 <figure class="highlight vim"><table><tr><td class="code"><pre><span class="line"><span class="keyword">vi</span> /etc/<span class="keyword">profile</span></span><br></pre></td></tr></table></figure>
 
 <p>路径需与安装路径相符</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export JAVA_HOME&#x3D;&#x2F;usr&#x2F;local&#x2F;java</span><br><span class="line">export JRE_HOME&#x3D;$&#123;JAVA_HOME&#125;&#x2F;jre</span><br><span class="line">export CLASSPATH&#x3D;.:$&#123;JAVA_HOME&#125;&#x2F;lib:$&#123;JRE_HOME&#125;&#x2F;lib:$CLASSPATH</span><br><span class="line">export JAVA_PATH&#x3D;$&#123;JAVA_HOME&#125;&#x2F;bin:$&#123;JRE_HOME&#125;&#x2F;bin</span><br><span class="line">export PATH&#x3D;$PATH:$&#123;JAVA_PATH&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">export JAVA_HOME=/usr/local/java</span><br><span class="line">export JRE_HOME=$&#123;JAVA_HOME&#125;/jre</span><br><span class="line">export CLASSPATH=.:$&#123;JAVA_HOME&#125;/lib:$&#123;JRE_HOME&#125;/lib:$CLASSPATH</span><br><span class="line">export JAVA_PATH=$&#123;JAVA_HOME&#125;/bin:$&#123;JRE_HOME&#125;/bin</span><br><span class="line">export PATH=$PATH:$&#123;JAVA_PATH&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/qVoCeMf5izmF8Du.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/02/qVoCeMf5izmF8Du.png"></p>
 <p>按左上方<code>&quot;esc&quot;</code>键退出编辑模式，按<code>wq!</code>强制保存；再通过命令<code>source /etc/profile</code>重载profile文件，使其生效</p>
 <ul>
 <li>验证</li>
 </ul>
-<p>通过<code>javac</code>和<code>java -version</code>命令验证，如下图所示即为安装成功<br><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/dZQCTcVmGUeiH6n.png" alt=""></p>
+<p>通过<code>javac</code>和<code>java -version</code>命令验证，如下图所示即为安装成功<br><img src="https://s2.loli.net/2022/04/02/dZQCTcVmGUeiH6n.png"></p>
 <h3 id="项目部署"><a href="#项目部署" class="headerlink" title="项目部署"></a>项目部署</h3><p>用IDEA将Spring Boot项目打包，并部署到服务器上。进入项目jar包所在路径，执行启动命令</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java -jar 包名称.jar</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">java -jar 包名称.jar</span><br></pre></td></tr></table></figure>
 
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/rhHDqNp2ML8Yuin.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/02/rhHDqNp2ML8Yuin.png"></p>
 <blockquote>
 <p>本项目log4j日志配置如下，<a href="https://www.goitman.cn/2021/12/06/Log4j2/">log4j基础教程</a></p>
 </blockquote>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">    日志级别以及优先级排序: OFF &gt; FATAL &gt; ERROR &gt; WARN &gt; INFO &gt; DEBUG &gt; TRACE &gt; ALL</span></span><br><span class="line"><span class="comment">    Configuration后面的status，这个用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，你会看到log4j2内部各种详细输出</span></span><br><span class="line"><span class="comment">    monitorInterval：Log4j2能够自动检测修改配置 文件和重新配置本身，设置间隔秒数</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    注意：若使用Weblogic服务器，修改项目中的文件不会自动加载生效(monitorInterval失效)，必须重启服务加载配置；</span></span><br><span class="line"><span class="comment">    若在生产环境不能随便停止应用，但可通过编程方法来进行配置log4j2，从数据库中动态读取配置信息。</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">monitorInterval</span>=<span class="string">"60"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 变量配置 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Properties</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--日志格式--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Property</span> <span class="attr">name</span>=<span class="string">"PATTERN"</span> <span class="attr">value</span>=<span class="string">"%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [TRACEID:%X&#123;traceId&#125;] %-5p [%t] %c : %m%n"</span>/&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--日志保存路径，以"/"开头为盘符下路径，无"/"开头为项目下路径--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Property</span> <span class="attr">name</span>=<span class="string">"file_path"</span> <span class="attr">value</span>=<span class="string">"logs"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--日志输出到控制台--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Console</span> <span class="attr">name</span>=<span class="string">"Console"</span> <span class="attr">target</span>=<span class="string">"SYSTEM_OUT"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"$&#123;PATTERN&#125;"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Console</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--日志输出到文件，滚动分割日志文件，自动打包gz--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">"File"</span> <span class="attr">fileName</span>=<span class="string">"$&#123;file_path&#125;/app.log"</span> <span class="attr">filePattern</span>=<span class="string">"$&#123;file_path&#125;/archives/app-%d&#123;yyyy-MM-dd&#125;-%i.log.gz"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">"$&#123;PATTERN&#125;"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Policies</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!--以标准时间每小时执行一次日志滚动分割--&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">TimeBasedTriggeringPolicy</span> <span class="attr">interval</span>=<span class="string">"1"</span> <span class="attr">modulate</span>=<span class="string">"false"</span>/&gt;</span></span><br><span class="line">                <span class="comment">&lt;!--每当fileName日志文件超过指定大小，则按上述(app-%d&#123;yyyy-MM-dd&#125;-%i.log.gz)格式进行压缩存档至logs/archives/路径下--&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">"1 GB"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">Policies</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--fileIndex：nomax为忽略min和max属性值，压缩文件编号(%i)每次递增1，无编号的限制--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">DefaultRolloverStrategy</span> <span class="attr">fileIndex</span>=<span class="string">"nomax"</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!--删除配置，防止日志文件所在分区的磁盘空间被占满，独立配置与TimeBasedTriggeringPolicy属性无关</span></span><br><span class="line"><span class="comment">                maxDepth：指定扫描目录的最大层级（安全限制不能访问的情况除外）</span></span><br><span class="line"><span class="comment">                        0表示仅能访问基准目录</span></span><br><span class="line"><span class="comment">                        1(默认)表示仅扫描基准目录下的文件</span></span><br><span class="line"><span class="comment">                --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">Delete</span> <span class="attr">basePath</span>=<span class="string">"$&#123;file_path&#125;"</span> <span class="attr">maxDepth</span>=<span class="string">"2"</span>&gt;</span></span><br><span class="line">                    <span class="comment">&lt;!--根据匹配格式删除文件--&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">IfFileName</span> <span class="attr">glob</span>=<span class="string">"*/app-*.log.gz"</span>&gt;</span></span><br><span class="line">                        <span class="comment">&lt;!--IfAny相当于OR逻辑，满足任意一个条件则执行删除--&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                            <span class="comment">&lt;!--文件总数大小上限值--&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfAccumulatedFileSize</span> <span class="attr">exceeds</span>=<span class="string">"29 GB"</span>/&gt;</span></span><br><span class="line">                            <span class="comment">&lt;!--文件数上限值--&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfAccumulatedFileCount</span> <span class="attr">exceeds</span>=<span class="string">"30"</span>/&gt;</span></span><br><span class="line">                            <span class="comment">&lt;!--删除超过1天的文件--&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfLastModified</span> <span class="attr">age</span>=<span class="string">"1d"</span>/&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">IfFileName</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">Delete</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">DefaultRolloverStrategy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">            添加自定义logger，一般用于区分包名的日志，不同包名不同的级别/appender</span></span><br><span class="line"><span class="comment">            additivity：默认true，禁止重复打印日志</span></span><br><span class="line"><span class="comment">        --&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">            打印sql执行语句到控制台和文件，</span></span><br><span class="line"><span class="comment">            需将mybatis配置中的sql打印修改为："log-impl: org.apache.ibatis.logging.log4j2.Log4j2Impl"</span></span><br><span class="line"><span class="comment">        --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">"cn.goitman.dao"</span> <span class="attr">level</span>=<span class="string">"DEBUG"</span> <span class="attr">additivity</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"Console"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"File"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">logger</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!--日志级别--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"INFO"</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--测试环境--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"Console"</span>/&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--正式环境--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"File"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!--过滤无用信息--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">"org.springframework"</span> <span class="attr">level</span>=<span class="string">"WARN"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">"org.mybatis"</span> <span class="attr">level</span>=<span class="string">"WARN"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">"com.zaxxer.hikari.HikariDataSource"</span> <span class="attr">level</span>=<span class="string">"WARN"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">"org.apache.catalina.core"</span> <span class="attr">level</span>=<span class="string">"WARN"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">    日志级别以及优先级排序: OFF &gt; FATAL &gt; ERROR &gt; WARN &gt; INFO &gt; DEBUG &gt; TRACE &gt; ALL</span></span><br><span class="line"><span class="comment">    Configuration后面的status，这个用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，你会看到log4j2内部各种详细输出</span></span><br><span class="line"><span class="comment">    monitorInterval：Log4j2能够自动检测修改配置 文件和重新配置本身，设置间隔秒数</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    注意：若使用Weblogic服务器，修改项目中的文件不会自动加载生效(monitorInterval失效)，必须重启服务加载配置；</span></span><br><span class="line"><span class="comment">    若在生产环境不能随便停止应用，但可通过编程方法来进行配置log4j2，从数据库中动态读取配置信息。</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">monitorInterval</span>=<span class="string">&quot;60&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 变量配置 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Properties</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--日志格式--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Property</span> <span class="attr">name</span>=<span class="string">&quot;PATTERN&quot;</span> <span class="attr">value</span>=<span class="string">&quot;%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [TRACEID:%X&#123;traceId&#125;] %-5p [%t] %c : %m%n&quot;</span>/&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--日志保存路径，以&quot;/&quot;开头为盘符下路径，无&quot;/&quot;开头为项目下路径--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Property</span> <span class="attr">name</span>=<span class="string">&quot;file_path&quot;</span> <span class="attr">value</span>=<span class="string">&quot;logs&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--日志输出到控制台--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Console</span> <span class="attr">name</span>=<span class="string">&quot;Console&quot;</span> <span class="attr">target</span>=<span class="string">&quot;SYSTEM_OUT&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">&quot;$&#123;PATTERN&#125;&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Console</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--日志输出到文件，滚动分割日志文件，自动打包gz--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">RollingFile</span> <span class="attr">name</span>=<span class="string">&quot;File&quot;</span> <span class="attr">fileName</span>=<span class="string">&quot;$&#123;file_path&#125;/app.log&quot;</span> <span class="attr">filePattern</span>=<span class="string">&quot;$&#123;file_path&#125;/archives/app-%d&#123;yyyy-MM-dd&#125;-%i.log.gz&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">PatternLayout</span> <span class="attr">pattern</span>=<span class="string">&quot;$&#123;PATTERN&#125;&quot;</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Policies</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!--以标准时间每小时执行一次日志滚动分割--&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">TimeBasedTriggeringPolicy</span> <span class="attr">interval</span>=<span class="string">&quot;1&quot;</span> <span class="attr">modulate</span>=<span class="string">&quot;false&quot;</span>/&gt;</span></span><br><span class="line">                <span class="comment">&lt;!--每当fileName日志文件超过指定大小，则按上述(app-%d&#123;yyyy-MM-dd&#125;-%i.log.gz)格式进行压缩存档至logs/archives/路径下--&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">SizeBasedTriggeringPolicy</span> <span class="attr">size</span>=<span class="string">&quot;1 GB&quot;</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">Policies</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--fileIndex：nomax为忽略min和max属性值，压缩文件编号(%i)每次递增1，无编号的限制--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">DefaultRolloverStrategy</span> <span class="attr">fileIndex</span>=<span class="string">&quot;nomax&quot;</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!--删除配置，防止日志文件所在分区的磁盘空间被占满，独立配置与TimeBasedTriggeringPolicy属性无关</span></span><br><span class="line"><span class="comment">                maxDepth：指定扫描目录的最大层级（安全限制不能访问的情况除外）</span></span><br><span class="line"><span class="comment">                        0表示仅能访问基准目录</span></span><br><span class="line"><span class="comment">                        1(默认)表示仅扫描基准目录下的文件</span></span><br><span class="line"><span class="comment">                --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">Delete</span> <span class="attr">basePath</span>=<span class="string">&quot;$&#123;file_path&#125;&quot;</span> <span class="attr">maxDepth</span>=<span class="string">&quot;2&quot;</span>&gt;</span></span><br><span class="line">                    <span class="comment">&lt;!--根据匹配格式删除文件--&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">IfFileName</span> <span class="attr">glob</span>=<span class="string">&quot;*/app-*.log.gz&quot;</span>&gt;</span></span><br><span class="line">                        <span class="comment">&lt;!--IfAny相当于OR逻辑，满足任意一个条件则执行删除--&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                            <span class="comment">&lt;!--文件总数大小上限值--&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfAccumulatedFileSize</span> <span class="attr">exceeds</span>=<span class="string">&quot;29 GB&quot;</span>/&gt;</span></span><br><span class="line">                            <span class="comment">&lt;!--文件数上限值--&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfAccumulatedFileCount</span> <span class="attr">exceeds</span>=<span class="string">&quot;30&quot;</span>/&gt;</span></span><br><span class="line">                            <span class="comment">&lt;!--删除超过1天的文件--&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">IfLastModified</span> <span class="attr">age</span>=<span class="string">&quot;1d&quot;</span>/&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">IfAny</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">IfFileName</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">Delete</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">DefaultRolloverStrategy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">RollingFile</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">            添加自定义logger，一般用于区分包名的日志，不同包名不同的级别/appender</span></span><br><span class="line"><span class="comment">            additivity：默认true，禁止重复打印日志</span></span><br><span class="line"><span class="comment">        --&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">            打印sql执行语句到控制台和文件，</span></span><br><span class="line"><span class="comment">            需将mybatis配置中的sql打印修改为：&quot;log-impl: org.apache.ibatis.logging.log4j2.Log4j2Impl&quot;</span></span><br><span class="line"><span class="comment">        --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">&quot;cn.goitman.dao&quot;</span> <span class="attr">level</span>=<span class="string">&quot;DEBUG&quot;</span> <span class="attr">additivity</span>=<span class="string">&quot;false&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">&quot;Console&quot;</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">&quot;File&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">logger</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!--日志级别--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">&quot;INFO&quot;</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--测试环境--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">&quot;Console&quot;</span>/&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--正式环境--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">&quot;File&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!--过滤无用信息--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">&quot;org.springframework&quot;</span> <span class="attr">level</span>=<span class="string">&quot;WARN&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">&quot;org.mybatis&quot;</span> <span class="attr">level</span>=<span class="string">&quot;WARN&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">&quot;com.zaxxer.hikari.HikariDataSource&quot;</span> <span class="attr">level</span>=<span class="string">&quot;WARN&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">&quot;org.apache.catalina.core&quot;</span> <span class="attr">level</span>=<span class="string">&quot;WARN&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="Logstash安装"><a href="#Logstash安装" class="headerlink" title="Logstash安装"></a>Logstash安装</h3><ul>
 <li>解压安装</li>
 </ul>
 <p>将logstash安装包上传到服务器，进行解压</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">tar -zxvf logstash-7.3.0.tar.gz</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tar -zxvf logstash-7.3.0.tar.gz</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>验证</li>
 </ul>
 <p>执行以下命令，验证是否安装成功</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cd logstash-7.3.0</span><br><span class="line">bin&#x2F;logstash -e &quot;input &#123; stdin &#123;&#125;&#125; output &#123; stdout &#123;&#125;&#125;&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd logstash-7.3.0</span><br><span class="line">bin/logstash -e &quot;input &#123; stdin &#123;&#125;&#125; output &#123; stdout &#123;&#125;&#125;&quot;</span><br></pre></td></tr></table></figure>
 
-<p>在控制台输入 HelloWorld ，看到如下效果代表 Logstash 安装成功<br><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/1wSDplWQXrz7JUT.png" alt=""><br>也可通过进程命令，检查logstash是否启动</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ps -ef|grep logstash</span><br></pre></td></tr></table></figure>
+<p>在控制台输入 HelloWorld ，看到如下效果代表 Logstash 安装成功<br><img src="https://s2.loli.net/2022/04/02/1wSDplWQXrz7JUT.png"><br>也可通过进程命令，检查logstash是否启动</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ps -ef|grep logstash</span><br></pre></td></tr></table></figure>
 
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/hi8rRGZ67VBXPCT.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/02/hi8rRGZ67VBXPCT.png"></p>
 <h3 id="Elasticsearch安装"><a href="#Elasticsearch安装" class="headerlink" title="Elasticsearch安装"></a>Elasticsearch安装</h3><ul>
 <li>解压安装</li>
 </ul>
 <p>将Elasticsearch安装包上传到服务器，进行解压</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">tar -zxvf elasticsearch-7.3.0-linux-x86_64.tar.gz</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tar -zxvf elasticsearch-7.3.0-linux-x86_64.tar.gz</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>创建用户</li>
 </ul>
 <p><code>Elasticsearch不能用root用户启动</code>，创建一个用户(名称随意)，并赋予<code>此用户与root同组(因为用root用户解压的包)</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">useradd nicky</span><br><span class="line">usermod -g root nicky</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">useradd nicky</span><br><span class="line">usermod -g root nicky</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>启动</li>
 </ul>
 <p>启动Elasticsearch，会遇到如下两个报错问题</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/n5URv13iYghAjBo.png" alt=""></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/LOKFkadVzuPf3Zh.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/02/n5URv13iYghAjBo.png"></p>
+<p><img src="https://s2.loli.net/2022/04/02/LOKFkadVzuPf3Zh.png"></p>
 <p>elasticsearch需在<code>data目录</code>和<code>logs目录</code>中存放与修改数据文件，因此在安装目录下<code>创建data目录</code>，再<code>赋予data目录和logs目录及其子文件的读写权限</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mkdir data</span><br><span class="line">chmod 777 -R logs&#x2F;</span><br><span class="line">chmod 777 -R data&#x2F;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mkdir data</span><br><span class="line">chmod 777 -R logs/</span><br><span class="line">chmod 777 -R data/</span><br></pre></td></tr></table></figure>
 
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/nNjL9ERsXCWz168.png" alt=""></p>
-<p>再次启动Elasticsearch，另起会话窗口执行 <code>curl http://localhost:9200</code>命令，如出现如下效果，则 Elasticsearch 安装成功。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">su - nicky</span><br><span class="line">cd elasticsearch-7.3.0</span><br><span class="line">bin&#x2F;elasticsearch</span><br></pre></td></tr></table></figure>
+<p><img src="https://s2.loli.net/2022/04/02/nNjL9ERsXCWz168.png"></p>
+<p>再次启动Elasticsearch，另起会话窗口执行 <code>curl http://localhost:9200 </code>命令，如出现如下效果，则 Elasticsearch 安装成功。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">su - nicky</span><br><span class="line">cd elasticsearch-7.3.0</span><br><span class="line">bin/elasticsearch</span><br></pre></td></tr></table></figure>
 
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/tdM6UxmlbV5Ifhs.png" alt=""></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/ZEhSr5sXepb9HLG.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/02/tdM6UxmlbV5Ifhs.png"></p>
+<p><img src="https://s2.loli.net/2022/04/02/ZEhSr5sXepb9HLG.png"></p>
 <h3 id="Kibana安装"><a href="#Kibana安装" class="headerlink" title="Kibana安装"></a>Kibana安装</h3><ul>
 <li>解压安装</li>
 </ul>
 <p>将Kibana安装包上传到服务器，进行解压</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">tar -zxvf kibana-7.3.0-linux-x86_64.tar.gz</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tar -zxvf kibana-7.3.0-linux-x86_64.tar.gz</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>启动</li>
 </ul>
 <p>使用上述新建<code>nicky</code>用户启动 Kibana (<code>Kibana解压安装情况下，不能使用root用户启动</code>)</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">su - nicky</span><br><span class="line">cd kibana-7.3.0-linux-x86_64</span><br><span class="line">bin&#x2F;kibana</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">su - nicky</span><br><span class="line">cd kibana-7.3.0-linux-x86_64</span><br><span class="line">bin/kibana</span><br></pre></td></tr></table></figure>
 <p>在浏览器中访问 <code>http://ip:5601</code>(可使用<code>hostname - I</code>命令查询IP)</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/hbuYtjIVlwgd6LH.png" alt=""><br>若出现以下界面，则表示 Kibana 安装成功<br><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/gRvG936cx82zPkt.png" alt=""></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/EnwFB2GulZjCNJ6.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/02/hbuYtjIVlwgd6LH.png"><br>若出现以下界面，则表示 Kibana 安装成功<br><img src="https://s2.loli.net/2022/04/02/gRvG936cx82zPkt.png"></p>
+<p><img src="https://s2.loli.net/2022/04/02/EnwFB2GulZjCNJ6.png"></p>
 <h3 id="filebeat安装"><a href="#filebeat安装" class="headerlink" title="filebeat安装"></a>filebeat安装</h3><ul>
 <li>解压安装</li>
 </ul>
 <p>进入安装包所在位置，进行解压</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">tar -zxvf filebeat-7.3.0-linux-x86_64.tar.gz</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tar -zxvf filebeat-7.3.0-linux-x86_64.tar.gz</span><br></pre></td></tr></table></figure>
 
 
 <ul>
 <li>添加filebeat命令</li>
 </ul>
 <p>先将filebeat命令加入到环境</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># ln -s 安装路径&#x2F;filebeat &#x2F;usr&#x2F;bin&#x2F;</span><br><span class="line">ln -s &#x2F;usr&#x2F;local&#x2F;filebeat-7.3.0-linux-x86_64&#x2F;filebeat &#x2F;usr&#x2F;bin&#x2F;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># ln -s 安装路径/filebeat /usr/bin/</span><br><span class="line">ln -s /usr/local/filebeat-7.3.0-linux-x86_64/filebeat /usr/bin/</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>启动</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cd filebeat-7.3.0-linux-x86_64</span><br><span class="line">filebeat -e -c filebeat.yml</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd filebeat-7.3.0-linux-x86_64</span><br><span class="line">filebeat -e -c filebeat.yml</span><br></pre></td></tr></table></figure>
 
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/13/LvxthmY2ZUqBkXN.png" alt=""></p>
-<h3 id="Supervisor安装"><a href="#Supervisor安装" class="headerlink" title="Supervisor安装"></a>Supervisor安装</h3><p>上述<code>ELK</code>的启动是在<code>前台启动</code>的，意味着如果关闭会话窗口，该组件就会停止导致整个 ELK 平台无法使用，至此使用<code>Supervisor</code>来<code>管理 ELK 的启停</code>。首先需要在服务器上安装 Supervisor (<a href="https://www.goitman.cn/2022/04/07/Supervisor%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/">安装教程</a>) 。安装成功后，还需要在 Supervisor 的配置文件中配置 ELK 三大组件（其配置文件默认为 <code>/etc/supervisor/supervisord.conf</code>文件）。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[program:elasticsearch]</span><br><span class="line">environment&#x3D;JAVA_HOME&#x3D;&quot;&#x2F;usr&#x2F;local&#x2F;java&#x2F;&quot;</span><br><span class="line">directory&#x3D;&#x2F;usr&#x2F;local&#x2F;elasticsearch-7.3.0</span><br><span class="line">user&#x3D;nicky</span><br><span class="line">command&#x3D;&#x2F;usr&#x2F;local&#x2F;elasticsearch-7.3.0&#x2F;bin&#x2F;elasticsearch</span><br><span class="line"></span><br><span class="line">[program:logstash]</span><br><span class="line">environment&#x3D;JAVA_HOME&#x3D;&quot;&#x2F;usr&#x2F;local&#x2F;java&#x2F;&quot;</span><br><span class="line">directory&#x3D;&#x2F;usr&#x2F;local&#x2F;logstash-7.3.0</span><br><span class="line">user&#x3D;nicky</span><br><span class="line">command&#x3D;&#x2F;usr&#x2F;local&#x2F;logstash-7.3.0&#x2F;bin&#x2F;logstash -f &#x2F;usr&#x2F;local&#x2F;logstash-7.3.0&#x2F;config&#x2F;elastic.conf</span><br><span class="line"></span><br><span class="line">[program:kibana]</span><br><span class="line">environment&#x3D;LS_HEAP_SIZE&#x3D;5000m</span><br><span class="line">directory&#x3D;&#x2F;usr&#x2F;local&#x2F;kibana-7.3.0</span><br><span class="line">user&#x3D;nicky</span><br><span class="line">command&#x3D;&#x2F;usr&#x2F;local&#x2F;kibana-7.3.0&#x2F;bin&#x2F;kibana</span><br></pre></td></tr></table></figure>
+<p><img src="https://s2.loli.net/2022/04/13/LvxthmY2ZUqBkXN.png"></p>
+<h3 id="Supervisor安装"><a href="#Supervisor安装" class="headerlink" title="Supervisor安装"></a>Supervisor安装</h3><p>上述<code>ELK</code>的启动是在<code>前台启动</code>的，意味着如果关闭会话窗口，该组件就会停止导致整个 ELK 平台无法使用，至此使用<code>Supervisor</code>来<code>管理 ELK 的启停</code>。首先需要在服务器上安装 Supervisor (<a href="https://www.goitman.cn/2022/04/07/Supervisor%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/">安装教程</a>) 。安装成功后，还需要在 Supervisor 的配置文件中配置 ELK 三大组件（其配置文件默认为 <code>/etc/supervisor/supervisord.conf </code>文件）。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[program:elasticsearch]</span><br><span class="line">environment=JAVA_HOME=&quot;/usr/local/java/&quot;</span><br><span class="line">directory=/usr/local/elasticsearch-7.3.0</span><br><span class="line">user=nicky</span><br><span class="line">command=/usr/local/elasticsearch-7.3.0/bin/elasticsearch</span><br><span class="line"></span><br><span class="line">[program:logstash]</span><br><span class="line">environment=JAVA_HOME=&quot;/usr/local/java/&quot;</span><br><span class="line">directory=/usr/local/logstash-7.3.0</span><br><span class="line">user=nicky</span><br><span class="line">command=/usr/local/logstash-7.3.0/bin/logstash -f /usr/local/logstash-7.3.0/config/elastic.conf</span><br><span class="line"></span><br><span class="line">[program:kibana]</span><br><span class="line">environment=LS_HEAP_SIZE=5000m</span><br><span class="line">directory=/usr/local/kibana-7.3.0</span><br><span class="line">user=nicky</span><br><span class="line">command=/usr/local/kibana-7.3.0/bin/kibana</span><br></pre></td></tr></table></figure>
 
 <p>执行<code>sudo supervisorctl reload</code>即可完成整个 ELK 的启动，而且其<code>默认是开机后台自启</code>。当然，也可以使用<code>sudo supervisorctl start/stop program_name</code>来管理单独的应用.</p>
 <h2 id="Logstash单服务部署"><a href="#Logstash单服务部署" class="headerlink" title="Logstash单服务部署"></a>Logstash单服务部署</h2><ul>
 <li>修改Logstash配置</li>
 </ul>
 <p>在<code>config/</code>目录下创建配置文件(名称随意)，并使用<code>bin/logstash -f config/配置文件名.conf</code> 命令启动</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/07/jXniFZ6E98HGprt.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/07/jXniFZ6E98HGprt.png"></p>
 <p>配置内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    file &#123;</span><br><span class="line">        path &#x3D;&gt; [</span><br><span class="line">            # 这里填写需要监控的文件</span><br><span class="line">            &quot;&#x2F;usr&#x2F;local&#x2F;logs&#x2F;app.log&quot;</span><br><span class="line">        ]</span><br><span class="line">        #设置多长时间检测文件是否修改</span><br><span class="line">        stat_interval &#x3D;&gt; 1</span><br><span class="line">        #监听文件的起始位置，默认是end</span><br><span class="line">        start_position &#x3D;&gt; beginning</span><br><span class="line">        #监听文件读取信息记录的位置</span><br><span class="line">        sincedb_path &#x3D;&gt; &quot;&#x2F;usr&#x2F;local&#x2F;logstash-7.3.0&#x2F;test.txt&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &#123;</span><br><span class="line">  elasticsearch &#123;	#输出源</span><br><span class="line">	  #ES IP地址与端口</span><br><span class="line">	  hosts &#x3D;&gt; &quot;localhost:9200&quot; </span><br><span class="line">	  #ES索引名称（自定义）</span><br><span class="line">	  index &#x3D;&gt; &quot;demo&quot;</span><br><span class="line">	  #文档类型</span><br><span class="line">	  document_type &#x3D;&gt; &quot;article&quot;</span><br><span class="line">  &#125;</span><br><span class="line">  stdout &#123;	#控制台输出，便于查看；生产环境将注释，影响性能</span><br><span class="line">      #以JSON格式输出</span><br><span class="line">      codec &#x3D;&gt; json_lines</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    file &#123;</span><br><span class="line">        path =&gt; [</span><br><span class="line">            # 这里填写需要监控的文件</span><br><span class="line">            &quot;/usr/local/logs/app.log&quot;</span><br><span class="line">        ]</span><br><span class="line">        #设置多长时间检测文件是否修改</span><br><span class="line">        stat_interval =&gt; 1</span><br><span class="line">        #监听文件的起始位置，默认是end</span><br><span class="line">        start_position =&gt; beginning</span><br><span class="line">        #监听文件读取信息记录的位置</span><br><span class="line">        sincedb_path =&gt; &quot;/usr/local/logstash-7.3.0/test.txt&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &#123;</span><br><span class="line">  elasticsearch &#123;	#输出源</span><br><span class="line">	  #ES IP地址与端口</span><br><span class="line">	  hosts =&gt; &quot;localhost:9200&quot; </span><br><span class="line">	  #ES索引名称（自定义）</span><br><span class="line">	  index =&gt; &quot;demo&quot;</span><br><span class="line">	  #文档类型</span><br><span class="line">	  document_type =&gt; &quot;article&quot;</span><br><span class="line">  &#125;</span><br><span class="line">  stdout &#123;	#控制台输出，便于查看；生产环境将注释，影响性能</span><br><span class="line">      #以JSON格式输出</span><br><span class="line">      codec =&gt; json_lines</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>修改Kibana配置</li>
 </ul>
 <p>修改配置文件 <code>config/kibana.yml ，指定 Elasticsearch 的信息</code> 。</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/06/SW1ZazRyiX7VINh.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/06/SW1ZazRyiX7VINh.png"></p>
 <p>如果<code>elasticsearch没有设置密码</code>，密码配置可去掉；</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">elasticsearch.hosts: &quot;http:&#x2F;&#x2F;localhost:9200&quot;</span><br><span class="line">server.host: &quot;0.0.0.0&quot;</span><br><span class="line">elasticsearch.username: &quot;nicky&quot;</span><br><span class="line">elasticsearch.password: &quot;nicky&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">elasticsearch.hosts: &quot;http://localhost:9200&quot;</span><br><span class="line">server.host: &quot;0.0.0.0&quot;</span><br><span class="line">elasticsearch.username: &quot;nicky&quot;</span><br><span class="line">elasticsearch.password: &quot;nicky&quot;</span><br></pre></td></tr></table></figure>
 
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/02/fVIHMkqEevO2BCG.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/02/fVIHMkqEevO2BCG.png"></p>
 <ul>
 <li>测试</li>
 </ul>
 <p>Elasticsearch默认配置即可；ELK与项目启动后，登录Kibana的web界面，关联Elasticsearch索引</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/07/DWxYUvGdHJKTF8V.png" alt=""></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/07/MsAiLJnxj4FONqV.png" alt=""></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/07/KOtR6zLk7isqgQN.png" alt=""></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/07/aIphoY6kH42VLw3.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/07/DWxYUvGdHJKTF8V.png"></p>
+<p><img src="https://s2.loli.net/2022/04/07/MsAiLJnxj4FONqV.png"></p>
+<p><img src="https://s2.loli.net/2022/04/07/KOtR6zLk7isqgQN.png"></p>
+<p><img src="https://s2.loli.net/2022/04/07/aIphoY6kH42VLw3.png"></p>
 <p>使用Postman请求接口，查看日志（环境内没有安装数据库，让其报个错吧）</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/07/EUAxcTYmuOjqItn.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/07/EUAxcTYmuOjqItn.png"></p>
 <p>项目控制台输出日志<code>(如下三张截图，并非同一时期所截，不影响正常流程)</code></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/07/RLWj6Dhgl8JdACH.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/07/RLWj6Dhgl8JdACH.png"></p>
 <p>logstash控制台输出日志</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/07/Qs5jykRubHNpDeg.png" alt=""></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/07/L9yvscXwBVMfzJN.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/07/Qs5jykRubHNpDeg.png"></p>
+<p><img src="https://s2.loli.net/2022/04/07/L9yvscXwBVMfzJN.png"></p>
 <h2 id="Beats部署"><a href="#Beats部署" class="headerlink" title="Beats部署"></a>Beats部署</h2><ul>
 <li>修改filebeat配置</li>
 </ul>
 <p>filebeat安装目录下，修改<code>filebeat.yml</code>配置文件</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/13/WlLarosG2JHuv9Y.png" alt=""></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/13/K1oMyZhankCfQVD.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/13/WlLarosG2JHuv9Y.png"></p>
+<p><img src="https://s2.loli.net/2022/04/13/K1oMyZhankCfQVD.png"></p>
 <ul>
 <li>修改Logstash配置</li>
 </ul>
 <p>配置内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">	beats &#123;</span><br><span class="line">        port &#x3D;&gt; 5044</span><br><span class="line">        codec &#x3D;&gt; plain &#123;</span><br><span class="line">          charset &#x3D;&gt; &quot;UTF-8&quot;</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &#123;</span><br><span class="line">  elasticsearch &#123;	#输出源</span><br><span class="line">	  #ES IP地址与端口</span><br><span class="line">	  hosts &#x3D;&gt; &quot;localhost:9200&quot; </span><br><span class="line">	  #ES索引名称（根据日期定义）</span><br><span class="line">	  index &#x3D;&gt; &quot;app-%&#123;+YYYY.MM.dd&#125;&quot;</span><br><span class="line">	  #文档类型</span><br><span class="line">	  document_type &#x3D;&gt; &quot;article&quot;</span><br><span class="line">  &#125;</span><br><span class="line">  stdout &#123;	#控制台输出，便于查看；生产环境将注释，影响性能</span><br><span class="line">      #以JSON格式输出</span><br><span class="line">      codec &#x3D;&gt; json_lines</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">	beats &#123;</span><br><span class="line">        port =&gt; 5044</span><br><span class="line">        codec =&gt; plain &#123;</span><br><span class="line">          charset =&gt; &quot;UTF-8&quot;</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &#123;</span><br><span class="line">  elasticsearch &#123;	#输出源</span><br><span class="line">	  #ES IP地址与端口</span><br><span class="line">	  hosts =&gt; &quot;localhost:9200&quot; </span><br><span class="line">	  #ES索引名称（根据日期定义）</span><br><span class="line">	  index =&gt; &quot;app-%&#123;+YYYY.MM.dd&#125;&quot;</span><br><span class="line">	  #文档类型</span><br><span class="line">	  document_type =&gt; &quot;article&quot;</span><br><span class="line">  &#125;</span><br><span class="line">  stdout &#123;	#控制台输出，便于查看；生产环境将注释，影响性能</span><br><span class="line">      #以JSON格式输出</span><br><span class="line">      codec =&gt; json_lines</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>测试</li>
 </ul>
 <p>ELK与项目启动后，关联Elasticsearch (Elasticsearch默认配置即可) 索引，查询结果如下</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/13/fIjxmiGzJyoQSpV.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/13/fIjxmiGzJyoQSpV.png"></p>
 <h2 id="Nginx代理"><a href="#Nginx代理" class="headerlink" title="Nginx代理"></a>Nginx代理</h2><p>ELK配置完之后，有些情况下外网无法连接Kibana，则需要使用Nginx代理到Kibana进行访问</p>
 <ul>
 <li>安装nginx和http用户认证工具</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum -y install epel-release</span><br><span class="line">yum -y install nginx httpd-tools</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">yum -y install epel-release</span><br><span class="line">yum -y install nginx httpd-tools</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>修改nginx配置</li>
 </ul>
 <p>先备份nginx.conf文件，以防错改</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cp &#x2F;etc&#x2F;nginx&#x2F;nginx.conf &#x2F;etc&#x2F;nginx&#x2F;nginx.conf.bak</span><br><span class="line">vi &#x2F;etc&#x2F;nginx&#x2F;nginx.conf</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak</span><br><span class="line">vi /etc/nginx/nginx.conf</span><br></pre></td></tr></table></figure>
 
 <p>将<code>location配置部分</code>，注释掉</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/14/ihlypgK7BIEd83T.jpg" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/14/ihlypgK7BIEd83T.jpg"></p>
 <p>创建并编辑<code>kibana.conf配置文件</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mkdir &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;kibana.conf</span><br><span class="line">vim &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;kibana.conf</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mkdir /etc/nginx/conf.d/kibana.conf</span><br><span class="line">vim /etc/nginx/conf.d/kibana.conf</span><br></pre></td></tr></table></figure>
 
 <p>内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 8000; #修改端口为8000</span><br><span class="line"></span><br><span class="line">    server_name kibana;</span><br><span class="line"></span><br><span class="line">    #auth_basic &quot;Restricted Access&quot;;</span><br><span class="line">    #auth_basic_user_file &#x2F;etc&#x2F;nginx&#x2F;kibana-user;</span><br><span class="line"></span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        proxy_pass http:&#x2F;&#x2F;127.0.0.1:5601; #代理转发到kibana</span><br><span class="line">        proxy_http_version 1.1;</span><br><span class="line">        proxy_set_header Upgrade $http_upgrade;</span><br><span class="line">        proxy_set_header Connection &#39;upgrade&#39;;</span><br><span class="line">        proxy_set_header Host $host;</span><br><span class="line">        proxy_cache_bypass $http_upgrade;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 8000; #修改端口为8000</span><br><span class="line"></span><br><span class="line">    server_name kibana;</span><br><span class="line"></span><br><span class="line">    #auth_basic &quot;Restricted Access&quot;;</span><br><span class="line">    #auth_basic_user_file /etc/nginx/kibana-user;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass http://127.0.0.1:5601; #代理转发到kibana</span><br><span class="line">        proxy_http_version 1.1;</span><br><span class="line">        proxy_set_header Upgrade $http_upgrade;</span><br><span class="line">        proxy_set_header Connection &#x27;upgrade&#x27;;</span><br><span class="line">        proxy_set_header Host $host;</span><br><span class="line">        proxy_cache_bypass $http_upgrade;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>重新加载配置文件，并重启服务</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">systemctl reload nginx</span><br><span class="line">systemctl restart nginx</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">systemctl reload nginx</span><br><span class="line">systemctl restart nginx</span><br></pre></td></tr></table></figure>
 <p>在浏览器输入<code>http://nginx服务器ip:8000</code>, 就可以访问了kibana</p>
 <h1 id="基础使用"><a href="#基础使用" class="headerlink" title="基础使用"></a>基础使用</h1><h2 id="Filebeat"><a href="#Filebeat" class="headerlink" title="Filebeat"></a>Filebeat</h2><h3 id="配置多个日志路径"><a href="#配置多个日志路径" class="headerlink" title="配置多个日志路径"></a>配置多个日志路径</h3><p>如需要获取<code>多个日志文件</code>路径(<code>如tomcat、nginx等等</code>)，只需修改<code>filebeat</code>和<code>logstash</code>配置文件即可</p>
 <ul>
 <li>修改filebeat配置文件</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vi 路径&#x2F;filebeat.yml</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vi 路径/filebeat.yml</span><br></pre></td></tr></table></figure>
 <p>模版内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">filebeat.prospectors:</span><br><span class="line"></span><br><span class="line">- type: log</span><br><span class="line">  # 启用输入配置</span><br><span class="line">  enabled: true</span><br><span class="line">  # 指定要监控的日志，可以指定文件(...&#x2F;*.log或...&#x2F;log.log)或者目录(...&#x2F;logs&#x2F;*)</span><br><span class="line">  paths:</span><br><span class="line">    - tomcat日志路径</span><br><span class="line">  </span><br><span class="line">  # multiline 用于在日志中，每一条日志占据多行的情况</span><br><span class="line">  # 多行日志，开始行的正则匹配规则，如下为：以&quot;年-月-日 时:分:秒,毫秒&quot;开头</span><br><span class="line">  multiline.pattern: &#39;^[0-9]&#123;4&#125;-[0-9]&#123;2&#125;-[0-9]&#123;2&#125; [0-9]&#123;2&#125;:[0-9]&#123;2&#125;:[0-9]&#123;2&#125;,[0-9]&#123;3&#125;&#39;</span><br><span class="line">  # 是否需要对pattern条件转置使用，不翻转为true，反转为false</span><br><span class="line">  multiline.negate: true</span><br><span class="line">  # 匹配pattern后，与前面（before）还是后面（after）的内容合并为一条日志</span><br><span class="line">  multiline.match: after</span><br><span class="line"></span><br><span class="line">  fields:</span><br><span class="line">    # type为自定义标签，以便做索引判断</span><br><span class="line">    type: tomcat</span><br><span class="line"></span><br><span class="line">- type: log</span><br><span class="line">  enabled: true</span><br><span class="line">  paths:</span><br><span class="line">    - nginx日志路径</span><br><span class="line"></span><br><span class="line">  multiline.pattern: &#39;&#39;</span><br><span class="line">  multiline.negate: true</span><br><span class="line">  multiline.match: after</span><br><span class="line"></span><br><span class="line">  fields:</span><br><span class="line">    type: nginx</span><br><span class="line">	</span><br><span class="line">- type: log</span><br><span class="line">  enabled: true</span><br><span class="line">  paths:</span><br><span class="line">    - web日志路径</span><br><span class="line">  </span><br><span class="line">  multiline.pattern: &#39;&#39;</span><br><span class="line">  multiline.negate: true</span><br><span class="line">  multiline.match: after</span><br><span class="line"></span><br><span class="line">  fields:</span><br><span class="line">    type: web</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">filebeat.prospectors:</span><br><span class="line"></span><br><span class="line">- type: log</span><br><span class="line">  # 启用输入配置</span><br><span class="line">  enabled: true</span><br><span class="line">  # 指定要监控的日志，可以指定文件(.../*.log或.../log.log)或者目录(.../logs/*)</span><br><span class="line">  paths:</span><br><span class="line">    - tomcat日志路径</span><br><span class="line">  </span><br><span class="line">  # multiline 用于在日志中，每一条日志占据多行的情况</span><br><span class="line">  # 多行日志，开始行的正则匹配规则，如下为：以&quot;年-月-日 时:分:秒,毫秒&quot;开头</span><br><span class="line">  multiline.pattern: &#x27;^[0-9]&#123;4&#125;-[0-9]&#123;2&#125;-[0-9]&#123;2&#125; [0-9]&#123;2&#125;:[0-9]&#123;2&#125;:[0-9]&#123;2&#125;,[0-9]&#123;3&#125;&#x27;</span><br><span class="line">  # 是否需要对pattern条件转置使用，不翻转为true，反转为false</span><br><span class="line">  multiline.negate: true</span><br><span class="line">  # 匹配pattern后，与前面（before）还是后面（after）的内容合并为一条日志</span><br><span class="line">  multiline.match: after</span><br><span class="line"></span><br><span class="line">  fields:</span><br><span class="line">    # type为自定义标签，以便做索引判断</span><br><span class="line">    type: tomcat</span><br><span class="line"></span><br><span class="line">- type: log</span><br><span class="line">  enabled: true</span><br><span class="line">  paths:</span><br><span class="line">    - nginx日志路径</span><br><span class="line"></span><br><span class="line">  multiline.pattern: &#x27;&#x27;</span><br><span class="line">  multiline.negate: true</span><br><span class="line">  multiline.match: after</span><br><span class="line"></span><br><span class="line">  fields:</span><br><span class="line">    type: nginx</span><br><span class="line">	</span><br><span class="line">- type: log</span><br><span class="line">  enabled: true</span><br><span class="line">  paths:</span><br><span class="line">    - web日志路径</span><br><span class="line">  </span><br><span class="line">  multiline.pattern: &#x27;&#x27;</span><br><span class="line">  multiline.negate: true</span><br><span class="line">  multiline.match: after</span><br><span class="line"></span><br><span class="line">  fields:</span><br><span class="line">    type: web</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>修改logstash配置文件</li>
 </ul>
 <p>以elastic.conf配置文件为例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vi 路径&#x2F;elastic.conf</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vi 路径/elastic.conf</span><br></pre></td></tr></table></figure>
 <p>模版内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">input&#123;</span><br><span class="line">    beats &#123;</span><br><span class="line">        port &#x3D;&gt; 5044</span><br><span class="line">        codec &#x3D;&gt; plain &#123;</span><br><span class="line">          charset &#x3D;&gt; &quot;UTF-8&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 过滤，remove_field为移除filebeat中的多余字段</span><br><span class="line">filter&#123;</span><br><span class="line">    mutate&#123;</span><br><span class="line">        remove_field &#x3D;&gt; &quot;beat.hostname&quot;</span><br><span class="line">        remove_field &#x3D;&gt; &quot;beat.name&quot;</span><br><span class="line">        remove_field &#x3D;&gt; &quot;@version&quot;</span><br><span class="line">        remove_field &#x3D;&gt; &quot;source&quot;</span><br><span class="line">        remove_field &#x3D;&gt; &quot;beat&quot;</span><br><span class="line">        remove_field &#x3D;&gt; &quot;tags&quot;</span><br><span class="line">        remove_field &#x3D;&gt; &quot;offset&quot;</span><br><span class="line">        remove_field &#x3D;&gt; &quot;sort&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output&#123;</span><br><span class="line">    # 索引判断，需与filebeat中的自定义标签一致</span><br><span class="line">    if [fields][tpye] &#x3D;&#x3D; &quot;tomcat&quot;  &#123;</span><br><span class="line">        # 控制台输出，生产环境禁用，影响性能</span><br><span class="line">        stdout &#123; codec &#x3D;&gt; rubydebug &#125;</span><br><span class="line">        elasticsearch &#123;</span><br><span class="line">            # ES服务器IP地址与端口</span><br><span class="line">            hosts &#x3D;&gt; [&quot;localhost:9200&quot;]</span><br><span class="line">            # 以日期创建ES索引</span><br><span class="line">            index &#x3D;&gt; &quot;tomcat-%&#123;+YYYY.MM.dd&#125;&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    if [fields][tpye] &#x3D;&#x3D; &quot;nginx&quot;  &#123;</span><br><span class="line">        stdout &#123; codec &#x3D;&gt; rubydebug &#125;</span><br><span class="line">        elasticsearch &#123;</span><br><span class="line">            hosts &#x3D;&gt; [&quot;localhost:9200&quot;]</span><br><span class="line">            index &#x3D;&gt; &quot;nginx-%&#123;+YYYY.MM.dd&#125;&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    if [fields][tpye] &#x3D;&#x3D; &quot;web&quot;  &#123;</span><br><span class="line">        stdout &#123; codec &#x3D;&gt; rubydebug &#125;</span><br><span class="line">        elasticsearch &#123;</span><br><span class="line">            hosts &#x3D;&gt; [&quot;localhost:9200&quot;]</span><br><span class="line">            index &#x3D;&gt; &quot;web-%&#123;+YYYY.MM.dd&#125;&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">input&#123;</span><br><span class="line">    beats &#123;</span><br><span class="line">        port =&gt; 5044</span><br><span class="line">        codec =&gt; plain &#123;</span><br><span class="line">          charset =&gt; &quot;UTF-8&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 过滤，remove_field为移除filebeat中的多余字段</span><br><span class="line">filter&#123;</span><br><span class="line">    mutate&#123;</span><br><span class="line">        remove_field =&gt; &quot;beat.hostname&quot;</span><br><span class="line">        remove_field =&gt; &quot;beat.name&quot;</span><br><span class="line">        remove_field =&gt; &quot;@version&quot;</span><br><span class="line">        remove_field =&gt; &quot;source&quot;</span><br><span class="line">        remove_field =&gt; &quot;beat&quot;</span><br><span class="line">        remove_field =&gt; &quot;tags&quot;</span><br><span class="line">        remove_field =&gt; &quot;offset&quot;</span><br><span class="line">        remove_field =&gt; &quot;sort&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output&#123;</span><br><span class="line">    # 索引判断，需与filebeat中的自定义标签一致</span><br><span class="line">    if [fields][tpye] == &quot;tomcat&quot;  &#123;</span><br><span class="line">        # 控制台输出，生产环境禁用，影响性能</span><br><span class="line">        stdout &#123; codec =&gt; rubydebug &#125;</span><br><span class="line">        elasticsearch &#123;</span><br><span class="line">            # ES服务器IP地址与端口</span><br><span class="line">            hosts =&gt; [&quot;localhost:9200&quot;]</span><br><span class="line">            # 以日期创建ES索引</span><br><span class="line">            index =&gt; &quot;tomcat-%&#123;+YYYY.MM.dd&#125;&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    if [fields][tpye] == &quot;nginx&quot;  &#123;</span><br><span class="line">        stdout &#123; codec =&gt; rubydebug &#125;</span><br><span class="line">        elasticsearch &#123;</span><br><span class="line">            hosts =&gt; [&quot;localhost:9200&quot;]</span><br><span class="line">            index =&gt; &quot;nginx-%&#123;+YYYY.MM.dd&#125;&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    if [fields][tpye] == &quot;web&quot;  &#123;</span><br><span class="line">        stdout &#123; codec =&gt; rubydebug &#125;</span><br><span class="line">        elasticsearch &#123;</span><br><span class="line">            hosts =&gt; [&quot;localhost:9200&quot;]</span><br><span class="line">            index =&gt; &quot;web-%&#123;+YYYY.MM.dd&#125;&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
 <h2 id="Logstash"><a href="#Logstash" class="headerlink" title="Logstash"></a>Logstash</h2><h3 id="input"><a href="#input" class="headerlink" title="input"></a>input</h3><p>input模块支持从多个源收集数据，以下列举几个常用配置</p>
-<h4 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    file &#123;</span><br><span class="line">        # path是file中唯一必需的参数。其他都是可选参数</span><br><span class="line">        # 单一文件</span><br><span class="line">        path &#x3D;&gt; &quot;&#x2F;usr&#x2F;local&#x2F;logs&#x2F;app.log&quot; </span><br><span class="line">        # 监听文件的多个路径，多路径用&quot;,&quot;分割</span><br><span class="line">        # path &#x3D;&gt; [&quot;&#x2F;usr&#x2F;local&#x2F;logs&#x2F;*.log&quot;,&quot;&#x2F;usr&#x2F;local&#x2F;logs&#x2F;app-*.log&quot;]</span><br><span class="line">		</span><br><span class="line">        # 过滤不想监听的文件</span><br><span class="line">        exclude &#x3D;&gt; &quot;1.log&quot;</span><br><span class="line">		</span><br><span class="line">        # 监听文件的起始位置，默认是end</span><br><span class="line">        start_position &#x3D;&gt; beginning</span><br><span class="line"></span><br><span class="line">        #监听文件读取信息记录的位置，配置此项，start_position将失效</span><br><span class="line">        sincedb_path &#x3D;&gt; &quot;&#x2F;usr&#x2F;local&#x2F;logstash-7.3.0&#x2F;test.txt&quot;	</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    file &#123;</span><br><span class="line">        ...	</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    file &#123;</span><br><span class="line">        # path是file中唯一必需的参数。其他都是可选参数</span><br><span class="line">        # 单一文件</span><br><span class="line">        path =&gt; &quot;/usr/local/logs/app.log&quot; </span><br><span class="line">        # 监听文件的多个路径，多路径用&quot;,&quot;分割</span><br><span class="line">        # path =&gt; [&quot;/usr/local/logs/*.log&quot;,&quot;/usr/local/logs/app-*.log&quot;]</span><br><span class="line">		</span><br><span class="line">        # 过滤不想监听的文件</span><br><span class="line">        exclude =&gt; &quot;1.log&quot;</span><br><span class="line">		</span><br><span class="line">        # 监听文件的起始位置，默认是end</span><br><span class="line">        start_position =&gt; beginning</span><br><span class="line"></span><br><span class="line">        #监听文件读取信息记录的位置，配置此项，start_position将失效</span><br><span class="line">        sincedb_path =&gt; &quot;/usr/local/logstash-7.3.0/test.txt&quot;	</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    file &#123;</span><br><span class="line">        ...	</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h4 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h4><h5 id="Redis-模式"><a href="#Redis-模式" class="headerlink" title="Redis 模式"></a>Redis 模式</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    redis &#123;</span><br><span class="line">        # redis主机地址</span><br><span class="line">        host &#x3D;&gt; &quot;IP&quot;</span><br><span class="line">        # redis端口号</span><br><span class="line">        port &#x3D;&gt; 6379</span><br><span class="line">        # redis数据库编号 0 ~ 15</span><br><span class="line">        db &#x3D;&gt; 8</span><br><span class="line">        # 可选值有 channel(发布&#x2F;订阅通信模式)、list(队列数据结构)、pattern_channel(发布订阅通信组模式) ，pattern_channel少用；</span><br><span class="line">        # channel 相比 list 的好处是，解除了发布者和订阅者之间的耦合</span><br><span class="line">        data_type &#x3D;&gt; &quot;channel&quot; </span><br><span class="line">        # 发布通道名称(KEY键)		</span><br><span class="line">        key &#x3D;&gt; &quot;&quot; </span><br><span class="line">        # 密码</span><br><span class="line">        password &#x3D;&gt;</span><br><span class="line">        # 超时时间，单位秒</span><br><span class="line">        timeout &#x3D;&gt;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    redis&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h4><h5 id="Redis-模式"><a href="#Redis-模式" class="headerlink" title="Redis 模式"></a>Redis 模式</h5><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    redis &#123;</span><br><span class="line">        # redis主机地址</span><br><span class="line">        host =&gt; &quot;IP&quot;</span><br><span class="line">        # redis端口号</span><br><span class="line">        port =&gt; 6379</span><br><span class="line">        # redis数据库编号 0 ~ 15</span><br><span class="line">        db =&gt; 8</span><br><span class="line">        # 可选值有 channel(发布/订阅通信模式)、list(队列数据结构)、pattern_channel(发布订阅通信组模式) ，pattern_channel少用；</span><br><span class="line">        # channel 相比 list 的好处是，解除了发布者和订阅者之间的耦合</span><br><span class="line">        data_type =&gt; &quot;channel&quot; </span><br><span class="line">        # 发布通道名称(KEY键)		</span><br><span class="line">        key =&gt; &quot;&quot; </span><br><span class="line">        # 密码</span><br><span class="line">        password =&gt;</span><br><span class="line">        # 超时时间，单位秒</span><br><span class="line">        timeout =&gt;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    redis&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h5 id="Kafka-模式"><a href="#Kafka-模式" class="headerlink" title="Kafka 模式"></a>Kafka 模式</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    kafka &#123;</span><br><span class="line">        # kafka集群地址</span><br><span class="line">        bootstrap_servers &#x3D;&gt; &quot;IP:PORT,IP:PORT,...&quot;	</span><br><span class="line">		</span><br><span class="line">        # 从哪个topic(主题)读取数据，支持多个topic</span><br><span class="line">        topics &#x3D;&gt; [&quot;topic名字&quot;]</span><br><span class="line">		</span><br><span class="line">        # 消费组者ID，默认值是“logstash”。kafka将消息发到每个消费者组中，同一组中消费者收到的数据不重复。</span><br><span class="line">        # 如有两个消费者组G1、G2，G1中有成员A、B，G2中有成员C、D。</span><br><span class="line">        # kafka从输入中收到了10条消息，会将这10条消息同时发送给G1和G2，A和B各会收到这10条消息中的一部分，收到消息的并集就是这10条消息，C和D同理  </span><br><span class="line">        group_id &#x3D;&gt; &quot;group名字&quot;</span><br><span class="line">		</span><br><span class="line">        # 由于beat传输数据给kafka集群的时候，会附加很多tag，默认情况下，logstash就会将这串tag也认为是message的一部分。</span><br><span class="line">        # 不利于后期数据处理。需要添加codec处理得到原本的message数据。</span><br><span class="line">        # codec &#x3D;&gt; json		</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    kafka｛</span><br><span class="line">        ...</span><br><span class="line">    ｝</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="Kafka-模式"><a href="#Kafka-模式" class="headerlink" title="Kafka 模式"></a>Kafka 模式</h5><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    kafka &#123;</span><br><span class="line">        # kafka集群地址</span><br><span class="line">        bootstrap_servers =&gt; &quot;IP:PORT,IP:PORT,...&quot;	</span><br><span class="line">		</span><br><span class="line">        # 从哪个topic(主题)读取数据，支持多个topic</span><br><span class="line">        topics =&gt; [&quot;topic名字&quot;]</span><br><span class="line">		</span><br><span class="line">        # 消费组者ID，默认值是“logstash”。kafka将消息发到每个消费者组中，同一组中消费者收到的数据不重复。</span><br><span class="line">        # 如有两个消费者组G1、G2，G1中有成员A、B，G2中有成员C、D。</span><br><span class="line">        # kafka从输入中收到了10条消息，会将这10条消息同时发送给G1和G2，A和B各会收到这10条消息中的一部分，收到消息的并集就是这10条消息，C和D同理  </span><br><span class="line">        group_id =&gt; &quot;group名字&quot;</span><br><span class="line">		</span><br><span class="line">        # 由于beat传输数据给kafka集群的时候，会附加很多tag，默认情况下，logstash就会将这串tag也认为是message的一部分。</span><br><span class="line">        # 不利于后期数据处理。需要添加codec处理得到原本的message数据。</span><br><span class="line">        # codec =&gt; json		</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    kafka｛</span><br><span class="line">        ...</span><br><span class="line">    ｝</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h4 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h4><h5 id="Rabbitmq-模式"><a href="#Rabbitmq-模式" class="headerlink" title="Rabbitmq 模式"></a>Rabbitmq 模式</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    rabbitmq &#123;</span><br><span class="line">        # IP地址</span><br><span class="line">        host &#x3D;&gt; &quot;ip&quot;</span><br><span class="line">        # 端口号</span><br><span class="line">        port &#x3D;&gt; 5672</span><br><span class="line">        # 队列名称</span><br><span class="line">        queue &#x3D;&gt; &quot;&quot;</span><br><span class="line">        # 虚拟主机</span><br><span class="line">        vhost &#x3D;&gt; &quot;&#x2F;vhost&quot;</span><br><span class="line">        prefetch_count &#x3D;&gt; 1</span><br><span class="line">        # 用户名</span><br><span class="line">        user &#x3D;&gt; &quot;&quot;</span><br><span class="line">        # 密码</span><br><span class="line">        password &#x3D;&gt; &quot;&quot;</span><br><span class="line">        # 关键字匹配</span><br><span class="line">        key &#x3D;&gt; &quot;routingkey.#&quot;</span><br><span class="line">        # 交换器名称</span><br><span class="line">        exchange &#x3D;&gt; &quot;&quot;</span><br><span class="line">        # 是否持久化，跟队列配置一致</span><br><span class="line">        durable&#x3D;&gt; true</span><br><span class="line">        # 可选格式有 plain、json</span><br><span class="line">        codec &#x3D;&gt; &quot;json&quot;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    rabbitmq &#123;</span><br><span class="line">		...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h4><h5 id="Rabbitmq-模式"><a href="#Rabbitmq-模式" class="headerlink" title="Rabbitmq 模式"></a>Rabbitmq 模式</h5><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    rabbitmq &#123;</span><br><span class="line">        # IP地址</span><br><span class="line">        host =&gt; &quot;ip&quot;</span><br><span class="line">        # 端口号</span><br><span class="line">        port =&gt; 5672</span><br><span class="line">        # 队列名称</span><br><span class="line">        queue =&gt; &quot;&quot;</span><br><span class="line">        # 虚拟主机</span><br><span class="line">        vhost =&gt; &quot;/vhost&quot;</span><br><span class="line">        prefetch_count =&gt; 1</span><br><span class="line">        # 用户名</span><br><span class="line">        user =&gt; &quot;&quot;</span><br><span class="line">        # 密码</span><br><span class="line">        password =&gt; &quot;&quot;</span><br><span class="line">        # 关键字匹配</span><br><span class="line">        key =&gt; &quot;routingkey.#&quot;</span><br><span class="line">        # 交换器名称</span><br><span class="line">        exchange =&gt; &quot;&quot;</span><br><span class="line">        # 是否持久化，跟队列配置一致</span><br><span class="line">        durable=&gt; true</span><br><span class="line">        # 可选格式有 plain、json</span><br><span class="line">        codec =&gt; &quot;json&quot;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    rabbitmq &#123;</span><br><span class="line">		...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h4 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># MySQL数据库</span><br><span class="line">input &#123;</span><br><span class="line">  jdbc &#123;</span><br><span class="line">    # 数据库连接地址</span><br><span class="line">    jdbc_connection_string &#x3D;&gt; &quot;jdbc:mysql:&#x2F;&#x2F;host:port&#x2F;database&quot;</span><br><span class="line">    # jar驱动包地址</span><br><span class="line">    jdbc_driver_library &#x3D;&gt; &quot;&#x2F;路径&#x2F;mysql-connector-java-X.X.XX-bin.jar&quot;</span><br><span class="line">    # mysql驱动类名</span><br><span class="line">    jdbc_driver_class &#x3D;&gt; &quot;&quot;</span><br><span class="line">    # 用户相关配置</span><br><span class="line">    jdbc_user &#x3D;&gt; &quot;&quot;</span><br><span class="line">    jdbc_password &#x3D;&gt; &quot;&quot;</span><br><span class="line">    # 对应密码文件绝对路径</span><br><span class="line">    # jdbc_password_filepath &#x3D;&gt; &quot;&quot;</span><br><span class="line">    # 抓取数据的SQL语句</span><br><span class="line">    statement &#x3D;&gt; &quot;&quot;</span><br><span class="line">    # 对应sql执行文件绝对路径	</span><br><span class="line">    # statement_filepath &#x3D;&gt; &quot;&quot;</span><br><span class="line">    # 是否分页抓取</span><br><span class="line">    jdbc_paging_enabled &#x3D;&gt; &quot;true&quot;</span><br><span class="line">    # 每页抓取的数量</span><br><span class="line">    jdbc_page_size &#x3D;&gt; &quot;50000&quot;</span><br><span class="line">    # 定时任务（由左至右：分、时、天、月、年），全为&quot;*&quot;默认为每分钟都更新</span><br><span class="line">    schedule &#x3D;&gt; &quot;* * * * *&quot;	  </span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># MySQL数据库</span><br><span class="line">input &#123;</span><br><span class="line">  jdbc &#123;</span><br><span class="line">    # 数据库连接地址</span><br><span class="line">    jdbc_connection_string =&gt; &quot;jdbc:mysql://host:port/database&quot;</span><br><span class="line">    # jar驱动包地址</span><br><span class="line">    jdbc_driver_library =&gt; &quot;/路径/mysql-connector-java-X.X.XX-bin.jar&quot;</span><br><span class="line">    # mysql驱动类名</span><br><span class="line">    jdbc_driver_class =&gt; &quot;&quot;</span><br><span class="line">    # 用户相关配置</span><br><span class="line">    jdbc_user =&gt; &quot;&quot;</span><br><span class="line">    jdbc_password =&gt; &quot;&quot;</span><br><span class="line">    # 对应密码文件绝对路径</span><br><span class="line">    # jdbc_password_filepath =&gt; &quot;&quot;</span><br><span class="line">    # 抓取数据的SQL语句</span><br><span class="line">    statement =&gt; &quot;&quot;</span><br><span class="line">    # 对应sql执行文件绝对路径	</span><br><span class="line">    # statement_filepath =&gt; &quot;&quot;</span><br><span class="line">    # 是否分页抓取</span><br><span class="line">    jdbc_paging_enabled =&gt; &quot;true&quot;</span><br><span class="line">    # 每页抓取的数量</span><br><span class="line">    jdbc_page_size =&gt; &quot;50000&quot;</span><br><span class="line">    # 定时任务（由左至右：分、时、天、月、年），全为&quot;*&quot;默认为每分钟都更新</span><br><span class="line">    schedule =&gt; &quot;* * * * *&quot;	  </span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
 <h3 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h3><p>filter模块是<code>非必须</code>的，input接收到的数据如果需要<code>类型转换</code>、<code>过滤判断</code>、<code>增减字段</code>等操作就需要用到filter模块。如果input得到的数据<code>不需要二次加工可以不使用filter</code>，直接output到一个输出端。</p>
@@ -412,43 +452,43 @@ if (autoChangeMode === '1') {
 <blockquote>
 <p>grok内置正则表达式文件路径：<code>/logstash安装路径\vendor\bundle\jruby\x.x\gems\logstash-patterns-core-x.x.x\patterns\grok-patterns</code></p>
 </blockquote>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/31/kfUENFrxwpuYQ6n.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/03/31/kfUENFrxwpuYQ6n.png"></p>
 <ul>
 <li>基本语法</li>
 </ul>
-<p>用<code>%{}</code>表示一组<code>正则匹配规则</code>，<code>SYNTAX</code> 是指grok里已经<code>预定义好的正则表达式匹配别名</code>，<code>SEMANTIC</code> 是指匹配之后准备<code>输出的字段名称</code>。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">%&#123;SYNTAX:SEMANTIC&#125;</span><br></pre></td></tr></table></figure>
+<p>用<code>%&#123;&#125; </code>表示一组<code>正则匹配规则</code>，<code>SYNTAX</code> 是指grok里已经<code>预定义好的正则表达式匹配别名</code>，<code>SEMANTIC</code> 是指匹配之后准备<code>输出的字段名称</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">%&#123;SYNTAX:SEMANTIC&#125;</span><br></pre></td></tr></table></figure>
 
 
 <ul>
 <li>自定义</li>
 </ul>
 <p>grok组件可以将多组复杂的pattern放到一个文件中，方便修改和管理，比如在<code>/usr/local/logstash-7.3.0/patterns/</code>目录下，创建一个为<code>test</code>(文件名随意)的文件。</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/31/ofTtAsz7ElLgrJP.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/03/31/ofTtAsz7ElLgrJP.png"></p>
 <p>以nginx日志为例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">23&#x2F;May&#x2F;2019:14:40:10 +0800,1558593610.753,1660,0.028,&quot;0.028&quot;,647,200,10.16.172.20-&quot;123.126.70.235&quot;,POST &#x2F;330000&#x2F;v6&#x2F;feeds&#x2F;detail&#x2F;query HTTP&#x2F;1.1,&quot;app_key_vs&#x3D;2.6.0&amp;appid&#x3D;330000&amp;feed_count&#x3D;10&amp;feed_id&#x3D;507297347911306752&amp;flyer&#x3D;1558593610700&amp;idfa&#x3D;A6719238-5AF6-4B57-B4B6-676B0905704D&amp;log_user_id&#x3D;248137098937342464&amp;query_type&#x3D;6&amp;sig&#x3D;28d2c189144c5380113afff158ea257d&amp;since_time_comment&#x3D;3000-01-01%2001%3A01%3A01.000&amp;since_time_pure&#x3D;3000-01-01%2001%3A01%3A01.000&quot;,UPS&#x2F;&quot;10.18.76.18:8080&quot;,&quot;sns&#x2F;2.6.0 (com.sohu.sns; build:3; iOS 12.1.4) Alamofire&#x2F;1.0&quot;,-,cs-ol.sns.sohu.com,&quot;01374622096363527552&quot;,&quot;248137098937342464&quot;,&quot;872289029629325312@sohu.com&quot;,&quot;110501&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">23/May/2019:14:40:10 +0800,1558593610.753,1660,0.028,&quot;0.028&quot;,647,200,10.16.172.20-&quot;123.126.70.235&quot;,POST /330000/v6/feeds/detail/query HTTP/1.1,&quot;app_key_vs=2.6.0&amp;appid=330000&amp;feed_count=10&amp;feed_id=507297347911306752&amp;flyer=1558593610700&amp;idfa=A6719238-5AF6-4B57-B4B6-676B0905704D&amp;log_user_id=248137098937342464&amp;query_type=6&amp;sig=28d2c189144c5380113afff158ea257d&amp;since_time_comment=3000-01-01%2001%3A01%3A01.000&amp;since_time_pure=3000-01-01%2001%3A01%3A01.000&quot;,UPS/&quot;10.18.76.18:8080&quot;,&quot;sns/2.6.0 (com.sohu.sns; build:3; iOS 12.1.4) Alamofire/1.0&quot;,-,cs-ol.sns.sohu.com,&quot;01374622096363527552&quot;,&quot;248137098937342464&quot;,&quot;872289029629325312@sohu.com&quot;,&quot;110501&quot;</span><br></pre></td></tr></table></figure>
 
 <p>nginx 配置的日志格式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">log_format nginx_nobody_log &#39;$time_local,$msec,$request_length,$request_time,&quot;$upstream_response_time&quot;,$body_bytes_sent,$status,$remote_addr-&quot;$http_x_forwarded_for&quot;,$request,&quot;$request_body&quot;,UPS&#x2F;&quot;$upstream_addr&quot;,&quot;$http_user_agent&quot;,$http_referer,$host,&quot;$http_s_cid&quot;,&quot;$http_s_pid&quot;,&quot;$http_s_ppid&quot;,&quot;$http_p_appid&quot;&#39;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">log_format nginx_nobody_log &#x27;$time_local,$msec,$request_length,$request_time,&quot;$upstream_response_time&quot;,$body_bytes_sent,$status,$remote_addr-&quot;$http_x_forwarded_for&quot;,$request,&quot;$request_body&quot;,UPS/&quot;$upstream_addr&quot;,&quot;$http_user_agent&quot;,$http_referer,$host,&quot;$http_s_cid&quot;,&quot;$http_s_pid&quot;,&quot;$http_s_ppid&quot;,&quot;$http_p_appid&quot;&#x27;;</span><br></pre></td></tr></table></figure>
 
 <p>编辑<code>test</code>文件如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SNS_NGINX_ACCESS %&#123;HTTPDATE:time_local&#125;,%&#123;NUMBER:msec&#125;,%&#123;INT:request_length&#125;,%&#123;BASE16FLOAT:request_time&#125;,&quot;(?:-|%&#123;BASE16FLOAT:upstream_response_time&#125;)(,%&#123;NUMBER:upstream_response_time2&#125;)?&quot;,%&#123;INT:body_bytes_sent&#125;,%&#123;INT:status&#125;,%&#123;IPORHOST:remote_addr&#125;-&quot;%&#123;DATA:http_x_forwarded_for&#125;(, %&#123;DATA:http_x_forwarded_for2&#125;)?&quot;,%&#123;WORD:method&#125; %&#123;URIPATH:interface&#125;(?:%&#123;DATA:uri_param&#125;)? HTTP&#x2F;%&#123;NUMBER:http_version&#125;,&quot;%&#123;DATA:request_body&#125;&quot;,UPS&#x2F;&quot;%&#123;DATA:upstream_addr&#125;(, %&#123;DATA:upstream_addr2&#125;)?&quot;,&quot;%&#123;DATA:http_user_agent&#125;&quot;,%&#123;DATA:http_referer&#125;,%&#123;IPORHOST:host&#125;,&quot;%&#123;DATA:http_s_cid&#125;&quot;,&quot;%&#123;DATA:http_s_pid&#125;&quot;,&quot;%&#123;DATA:http_s_ppid&#125;&quot;,&quot;%&#123;DATA:http_p_appid&#125;&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SNS_NGINX_ACCESS %&#123;HTTPDATE:time_local&#125;,%&#123;NUMBER:msec&#125;,%&#123;INT:request_length&#125;,%&#123;BASE16FLOAT:request_time&#125;,&quot;(?:-|%&#123;BASE16FLOAT:upstream_response_time&#125;)(,%&#123;NUMBER:upstream_response_time2&#125;)?&quot;,%&#123;INT:body_bytes_sent&#125;,%&#123;INT:status&#125;,%&#123;IPORHOST:remote_addr&#125;-&quot;%&#123;DATA:http_x_forwarded_for&#125;(, %&#123;DATA:http_x_forwarded_for2&#125;)?&quot;,%&#123;WORD:method&#125; %&#123;URIPATH:interface&#125;(?:%&#123;DATA:uri_param&#125;)? HTTP/%&#123;NUMBER:http_version&#125;,&quot;%&#123;DATA:request_body&#125;&quot;,UPS/&quot;%&#123;DATA:upstream_addr&#125;(, %&#123;DATA:upstream_addr2&#125;)?&quot;,&quot;%&#123;DATA:http_user_agent&#125;&quot;,%&#123;DATA:http_referer&#125;,%&#123;IPORHOST:host&#125;,&quot;%&#123;DATA:http_s_cid&#125;&quot;,&quot;%&#123;DATA:http_s_pid&#125;&quot;,&quot;%&#123;DATA:http_s_ppid&#125;&quot;,&quot;%&#123;DATA:http_p_appid&#125;&quot;</span><br></pre></td></tr></table></figure>
 
 <p>引用pattern文件：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># SNS_NGINX_ACCESS 自定义的pattern别名</span><br><span class="line">grok &#123;</span><br><span class="line">    patterns_dir &#x3D;&gt; &quot;&#x2F;usr&#x2F;local&#x2F;logstash-7.3.0&#x2F;patterns&quot;</span><br><span class="line">    match &#x3D;&gt; &#123;</span><br><span class="line">        &quot;message&quot; &#x3D;&gt; &quot;%&#123;SNS_NGINX_ACCESS&#125;&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># SNS_NGINX_ACCESS 自定义的pattern别名</span><br><span class="line">grok &#123;</span><br><span class="line">    patterns_dir =&gt; &quot;/usr/local/logstash-7.3.0/patterns&quot;</span><br><span class="line">    match =&gt; &#123;</span><br><span class="line">        &quot;message&quot; =&gt; &quot;%&#123;SNS_NGINX_ACCESS&#125;&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p><code>在线调试</code> <a href="https://grokdebug.herokuapp.com" target="_blank" rel="noopener">grok规则匹配地址</a></p>
+<p><code>在线调试</code> <a target="_blank" rel="noopener" href="https://grokdebug.herokuapp.com/">grok规则匹配地址</a></p>
 </blockquote>
 <p>从Kibana 6.4.0版本开始，<code>Dev Tools</code>自带了grok调试功能</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/31/aVUhZPlX975TeYs.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/03/31/aVUhZPlX975TeYs.png"></p>
 <ul>
 <li>其他配置</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">filter &#123;</span><br><span class="line">    # filter模块内也提供了众多插件</span><br><span class="line">    # 常用修改，字段拆分、连接、大小写、字段改名、类型变换</span><br><span class="line">    mutate &#123;</span><br><span class="line">        # 将读到的数据用’,‘ 拆分</span><br><span class="line">        split &#x3D;&gt; [&quot;message&quot;,&quot;,&quot;]</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    # 日期类型的字段处理</span><br><span class="line">    # 日期插件有区别于其他的插件，默认会改写当前数据记录所代表的时间(@timestamp这个字段)，在通过kibana进行时间范围查询时会使用到@timestamp</span><br><span class="line">    date &#123;</span><br><span class="line">        match &#x3D;&gt; [&quot;time&quot;, &quot;yyyy-MM-dd HH:mm:ss.SSS&quot;]</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    # 正则处理插件</span><br><span class="line">    grok &#123;</span><br><span class="line">        match &#x3D;&gt; &#123;</span><br><span class="line">            &quot;params&quot; &#x3D;&gt; &quot;Method:%&#123;DATA:method&#125;,...TimeId:%&#123;INT:timeId&#125;&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    # kv类型的字符串字段处理，如&quot;params&#x3D;&quot;?app_key_vs&#x3D;2.6.0&amp;appid&#x3D;330000&amp;feed_count&#x3D;10&amp;feed_id&#x3D;xxx&quot;</span><br><span class="line">    kv &#123;</span><br><span class="line">        source &#x3D;&gt; &quot;params&quot;</span><br><span class="line">        field_split &#x3D;&gt; &quot;&#x3D;&quot;</span><br><span class="line">        value_split &#x3D;&gt; &quot;,&quot;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    # 处理json字符串字段，如param&#x3D;&quot;&#123;a:1,b:2&#125;&quot;</span><br><span class="line">    json &#123;</span><br><span class="line">        source &#x3D;&gt; &quot;param&quot;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    # 丢弃接收到的数据</span><br><span class="line">    drop &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">filter &#123;</span><br><span class="line">    # filter模块内也提供了众多插件</span><br><span class="line">    # 常用修改，字段拆分、连接、大小写、字段改名、类型变换</span><br><span class="line">    mutate &#123;</span><br><span class="line">        # 将读到的数据用’,‘ 拆分</span><br><span class="line">        split =&gt; [&quot;message&quot;,&quot;,&quot;]</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    # 日期类型的字段处理</span><br><span class="line">    # 日期插件有区别于其他的插件，默认会改写当前数据记录所代表的时间(@timestamp这个字段)，在通过kibana进行时间范围查询时会使用到@timestamp</span><br><span class="line">    date &#123;</span><br><span class="line">        match =&gt; [&quot;time&quot;, &quot;yyyy-MM-dd HH:mm:ss.SSS&quot;]</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    # 正则处理插件</span><br><span class="line">    grok &#123;</span><br><span class="line">        match =&gt; &#123;</span><br><span class="line">            &quot;params&quot; =&gt; &quot;Method:%&#123;DATA:method&#125;,...TimeId:%&#123;INT:timeId&#125;&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    # kv类型的字符串字段处理，如&quot;params=&quot;?app_key_vs=2.6.0&amp;appid=330000&amp;feed_count=10&amp;feed_id=xxx&quot;</span><br><span class="line">    kv &#123;</span><br><span class="line">        source =&gt; &quot;params&quot;</span><br><span class="line">        field_split =&gt; &quot;=&quot;</span><br><span class="line">        value_split =&gt; &quot;,&quot;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    # 处理json字符串字段，如param=&quot;&#123;a:1,b:2&#125;&quot;</span><br><span class="line">    json &#123;</span><br><span class="line">        source =&gt; &quot;param&quot;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    # 丢弃接收到的数据</span><br><span class="line">    drop &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
 <h3 id="output"><a href="#output" class="headerlink" title="output"></a>output</h3><p>output内输出配置与input内输入配置大同小异，其他中间件配置在此不再累述</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">output &#123;</span><br><span class="line">    # debug 调试使用，由于性能的关系，生产环境禁止使用</span><br><span class="line">    stdout&#123;codec &#x3D;&gt; rubydebug&#125;</span><br><span class="line">	</span><br><span class="line">    # 输出到Elasticsearch存储</span><br><span class="line">    elasticsearch &#123;</span><br><span class="line">        # ES IP地址与端口，可多个</span><br><span class="line">        hosts &#x3D;&gt; [&quot;ip:port&quot;,...]</span><br><span class="line">        # 按天命名的index</span><br><span class="line">        index &#x3D;&gt; &quot;app-%&#123;+YYYY.MM.dd&#125;&quot;</span><br><span class="line">        # 文档类型</span><br><span class="line">        document_type &#x3D;&gt; &quot;&quot;    </span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    file&#123;</span><br><span class="line">        # 按天命名输出文件</span><br><span class="line">        path &#x3D;&gt; &quot;&#x2F;usr&#x2F;local&#x2F;logs&#x2F;app-%&#123;+YYYY-MM-dd&#125;.log&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">output &#123;</span><br><span class="line">    # debug 调试使用，由于性能的关系，生产环境禁止使用</span><br><span class="line">    stdout&#123;codec =&gt; rubydebug&#125;</span><br><span class="line">	</span><br><span class="line">    # 输出到Elasticsearch存储</span><br><span class="line">    elasticsearch &#123;</span><br><span class="line">        # ES IP地址与端口，可多个</span><br><span class="line">        hosts =&gt; [&quot;ip:port&quot;,...]</span><br><span class="line">        # 按天命名的index</span><br><span class="line">        index =&gt; &quot;app-%&#123;+YYYY.MM.dd&#125;&quot;</span><br><span class="line">        # 文档类型</span><br><span class="line">        document_type =&gt; &quot;&quot;    </span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    file&#123;</span><br><span class="line">        # 按天命名输出文件</span><br><span class="line">        path =&gt; &quot;/usr/local/logs/app-%&#123;+YYYY-MM-dd&#125;.log&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
 <h2 id="Elasticsearch"><a href="#Elasticsearch" class="headerlink" title="Elasticsearch"></a>Elasticsearch</h2><p>Elasticsearch提供了众多的api和丰富的功能；常用的API分为如下几类</p>
@@ -465,27 +505,27 @@ if (autoChangeMode === '1') {
 <h3 id="获取es信息"><a href="#获取es信息" class="headerlink" title="获取es信息"></a>获取es信息</h3><ul>
 <li>查看es的基本信息(包括版本号、集群名称、lucene版本号等)</li>
 </ul>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/30/XrEoiaupxR5Fd3h.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/03/30/XrEoiaupxR5Fd3h.png"></p>
 <ul>
 <li>查看es对应index的aliases、mappings、settings信息</li>
 </ul>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/30/t6xI2j1PbhAq9ir.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/03/30/t6xI2j1PbhAq9ir.png"></p>
 <h3 id="搜索-Search"><a href="#搜索-Search" class="headerlink" title="搜索(Search)"></a>搜索(Search)</h3><p>查询可以分别使用<code>URI search</code>和<code>Request body</code>两种查询方式</p>
 <blockquote>
-<p><code>URI search</code> 查询方式，语法参考 <a href="https://www.elastic.co/guide/en/elasticsearch/reference/6.6/search-uri-request.html" target="_blank" rel="noopener">search-uri-request</a><br><code>request body</code> 查询方式，语法参考 <a href="https://www.elastic.co/guide/en/elasticsearch/reference/6.6/search-request-body.html" target="_blank" rel="noopener">search-request-body</a></p>
+<p><code>URI search</code> 查询方式，语法参考 <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.6/search-uri-request.html">search-uri-request</a><br><code>request body</code> 查询方式，语法参考 <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.6/search-request-body.html">search-request-body</a></p>
 </blockquote>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/30/VaDqjW8KIFhUEck.png" alt=""></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/30/9pJ6I7KZmnh1DbG.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/03/30/VaDqjW8KIFhUEck.png"></p>
+<p><img src="https://s2.loli.net/2022/03/30/9pJ6I7KZmnh1DbG.png"></p>
 <p>上图返回结果中有一个 <code>_scroll_id</code> 字段，要<code>基于这个游标继续遍历</code>数据只需要像下面这样，调用 <code>/_search/scroll</code>接口，将前面返回结果的<code>_scroll_id作为scroll_id参数值</code>；<code>scroll:5m</code>表示将当前的scroll_id查询窗口<code>再次延长5分钟</code>。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET &#x2F;_search&#x2F;scroll</span><br><span class="line">&#123;</span><br><span class="line">    &quot;scroll&quot;:&quot;5m&quot;,</span><br><span class="line">    &quot;scroll_id&quot;:&quot;DXF1ZXJ5QW5kRmV0Y2gBAAAAAAAAexUWX3ptTVA0aWRRRi1YMlBMZmN6a2ZDUQ&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">GET /_search/scroll</span><br><span class="line">&#123;</span><br><span class="line">    &quot;scroll&quot;:&quot;5m&quot;,</span><br><span class="line">    &quot;scroll_id&quot;:&quot;DXF1ZXJ5QW5kRmV0Y2gBAAAAAAAAexUWX3ptTVA0aWRRRi1YMlBMZmN6a2ZDUQ&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>游标超过时间窗口会自动清理，也可以通过 <code>DELETE /_search/scroll</code> 来<code>清理一个游标</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">DELETE &#x2F;_search&#x2F;scroll</span><br><span class="line">&#123;</span><br><span class="line">    &quot;scroll_id&quot; : &quot;DXF1ZXJ5QW5kRmV0Y2gBAAAAAAAAexUWX3ptTVA0aWRRRi1YMlBMZmN6a2ZDUQ&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">DELETE /_search/scroll</span><br><span class="line">&#123;</span><br><span class="line">    &quot;scroll_id&quot; : &quot;DXF1ZXJ5QW5kRmV0Y2gBAAAAAAAAexUWX3ptTVA0aWRRRi1YMlBMZmN6a2ZDUQ&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="统计-Count"><a href="#统计-Count" class="headerlink" title="统计(Count)"></a>统计(Count)</h3><p>统计数量可使用 Count；下右图<code>count</code>表示查询命中的数量</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/30/emrBS2pf4JIvia5.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/03/30/emrBS2pf4JIvia5.png"></p>
 <blockquote>
-<p><code>query</code>部分es提供了Query DSL查询语法，语法参考 <a href="https://www.elastic.co/guide/en/elasticsearch/reference/6.6/query-dsl.html" target="_blank" rel="noopener">query-dsl</a></p>
+<p><code>query</code>部分es提供了Query DSL查询语法，语法参考 <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.6/query-dsl.html">query-dsl</a></p>
 </blockquote>
 <h3 id="聚合-Aggregation"><a href="#聚合-Aggregation" class="headerlink" title="聚合(Aggregation)"></a>聚合(Aggregation)</h3><p>统计某索引每天(每小时)的数量、按照某个字段计数等，类似的查询就要用到aggregation聚合查询</p>
 <ul>
@@ -499,25 +539,25 @@ if (autoChangeMode === '1') {
 <li><code>size:0</code>：表示不返回具体的记录，hits部分是空数组</li>
 </ul>
 </blockquote>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/30/QPXzsWS4NOerFU2.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/03/30/QPXzsWS4NOerFU2.png"></p>
 <ul>
 <li>查询日期范围</li>
 </ul>
-<p>查询的日期范围，并且只查询@version=1的数量，可以在查询增加query部分，如下</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/30/Y64ARNDv8sGrXfq.png" alt=""></p>
+<p>查询的日期范围，并且只查询@version&#x3D;1的数量，可以在查询增加query部分，如下</p>
+<p><img src="https://s2.loli.net/2022/03/30/Y64ARNDv8sGrXfq.png"></p>
 <ul>
 <li>查询一天内接口调用次数</li>
 </ul>
 <p>使用<code>terms</code>进行聚合，将aggs部分修改成如下，<code>interface.keyword</code> 就是接口路径(<code>这里的interface.keyword是经过grok插件过滤后的字段</code>)，size:5 表示只展示前面5个(默认是按照doc_count倒序排序)</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;aggs&quot;: &#123;</span><br><span class="line">    &quot;interface_count&quot;: &#123;</span><br><span class="line">      &quot;terms&quot;: &#123;</span><br><span class="line">        &quot;field&quot;: &quot;interface.keyword&quot;,</span><br><span class="line">        &quot;size&quot;: 5</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;size&quot;: 0,</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;bool&quot;: &#123;</span><br><span class="line">      &quot;must&quot;: [</span><br><span class="line">        &#123;&quot;range&quot;: &#123;</span><br><span class="line">            &quot;@timestamp&quot;: &#123;</span><br><span class="line">              &quot;gte&quot;: &quot;2020-05-20&quot;,</span><br><span class="line">              &quot;lte&quot;: &quot;2020-05-21&quot;,</span><br><span class="line">              &quot;format&quot;: &quot;yyyy-MM-dd&quot;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,&#123;</span><br><span class="line">          &quot;match&quot;: &#123;</span><br><span class="line">            &quot;status&quot;: 200</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;aggs&quot;: &#123;</span><br><span class="line">    &quot;interface_count&quot;: &#123;</span><br><span class="line">      &quot;terms&quot;: &#123;</span><br><span class="line">        &quot;field&quot;: &quot;interface.keyword&quot;,</span><br><span class="line">        &quot;size&quot;: 5</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;size&quot;: 0,</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;bool&quot;: &#123;</span><br><span class="line">      &quot;must&quot;: [</span><br><span class="line">        &#123;&quot;range&quot;: &#123;</span><br><span class="line">            &quot;@timestamp&quot;: &#123;</span><br><span class="line">              &quot;gte&quot;: &quot;2020-05-20&quot;,</span><br><span class="line">              &quot;lte&quot;: &quot;2020-05-21&quot;,</span><br><span class="line">              &quot;format&quot;: &quot;yyyy-MM-dd&quot;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,&#123;</span><br><span class="line">          &quot;match&quot;: &#123;</span><br><span class="line">            &quot;status&quot;: 200</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/31/fbIR368jyzcWlwT.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/03/31/fbIR368jyzcWlwT.png"></p>
 <ul>
 <li>查询一天内每小时接口调用次数</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&quot;aggs&quot;: &#123;</span><br><span class="line">    &quot;interface_count&quot;: &#123;</span><br><span class="line">      &quot;terms&quot;: &#123;</span><br><span class="line">        &quot;field&quot;: &quot;interface.keyword&quot;,</span><br><span class="line">        &quot;size&quot;: 5</span><br><span class="line">      &#125;</span><br><span class="line">      ,</span><br><span class="line">      &quot;aggs&quot; :&#123;</span><br><span class="line">        &quot;hours&quot; : &#123;</span><br><span class="line">          &quot;date_histogram&quot;: &#123;</span><br><span class="line">            &quot;field&quot;: &quot;@timestamp&quot;,</span><br><span class="line">            &quot;interval&quot;: &quot;1h&quot; &#x2F;&#x2F;按照1小时间隔分布</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&quot;aggs&quot;: &#123;</span><br><span class="line">    &quot;interface_count&quot;: &#123;</span><br><span class="line">      &quot;terms&quot;: &#123;</span><br><span class="line">        &quot;field&quot;: &quot;interface.keyword&quot;,</span><br><span class="line">        &quot;size&quot;: 5</span><br><span class="line">      &#125;</span><br><span class="line">      ,</span><br><span class="line">      &quot;aggs&quot; :&#123;</span><br><span class="line">        &quot;hours&quot; : &#123;</span><br><span class="line">          &quot;date_histogram&quot;: &#123;</span><br><span class="line">            &quot;field&quot;: &quot;@timestamp&quot;,</span><br><span class="line">            &quot;interval&quot;: &quot;1h&quot; //按照1小时间隔分布</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/31/xo9OzZ5fKk6NMub.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/03/31/xo9OzZ5fKk6NMub.png"></p>
 <h2 id="Kibana"><a href="#Kibana" class="headerlink" title="Kibana"></a>Kibana</h2><p>通过<code>grok匹配</code>存储在Elasticsearch中的字段，都是可以使用Kibana的 <code>Discover</code>菜单的中 “Add a filter” 进行查询</p>
 <h3 id="基础查询"><a href="#基础查询" class="headerlink" title="基础查询"></a>基础查询</h3><h4 id="两种过滤方式"><a href="#两种过滤方式" class="headerlink" title="两种过滤方式"></a>两种过滤方式</h4><blockquote>
 <ul>
@@ -525,25 +565,25 @@ if (autoChangeMode === '1') {
 <li><code>&quot;字段名.keyword&quot;</code>：使用interface整体进行查询<code>不支持分词</code>，使用时Kibana时也会弹出下拉列表。</li>
 </ul>
 </blockquote>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/31/ojzuIUA34rq6TYX.png" alt=""></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/31/PZQe8xGrSkfKd3j.png" alt=""></p>
-<h4 id="单字段多词查询"><a href="#单字段多词查询" class="headerlink" title="单字段多词查询"></a>单字段多词查询</h4><p>查询<code>一个字段的多个值</code>可以使用<code>“is one of”</code>或者<code>“is not one of”</code> ，用来表示要查询的分词在其中或者不在其中：</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/31/HIoOhWz5gNFLCbi.png" alt=""></p>
-<h4 id="多过滤条件查询"><a href="#多过滤条件查询" class="headerlink" title="多过滤条件查询"></a>多过滤条件查询</h4><p>进行多个字段查询之间的关系是 <code>and</code> 关系，如下 查询的是“interface包含feeds关键字的并且 appid=330000 并且 status是200的 ”</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/31/BNoLluJr2YRsmFx.png" alt=""></p>
-<h3 id="高级查询"><a href="#高级查询" class="headerlink" title="高级查询"></a>高级查询</h3><h4 id="全文搜索"><a href="#全文搜索" class="headerlink" title="全文搜索"></a>全文搜索</h4><p>直接搜索框输入查询内容：<code>content 或 &quot;${content}&quot;</code>，如果<code>不写引号</code>，那么搜索内容将按照<code>分词处理</code>，不区分<code>内容顺序</code></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/xUOD579eqGkwzo8.png" alt=""></p>
-<h4 id="字段搜索"><a href="#字段搜索" class="headerlink" title="字段搜索"></a>字段搜索</h4><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/31/CgMl7QTpWfmecvE.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/03/31/ojzuIUA34rq6TYX.png"></p>
+<p><img src="https://s2.loli.net/2022/03/31/PZQe8xGrSkfKd3j.png"></p>
+<h4 id="单字段多词查询"><a href="#单字段多词查询" class="headerlink" title="单字段多词查询"></a>单字段多词查询</h4><p>查询<code>一个字段的多个值</code>可以使用<code>“is one of”</code>或者<code> “is not one of”</code> ，用来表示要查询的分词在其中或者不在其中：</p>
+<p><img src="https://s2.loli.net/2022/03/31/HIoOhWz5gNFLCbi.png"></p>
+<h4 id="多过滤条件查询"><a href="#多过滤条件查询" class="headerlink" title="多过滤条件查询"></a>多过滤条件查询</h4><p>进行多个字段查询之间的关系是 <code>and</code> 关系，如下 查询的是“interface包含feeds关键字的并且 appid&#x3D;330000 并且 status是200的 ”</p>
+<p><img src="https://s2.loli.net/2022/03/31/BNoLluJr2YRsmFx.png"></p>
+<h3 id="高级查询"><a href="#高级查询" class="headerlink" title="高级查询"></a>高级查询</h3><h4 id="全文搜索"><a href="#全文搜索" class="headerlink" title="全文搜索"></a>全文搜索</h4><p>直接搜索框输入查询内容：<code>content 或 &quot;$&#123;content&#125;&quot;</code>，如果<code>不写引号</code>，那么搜索内容将按照<code>分词处理</code>，不区分<code>内容顺序</code></p>
+<p><img src="https://s2.loli.net/2022/04/01/xUOD579eqGkwzo8.png"></p>
+<h4 id="字段搜索"><a href="#字段搜索" class="headerlink" title="字段搜索"></a>字段搜索</h4><p><img src="https://s2.loli.net/2022/03/31/CgMl7QTpWfmecvE.png"></p>
 <h4 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h4><blockquote>
 <p><code>?</code>：匹配单个字符，如<code>app?d</code><br><code>*</code>：匹配0到多个字符，如<code>searc*h</code><br>通配符不能做为第一个字符，如<code>*test，?test</code></p>
 </blockquote>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/fqBAdVJyuSjEvnU.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/01/fqBAdVJyuSjEvnU.png"></p>
 <h4 id="模糊搜索"><a href="#模糊搜索" class="headerlink" title="模糊搜索"></a>模糊搜索</h4><blockquote>
 <p><code>~</code>：在单词后面加上<code>~</code>启用模糊搜索，可搜到近似单词；还可指定相似度<code>cromm~1</code>(默认2)，越大值越接近搜索的原始值</p>
 </blockquote>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/UwRWBec1NMXJ7lC.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/01/UwRWBec1NMXJ7lC.png"></p>
 <h4 id="近似搜索"><a href="#近似搜索" class="headerlink" title="近似搜索"></a>近似搜索</h4><p>在<code>短语后加上~</code>，可以搜到被隔开或顺序不同的单词</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/iPepcNUg4WZBav8.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/01/iPepcNUg4WZBav8.png"></p>
 <h4 id="逻辑操作"><a href="#逻辑操作" class="headerlink" title="逻辑操作"></a>逻辑操作</h4><blockquote>
 <p><code>逻辑符 +、-</code></p>
 <ul>
@@ -552,27 +592,27 @@ if (autoChangeMode === '1') {
 </ul>
 <p><code>逻辑符 AND、OR</code><br>((quick AND fox) OR (brown AND fox) OR fox) AND NOT news</p>
 </blockquote>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/S4VOsZMQviKIbET.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/01/S4VOsZMQviKIbET.png"></p>
 <h4 id="范围搜索"><a href="#范围搜索" class="headerlink" title="范围搜索"></a>范围搜索</h4><p>有如下写法：</p>
 <blockquote>
 <ul>
 <li>[1,5}，含1但不含5</li>
 <li>age:&gt;10</li>
-<li>age:&lt;=10</li>
-<li>age:(&gt;=10 AND &lt;20)</li>
-<li>age:(+&gt;=10 +&lt;20)</li>
+<li>age:&lt;&#x3D;10</li>
+<li>age:(&gt;&#x3D;10 AND &lt;20)</li>
+<li>age:(+&gt;&#x3D;10 +&lt;20)</li>
 </ul>
 </blockquote>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/R2JlmkIe8sySNDb.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/01/R2JlmkIe8sySNDb.png"></p>
 <h4 id="转义特殊字符"><a href="#转义特殊字符" class="headerlink" title="转义特殊字符"></a>转义特殊字符</h4><p>以下字符搜索时需用<code>\</code>转义</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">+ - &#x3D; &amp;&amp; || &gt; &lt; ! ( ) &#123; &#125; [ ] ^ &quot; ~ * ? : \ &#x2F;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">+ - = &amp;&amp; || &gt; &lt; ! ( ) &#123; &#125; [ ] ^ &quot; ~ * ? : \ /</span><br></pre></td></tr></table></figure>
 
 <h3 id="数据统计"><a href="#数据统计" class="headerlink" title="数据统计"></a>数据统计</h3><p>若想清楚某个接口最近1小时都有哪些用户和都来自哪些城市。这里就用到了<code>Kibana Visualize</code>。</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/JsxiwOgyYSqMU1z.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/01/JsxiwOgyYSqMU1z.png"></p>
 <p>选择 <code>Data Table</code> 数据表视图，它可以下载成csv格式的文件。</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/rkXZpVe6NWbuj3t.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/01/rkXZpVe6NWbuj3t.png"></p>
 <p>选择想要查询的索引</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/lSbhBp6P245Q1Ec.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/01/lSbhBp6P245Q1Ec.png"></p>
 <blockquote>
 <p><code>趋势图表</code>和<code>数据表</code>都分为 <code>Metrics</code>和<code>Buckets</code>两部分：</p>
 <ul>
@@ -581,76 +621,74 @@ if (autoChangeMode === '1') {
 </ul>
 </blockquote>
 <p>下图的DataTable为查询<code>接口</code>包含<code>&quot;repost&quot;</code>字段，最近15分钟内 前10个调用最多的用户id。</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/NwMTBagbkGc59uA.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/01/NwMTBagbkGc59uA.png"></p>
 <p>在<code>Bucket</code>上增加<code>http_s_pid.keyword</code>和<code>geoip.city_name</code>， 数据表 2 列是在 1 列的前提下查询出来的<code>城市名称</code></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/aYDULhpAQBVNqMX.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/01/aYDULhpAQBVNqMX.png"></p>
 <p>给每个metric和bucket<code>起别名</code>，然后<code>点击Raw</code>或者<code>Formatted</code>将查询到的<code>数据下载</code>成csv文件</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/hVn85KaFpre6RwX.png" alt=""></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/EPlHQihJn7gpO9C.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/01/hVn85KaFpre6RwX.png"></p>
+<p><img src="https://s2.loli.net/2022/04/01/EPlHQihJn7gpO9C.png"></p>
 <h3 id="趋势图绘制"><a href="#趋势图绘制" class="headerlink" title="趋势图绘制"></a>趋势图绘制</h3><p>比如想要了解某些接口<code>平均响应时间</code>和50%，75%，95%的<code>响应时间走向</code>。就可以使用<code>Line视图</code></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/SZtnCvrh2ioqlz5.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/01/SZtnCvrh2ioqlz5.png"></p>
 <blockquote>
 <p>想要进行均值，最大，最小，百分比分布等这些统计，必须得有<code>Number类型</code>的字段，如果<code>前期logstash</code>没有进行合适的数据类型转换，就需要<code>在Kibana对应索引下</code>的<code>Script Field</code>来实现基于某个字段的类型转换(Script Field中需要编写Script语句，在此不做详解)</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/185sDJxiPa7XHEY.png" alt=""></p>
+<p><img src="https://s2.loli.net/2022/04/01/185sDJxiPa7XHEY.png"></p>
 </blockquote>
-<p>统计最近1小时包含timeline/template的接口调用数量折线图。想要统计响应时间，就要先修改Metric的统计方式。</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/JLdztXBD1OMwrvE.png" alt=""></p>
+<p>统计最近1小时包含timeline&#x2F;template的接口调用数量折线图。想要统计响应时间，就要先修改Metric的统计方式。</p>
+<p><img src="https://s2.loli.net/2022/04/01/JLdztXBD1OMwrvE.png"></p>
 <p>增加两个<code>Y-Axis</code>的metric，分别是对 <code>request_time 求均值</code>和对 <code>request_time 求百分比</code>分布</p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/cyIawVGzH3NpvRJ.png" alt=""></p>
-<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/04/01/l3JxP41jaVGfrnA.png" alt=""></p>
-</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:minkeyto@qq.com">灵熙云</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://www.goitman.cn/2022/04/06/%E5%AE%9E%E6%88%98%20ELK%20%E4%BC%98%E9%9B%85%E7%AE%A1%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%A5%E5%BF%97/">http://www.goitman.cn/2022/04/06/实战 ELK 优雅管理服务器日志/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://www.goitman.cn" target="_blank">灵熙云工作室</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Elasticsearch/">Elasticsearch</a><a class="post-meta__tags" href="/tags/Logstash/">Logstash</a><a class="post-meta__tags" href="/tags/Kibana/">Kibana</a><a class="post-meta__tags" href="/tags/Filebeat/">Filebeat</a><a class="post-meta__tags" href="/tags/%E9%9B%86%E4%B8%AD%E5%BC%8F%E6%97%A5%E5%BF%97/">集中式日志</a></div><div class="post_share"><div class="social-share" data-image="https://s2.loli.net/2022/04/27/9xQwapEFrtc4HnP.jpg" data-sites="wechat,weibo,qq,facebook,twitter"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"/><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js"></script></div></div><div class="post-reward"><button class="reward-button" type="button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><img class="post-qr-code__img" src="/file/wechat.jpg" alt="微信" onclick="window.open('/file/wechat.jpg')"/><div class="post-qr-code__desc">微信</div></li></ul></div></button></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/04/07/Supervisor%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/"><img class="prev-cover" data-src="https://s2.loli.net/2022/04/07/VUezAxHglWuKPpT.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Supervisor安装与配置</div></div></a></div><div class="next-post pull-right"><a href="/2022/03/22/%E7%94%A8%E5%A5%BDSpringBoot%E5%86%85%E7%BD%AE%E5%B7%A5%E5%85%B7%E7%B1%BB/"><img class="next-cover" data-src="https://s2.loli.net/2022/03/22/aWmpkPE8tzr74cw.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">用好SpringBoot内置工具类</div></div></a></div></nav><hr><div id="post-comment"><div class="comment-head"><div class="comment-headling"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div class="comments-items-1" data-name="Valine"><div class="vcomment" id="vcomment"></div><script>function loadvaline () {  
-  var requestSetting = function (from,set) {
-    var from = from
-    var setting = set.split(',').filter(function(item){
-    return from.indexOf(item) > -1
-    });
-    setting = setting.length == 0 ? from :setting;
-    return setting
+<p><img src="https://s2.loli.net/2022/04/01/cyIawVGzH3NpvRJ.png"></p>
+<p><img src="https://s2.loli.net/2022/04/01/l3JxP41jaVGfrnA.png"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://www.goitman.cn">灵熙云</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://www.goitman.cn/2022/04/06/%E5%AE%9E%E6%88%98%20ELK%20%E4%BC%98%E9%9B%85%E7%AE%A1%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%A5%E5%BF%97/">http://www.goitman.cn/2022/04/06/实战 ELK 优雅管理服务器日志/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://www.goitman.cn" target="_blank">灵熙云工作室</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Elasticsearch/">Elasticsearch</a><a class="post-meta__tags" href="/tags/Logstash/">Logstash</a><a class="post-meta__tags" href="/tags/Kibana/">Kibana</a><a class="post-meta__tags" href="/tags/Filebeat/">Filebeat</a><a class="post-meta__tags" href="/tags/%E9%9B%86%E4%B8%AD%E5%BC%8F%E6%97%A5%E5%BF%97/">集中式日志</a></div><div class="post_share"><div class="social-share" data-image="https://s2.loli.net/2022/04/07/NOCjUTqIv1XhwkL.jpg" data-sites="wechat,weibo,qq,facebook,twitter"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/gh/overtrue/share.js@master/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/file/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/file/wechat.jpg" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/04/07/Supervisor%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/"><img class="prev-cover" src="https://s2.loli.net/2022/04/07/VUezAxHglWuKPpT.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Supervisor安装与配置</div></div></a></div><div class="next-post pull-right"><a href="/2022/03/22/%E7%94%A8%E5%A5%BDSpringBoot%E5%86%85%E7%BD%AE%E5%B7%A5%E5%85%B7%E7%B1%BB/"><img class="next-cover" src="https://s2.loli.net/2022/03/22/aWmpkPE8tzr74cw.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">用好SpringBoot内置工具类</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/file/head.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">灵熙云</div><div class="author-info__description">空话连篇，不如劳动实践！</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">35</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">123</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" href="https://www.goitman.cn/"><i class="fab fa-github"></i><span>加入书签</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://blog.csdn.net/minkeyto" target="_blank" title="CSDN"><i class="fa fa-university"></i></a><a class="social-icon" href="/file/wx.png" target="_blank" title="抖音号"><i class="fas fa-video"></i></a><a class="social-icon" href="https://github.com/wangdaicong" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="/about/" target="_blank" title="关于本站"><i class="fa fa-address-book"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">你好，欢迎来到我的博客！</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/04/27/So%20easy%20Spring%E4%BA%8B%E5%8A%A1%E5%9B%9E%E6%BB%9A%E6%9C%BA%E5%88%B6/" title="So easy Spring事务回滚机制"><img src="https://s2.loli.net/2022/04/27/9xQwapEFrtc4HnP.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="So easy Spring事务回滚机制"/></a><div class="content"><a class="title" href="/2022/04/27/So%20easy%20Spring%E4%BA%8B%E5%8A%A1%E5%9B%9E%E6%BB%9A%E6%9C%BA%E5%88%B6/" title="So easy Spring事务回滚机制">So easy Spring事务回滚机制</a><time datetime="2022-04-27T08:57:26.164Z" title="发表于 2022-04-27 16:57:26">2022-04-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/04/11/Caddy%E8%B6%85%E8%B6%8ANginx%EF%BC%8C%E4%B8%8B%E4%B8%80%E4%BB%A3Web%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="Caddy超越Nginx，下一代Web服务器？"><img src="https://s2.loli.net/2022/04/11/sSTLlxib6jRZCkH.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Caddy超越Nginx，下一代Web服务器？"/></a><div class="content"><a class="title" href="/2022/04/11/Caddy%E8%B6%85%E8%B6%8ANginx%EF%BC%8C%E4%B8%8B%E4%B8%80%E4%BB%A3Web%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="Caddy超越Nginx，下一代Web服务器？">Caddy超越Nginx，下一代Web服务器？</a><time datetime="2022-04-11T03:36:30.619Z" title="发表于 2022-04-11 11:36:30">2022-04-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/04/07/Supervisor%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/" title="Supervisor安装与配置"><img src="https://s2.loli.net/2022/04/07/VUezAxHglWuKPpT.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Supervisor安装与配置"/></a><div class="content"><a class="title" href="/2022/04/07/Supervisor%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/" title="Supervisor安装与配置">Supervisor安装与配置</a><time datetime="2022-04-07T02:55:18.881Z" title="发表于 2022-04-07 10:55:18">2022-04-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/04/06/%E5%AE%9E%E6%88%98%20ELK%20%E4%BC%98%E9%9B%85%E7%AE%A1%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%A5%E5%BF%97/" title="实战 ELK 优雅管理服务器日志"><img src="https://s2.loli.net/2022/04/07/NOCjUTqIv1XhwkL.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="实战 ELK 优雅管理服务器日志"/></a><div class="content"><a class="title" href="/2022/04/06/%E5%AE%9E%E6%88%98%20ELK%20%E4%BC%98%E9%9B%85%E7%AE%A1%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%A5%E5%BF%97/" title="实战 ELK 优雅管理服务器日志">实战 ELK 优雅管理服务器日志</a><time datetime="2022-04-06T01:53:47.256Z" title="发表于 2022-04-06 09:53:47">2022-04-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/22/%E7%94%A8%E5%A5%BDSpringBoot%E5%86%85%E7%BD%AE%E5%B7%A5%E5%85%B7%E7%B1%BB/" title="用好SpringBoot内置工具类"><img src="https://s2.loli.net/2022/03/22/aWmpkPE8tzr74cw.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用好SpringBoot内置工具类"/></a><div class="content"><a class="title" href="/2022/03/22/%E7%94%A8%E5%A5%BDSpringBoot%E5%86%85%E7%BD%AE%E5%B7%A5%E5%85%B7%E7%B1%BB/" title="用好SpringBoot内置工具类">用好SpringBoot内置工具类</a><time datetime="2022-03-22T08:57:55.156Z" title="发表于 2022-03-22 16:57:55">2022-03-22</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://s2.loli.net/2022/04/07/NOCjUTqIv1XhwkL.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 灵熙云</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
   }
-
-  var guestInfo = requestSetting(['nick','mail','link'],'nick,mail,link')
-  var requiredFields = requestSetting(['nick','mail'],'nick,mail')
-
+})()</script><script>function loadValine () {
   function initValine () {
-    window.valine = new Valine({
-      el:'#vcomment',
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
       appId: 'eKp2wzPKybiFid4KXcVFcyMX-gzGzoHsz',
       appKey: 'RSA7FDJfrFwpawTfG1vE6R71',
-      placeholder: 'minkeyto@qq.com',
       avatar: 'monsterid',
-      meta: guestInfo,
-      pageSize: '10',
-      lang: 'zh-CN',
-      recordIP: false,
       serverURLs: '',
-      emojiCDN: '',
       emojiMaps: "",
-      enableQQ: false,
-      requiredFields: requiredFields
-    });
+      path: window.location.pathname,
+      visitor: 
+    }, ))
   }
-  loadScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js', initValine)
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
 }
 
-if ('Valine' === 'Valine' || false) {
-  window.addEventListener('load', loadvaline)
-}
-else {
+if ('Valine' === 'Valine' || !false) {
+  if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
   function loadOtherComment () {
-    loadvaline()
+    loadValine()
   }
-}</script></div></div></div></article></main><footer id="footer" style="background-image: url(https://s2.loli.net/2022/04/07/NOCjUTqIv1XhwkL.jpg)" data-type="photo"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2022 By 灵熙云</div><div class="framework-info"><span>Copyright Ⓒ 灵熙云工作室. All rights reserved.</span></div><div class="footer_custom_text">Hi, welcome to my blog !</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a href="https://github.com/wzpan/hexo-generator-search" target="_blank" rel="noopener" style="color:#49B1F5;">hexo-generator-search</a>
- <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div class="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script defer id="ribbon" src="/js/third-party/canvas-ribbon.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="true"></script><script id="ribbon_piao" mobile="false" src="/js/third-party/piao.js"></script><script src="/js/third-party/activate-power-mode.js"></script><script>POWERMODE.colorful = false;
+}</script></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="true"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = false;
 POWERMODE.shake = false;
+POWERMODE.mobile = false;
 document.body.addEventListener('input', POWERMODE);
-</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="/js/search/local-search.js"></script><script>if (document.getElementsByClassName('mermaid').length) {
-  loadScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js',function () {
-    mermaid.initialize({
-      theme: 'default',
-  })
-})
-}</script><script>var endLoading = function () {
-  document.body.style.overflow = 'auto';
-  document.getElementById('loading-box').classList.add("loaded")
-}
-window.addEventListener('load',endLoading)</script></body></html>
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
