@@ -1,152 +1,110 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>限流组件设计实战 | 灵熙云工作室</title><meta name="keywords" content="redis,限流,令牌算法,lua脚本,漏桶算法"><meta name="author" content="灵熙云,minkeyto@qq.com"><meta name="copyright" content="灵熙云"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="为什么要限流互联网系统通常都要面对高并发请求（如秒杀、抢购等），难免会对后端服务造成高压力，严重甚至会导致系统宕机。为避免这种问题通常会添加限流、降级、熔断等能力，从而使系统更为健壮。  Java领域常见的开源组件有Netflix的hystrix，阿里系开源的sentinel(以流量为切入点，从流量控制、熔断降级、系统负载保护等多个维度保护服务的稳定性)等，都是蛮不错的限流熔断框架。  限流维度Q">
-<meta property="og:type" content="article">
-<meta property="og:title" content="限流组件设计实战">
-<meta property="og:url" content="http://www.goitman.cn/2022/03/21/%E5%AE%9E%E6%88%98%E9%99%90%E6%B5%81%E7%BB%84%E4%BB%B6%E8%AE%BE%E8%AE%A1/index.html">
-<meta property="og:site_name" content="灵熙云工作室">
-<meta property="og:description" content="为什么要限流互联网系统通常都要面对高并发请求（如秒杀、抢购等），难免会对后端服务造成高压力，严重甚至会导致系统宕机。为避免这种问题通常会添加限流、降级、熔断等能力，从而使系统更为健壮。  Java领域常见的开源组件有Netflix的hystrix，阿里系开源的sentinel(以流量为切入点，从流量控制、熔断降级、系统负载保护等多个维度保护服务的稳定性)等，都是蛮不错的限流熔断框架。  限流维度Q">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://s2.loli.net/2022/03/21/6xYg7RHKFiOWlAf.jpg">
-<meta property="article:published_time" content="2022-03-21T08:16:15.058Z">
-<meta property="article:modified_time" content="2022-03-21T09:33:23.289Z">
-<meta property="article:author" content="灵熙云">
-<meta property="article:tag" content="redis">
-<meta property="article:tag" content="限流">
-<meta property="article:tag" content="令牌算法">
-<meta property="article:tag" content="lua脚本">
-<meta property="article:tag" content="漏桶算法">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://s2.loli.net/2022/03/21/6xYg7RHKFiOWlAf.jpg"><link rel="shortcut icon" href="/file/favicon.png"><link rel="canonical" href="http://www.goitman.cn/2022/03/21/%E5%AE%9E%E6%88%98%E9%99%90%E6%B5%81%E7%BB%84%E4%BB%B6%E8%AE%BE%E8%AE%A1/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>限流组件设计实战 | 灵熙云工作室</title><meta name="description" content="为什么要限流互联网系统通常都要面对高并发请求（如秒杀、抢购等），难免会对后端服务造成高压力，严重甚至会导致系统宕机。为避免这种问题通常会添加限流、降级、熔断等能力，从而使系统更为健壮。  Java领域常见的开源组件有Netflix的hystrix，阿里系开源的sentinel(以流量为切入点，从流量控制、熔断降级、系统负载保护等多个维度保护服务的稳定性)等，都是蛮不错的限流熔断框架。  限流维度Q"><meta name="keywords" content="redis,限流,令牌算法,lua脚本,漏桶算法"><meta name="author" content="灵熙云,minkeyto@qq.com"><meta name="copyright" content="灵熙云"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/file/favicon.png"><link rel="canonical" href="http://www.goitman.cn/2022/03/21/%E5%AE%9E%E6%88%98%E9%99%90%E6%B5%81%E7%BB%84%E4%BB%B6%E8%AE%BE%E8%AE%A1/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preconnect" href="//zz.bdstatic.com"/><meta property="og:type" content="article"><meta property="og:title" content="限流组件设计实战"><meta property="og:url" content="http://www.goitman.cn/2022/03/21/%E5%AE%9E%E6%88%98%E9%99%90%E6%B5%81%E7%BB%84%E4%BB%B6%E8%AE%BE%E8%AE%A1/"><meta property="og:site_name" content="灵熙云工作室"><meta property="og:description" content="为什么要限流互联网系统通常都要面对高并发请求（如秒杀、抢购等），难免会对后端服务造成高压力，严重甚至会导致系统宕机。为避免这种问题通常会添加限流、降级、熔断等能力，从而使系统更为健壮。  Java领域常见的开源组件有Netflix的hystrix，阿里系开源的sentinel(以流量为切入点，从流量控制、熔断降级、系统负载保护等多个维度保护服务的稳定性)等，都是蛮不错的限流熔断框架。  限流维度Q"><meta property="og:image" content="https://s2.loli.net/2022/03/21/6xYg7RHKFiOWlAf.jpg"><meta property="article:published_time" content="2022-03-21T08:16:15.058Z"><meta property="article:modified_time" content="2022-03-21T09:33:23.289Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'false'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="prev" title="用好SpringBoot内置工具类" href="http://www.goitman.cn/2022/03/22/%E7%94%A8%E5%A5%BDSpringBoot%E5%86%85%E7%BD%AE%E5%B7%A5%E5%85%B7%E7%B1%BB/"><link rel="next" title="Druid监控统计数据源" href="http://www.goitman.cn/2022/02/28/Druid%E7%9B%91%E6%8E%A7%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE%E6%BA%90/"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?5c009f46ba6df7bc385f101477536214";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
   root: '/',
   algolia: undefined,
-  localSearch: {"path":"/search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容:${query}"}},
   translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
   noticeOutdate: undefined,
-  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
   copy: {
     success: '复制成功',
     error: '复制错误',
     noSupport: '浏览器不支持'
   },
-  relativeDate: {
-    homepage: false,
-    post: false
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
   },
-  runtime: '',
-  date_suffix: {
-    just: '刚刚',
-    min: '分钟前',
-    hour: '小时前',
-    day: '天前',
-    month: '个月前'
-  },
+  runtime_unit: '天',
+  runtime: true,
   copyright: undefined,
-  lightbox: 'fancybox',
-  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
-  source: {
-    justifiedGallery: {
-      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
-      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
-    }
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://fastly.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://fastly.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
   },
+  baiduPush: true,
+  highlightCopy: true,
+  highlightLang: true,
   isPhotoFigcaption: false,
   islazyload: true,
-  isAnchor: false
-}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: '限流组件设计实战',
+  isanchor: false    
+}</script><script>var GLOBAL_CONFIG_SITE = { 
   isPost: true,
   isHome: false,
   isHighlightShrink: false,
-  isToc: true,
+  isSidebar: true,
   postUpdate: '2022-03-21 17:33:23'
-}</script><noscript><style type="text/css">
-  #nav {
-    opacity: 1
-  }
-  .justified-gallery img {
-    opacity: 1
-  }
-
-  #recent-posts time,
-  #post-meta time {
-    display: inline !important
-  }
-</style></noscript><script>(win=>{
-    win.saveToLocal = {
-      set: function setWithExpiry(key, value, ttl) {
-        if (ttl === 0) return
-        const now = new Date()
-        const expiryDay = ttl * 86400000
-        const item = {
-          value: value,
-          expiry: now.getTime() + expiryDay,
-        }
-        localStorage.setItem(key, JSON.stringify(item))
-      },
-
-      get: function getWithExpiry(key) {
-        const itemStr = localStorage.getItem(key)
-
-        if (!itemStr) {
-          return undefined
-        }
-        const item = JSON.parse(itemStr)
-        const now = new Date()
-
-        if (now.getTime() > item.expiry) {
-          localStorage.removeItem(key)
-          return undefined
-        }
-        return item.value
-      }
-    }
-  
-    win.getScript = url => new Promise((resolve, reject) => {
-      const script = document.createElement('script')
-      script.src = url
-      script.async = true
-      script.onerror = reject
-      script.onload = script.onreadystatechange = function() {
-        const loadState = this.readyState
-        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-        script.onload = script.onreadystatechange = null
-        resolve()
-      }
-      document.head.appendChild(script)
-    })
-  
-      win.activateDarkMode = function () {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
-        }
-      }
-      win.activateLightMode = function () {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-        }
-      }
-      const t = saveToLocal.get('theme')
-    
-          if (t === 'dark') activateDarkMode()
-          else if (t === 'light') activateLightMode()
-        
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        if (asideStatus === 'hide') {
-          document.documentElement.classList.add('hide-aside')
-        } else {
-          document.documentElement.classList.remove('hide-aside')
-        }
-      }
-    
-    const detectApple = () => {
-      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
-        document.documentElement.classList.add('apple')
-      }
-    }
-    detectApple()
-    })(window)</script><link rel="stylesheet" href="/css/effect.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/file/head.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">35</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">123</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://s2.loli.net/2022/03/21/6xYg7RHKFiOWlAf.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">灵熙云工作室</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">限流组件设计实战</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-03-21T08:16:15.058Z" title="发表于 2022-03-21 16:16:15">2022-03-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-03-21T09:33:23.289Z" title="更新于 2022-03-21 17:33:23">2022-03-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/">技术专题</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/%E7%BC%93%E5%AD%98/">缓存</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">8.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>36分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="限流组件设计实战"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="为什么要限流"><a href="#为什么要限流" class="headerlink" title="为什么要限流"></a>为什么要限流</h1><p>互联网系统通常都要面对<code>高并发</code>请求（如秒杀、抢购等），难免会对后端服务造成高压力，严重甚至会导致系统宕机。为避免这种问题通常会添加<code>限流</code>、<code>降级</code>、<code>熔断</code>等能力，从而使系统更为健壮。</p>
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img{
+  opacity: 1
+}
+</style></noscript><link rel="stylesheet" href="/css/effect.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/file/head.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">35</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">123</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">15</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-list"></i><span> 专题笔记</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/2020/08/17/Redis/"><i class="fa-fw fa fa-file"></i><span> Redis</span></a></li><li><a class="site-page" href="/2021/12/06/Log4j2/"><i class="fa-fw fa fa-file"></i><span> Log4j2</span></a></li><li><a class="site-page" href="/2022/02/08/Sharding-JDBC/"><i class="fa-fw fa fa-file"></i><span> Sharding-JDBC</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div></div></div><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E9%99%90%E6%B5%81"><span class="toc-number">1.</span> <span class="toc-text">为什么要限流</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%99%90%E6%B5%81%E7%BB%B4%E5%BA%A6"><span class="toc-number">2.</span> <span class="toc-text">限流维度</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#QPS%E5%92%8C%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8E%A7%E5%88%B6"><span class="toc-number">2.1.</span> <span class="toc-text">QPS和连接数控制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%A0%E8%BE%93%E9%80%9F%E7%8E%87"><span class="toc-number">2.2.</span> <span class="toc-text">传输速率</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%BB%91%E7%99%BD%E5%90%8D%E5%8D%95"><span class="toc-number">2.3.</span> <span class="toc-text">黑白名单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83"><span class="toc-number">2.4.</span> <span class="toc-text">分布式环境</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">基础算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%BA%E5%AE%9A%E7%AA%97%E5%8F%A3%E7%AE%97%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text">固定窗口算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E7%AE%97%E6%B3%95"><span class="toc-number">3.2.</span> <span class="toc-text">滑动窗口算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95"><span class="toc-number">3.3.</span> <span class="toc-text">漏桶算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A4%E7%89%8C%E6%A1%B6%E7%AE%97%E6%B3%95"><span class="toc-number">3.4.</span> <span class="toc-text">令牌桶算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">3.5.</span> <span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RateLimiter-%E9%99%90%E6%B5%81"><span class="toc-number">4.</span> <span class="toc-text">RateLimiter 限流</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B3%E6%BB%91%E7%AA%81%E5%8F%91%E9%99%90%E6%B5%81-SmoothBursty"><span class="toc-number">4.1.</span> <span class="toc-text">平滑突发限流(SmoothBursty)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B3%E6%BB%91%E9%A2%84%E7%83%AD%E9%99%90%E6%B5%81-SmoothwarmingUp"><span class="toc-number">4.2.</span> <span class="toc-text">平滑预热限流(SmoothwarmingUp)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E6%B6%88%E8%B4%B9"><span class="toc-number">4.3.</span> <span class="toc-text">预消费</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E8%8C%83%E6%A1%88%E4%BE%8B"><span class="toc-number">4.4.</span> <span class="toc-text">示范案例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96"><span class="toc-number">4.4.1.</span> <span class="toc-text">依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3"><span class="toc-number">4.4.2.</span> <span class="toc-text">自定义注解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E5%8A%A0%E8%BD%BD"><span class="toc-number">4.4.3.</span> <span class="toc-text">预加载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%87%E9%9D%A2%E6%8B%A6%E6%88%AA"><span class="toc-number">4.4.4.</span> <span class="toc-text">切面拦截</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%99%90%E6%B5%81%E6%8E%A5%E5%8F%A3"><span class="toc-number">4.4.5.</span> <span class="toc-text">限流接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95"><span class="toc-number">4.4.6.</span> <span class="toc-text">并发测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%80%E9%99%90"><span class="toc-number">4.5.</span> <span class="toc-text">局限</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis-Lua-%E9%99%90%E6%B5%81"><span class="toc-number">5.</span> <span class="toc-text">Redis + Lua 限流</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Lua%E8%84%9A%E6%9C%AC"><span class="toc-number">5.1.</span> <span class="toc-text">Lua脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">5.1.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-number">5.1.2.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Windows-%E7%8E%AF%E5%A2%83"><span class="toc-number">5.1.3.</span> <span class="toc-text">Windows 环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mac-%E7%8E%AF%E5%A2%83"><span class="toc-number">5.1.4.</span> <span class="toc-text">Mac 环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#linux-%E7%8E%AF%E5%A2%83"><span class="toc-number">5.1.5.</span> <span class="toc-text">linux 环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IDEA-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="toc-number">5.1.6.</span> <span class="toc-text">IDEA 插件安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E8%8C%83%E6%A1%88%E4%BE%8B-1"><span class="toc-number">5.2.</span> <span class="toc-text">示范案例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96-1"><span class="toc-number">5.2.1.</span> <span class="toc-text">依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis%E9%85%8D%E7%BD%AE"><span class="toc-number">5.2.2.</span> <span class="toc-text">Redis配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3-1"><span class="toc-number">5.2.3.</span> <span class="toc-text">自定义注解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%87%E9%9D%A2%E6%8B%A6%E6%88%AA-1"><span class="toc-number">5.2.4.</span> <span class="toc-text">切面拦截</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Lua%E8%84%9A%E6%9C%AC-1"><span class="toc-number">5.2.5.</span> <span class="toc-text">Lua脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BA%E5%AE%9A%E7%AA%97%E5%8F%A3%E9%99%90%E6%B5%81"><span class="toc-number">5.2.5.1.</span> <span class="toc-text">固定窗口限流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E9%99%90%E6%B5%81"><span class="toc-number">5.2.5.2.</span> <span class="toc-text">滑动窗口限流</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95-1"><span class="toc-number">5.2.6.</span> <span class="toc-text">并发测试</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nginx-%E9%99%90%E6%B5%81"><span class="toc-number">6.</span> <span class="toc-text">Nginx 限流</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#iP%E9%99%90%E6%B5%81"><span class="toc-number">6.1.</span> <span class="toc-text">iP限流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E7%BB%B4%E5%BA%A6%E9%99%90%E6%B5%81"><span class="toc-number">6.2.</span> <span class="toc-text">多维度限流</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%90%8E%E8%AF%AD"><span class="toc-number">7.</span> <span class="toc-text">后语</span></a></li></ol></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://s2.loli.net/2022/03/21/6xYg7RHKFiOWlAf.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">灵熙云工作室</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-list"></i><span> 专题笔记</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/2020/08/17/Redis/"><i class="fa-fw fa fa-file"></i><span> Redis</span></a></li><li><a class="site-page" href="/2021/12/06/Log4j2/"><i class="fa-fw fa fa-file"></i><span> Log4j2</span></a></li><li><a class="site-page" href="/2022/02/08/Sharding-JDBC/"><i class="fa-fw fa fa-file"></i><span> Sharding-JDBC</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">限流组件设计实战</div></div><div id="post-meta"><div class="meta-firstline"><time class="post-meta__date"><span class="post-meta__date-created" title="发表于 2022-03-21 16:16:15"><i class="far fa-calendar-alt fa-fw"></i> 发表于 2022-03-21</span><span class="post-meta__separator">|</span><span class="post-meta__date-updated" title="更新于 2022-03-21 17:33:23"><i class="fas fa-history fa-fw"></i> 更新于 2022-03-21</span></time><span class="post-meta__categories"><span class="post-meta__separator">|</span><i class="fas fa-inbox fa-fw post-meta__icon"></i><a class="post-meta__categories" href="/categories/%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/">技术专题</a><i class="fas fa-angle-right post-meta__separator"></i><i class="fas fa-inbox fa-fw post-meta__icon"></i><a class="post-meta__categories" href="/categories/%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/%E7%BC%93%E5%AD%98/">缓存</a></span></div><div class="meta-secondline"> <span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta__icon"></i><span>字数总计:</span><span class="word-count">8.5k</span><span class="post-meta__separator">|</span><i class="far fa-clock fa-fw post-meta__icon"></i><span>阅读时长: 36 分钟</span></span></div><div class="meta-thirdline"><span class="post-meta-pv-cv"><span class="post-meta__separator">|</span><i class="far fa-eye fa-fw post-meta__icon"></i><span>阅读量:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-commentcount"></span><span class="post-meta__separator">|</span><i class="far fa-comments fa-fw post-meta__icon"></i><span>评论数:</span><a href="/2022/03/21/%E5%AE%9E%E6%88%98%E9%99%90%E6%B5%81%E7%BB%84%E4%BB%B6%E8%AE%BE%E8%AE%A1/#post-comment" itemprop="discussionUrl"><span class="valine-comment-count comment-count" data-xid="/2022/03/21/%E5%AE%9E%E6%88%98%E9%99%90%E6%B5%81%E7%BB%84%E4%BB%B6%E8%AE%BE%E8%AE%A1/" itemprop="commentCount"></span></a></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h1 id="为什么要限流"><a href="#为什么要限流" class="headerlink" title="为什么要限流"></a>为什么要限流</h1><p>互联网系统通常都要面对<code>高并发</code>请求（如秒杀、抢购等），难免会对后端服务造成高压力，严重甚至会导致系统宕机。为避免这种问题通常会添加<code>限流</code>、<code>降级</code>、<code>熔断</code>等能力，从而使系统更为健壮。</p>
 <blockquote>
 <p>Java领域常见的开源组件有<code>Netflix</code>的<code>hystrix</code>，阿里系开源的<code>sentinel(以流量为切入点，从流量控制、熔断降级、系统负载保护等多个维度保护服务的稳定性)</code>等，都是蛮不错的限流熔断框架。</p>
 </blockquote>
@@ -176,13 +134,13 @@
 <p>如：使用<code> AomicInteger</code>来进行统计当前正在并发执行的次数，如果超过域值就直接拒绝请求，提示系统繁忙。</p>
 </blockquote>
 <p>但固定窗口算法存在问题，比如当遇到时间窗口的<code>临界突变</code>时，如 1s 中的后 500 ms 和第 2s 的前 500ms 时，虽然是加起来是 1s时间，却可以被请求 4 次。</p>
-<p><img src="https://s2.loli.net/2022/03/18/kIJYN3aV4qupUEf.png"></p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/18/kIJYN3aV4qupUEf.png"></p>
 <h2 id="滑动窗口算法"><a href="#滑动窗口算法" class="headerlink" title="滑动窗口算法"></a>滑动窗口算法</h2><p>滑动窗口算法是对固定窗口算法的改进。既然固定窗口算法在遇到时间窗口的临界突变时会有问题，那么在遇到下一个时间窗口前调整时间窗口是否可以？</p>
-<p><img src="https://s2.loli.net/2022/03/21/Wg9o1Pki3TFDzY2.png"></p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/21/Wg9o1Pki3TFDzY2.png"></p>
 <p>每 500ms 滑动一次窗口，可以发现窗口滑动的<code>间隔越短</code>，时间窗口的<code>临界突变</code>问题发生的<code>概率也就越小</code>，不过只要有时间窗口的存在，还是有可能发生<code>时间窗口的临界突变问题</code>。</p>
-<h2 id="漏桶算法"><a href="#漏桶算法" class="headerlink" title="漏桶算法"></a>漏桶算法</h2><p><img src="https://s2.loli.net/2022/03/10/oRspiEwKmqHaQJB.png" alt="1.png"></p>
+<h2 id="漏桶算法"><a href="#漏桶算法" class="headerlink" title="漏桶算法"></a>漏桶算法</h2><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/10/oRspiEwKmqHaQJB.png" alt="1.png"></p>
 <p>漏桶算法思路可把<code>水</code>比作是<code>请求</code>，<code>漏桶</code>比作是<code>系统处理能力</code>极限，水先进入到漏桶里，漏桶里的水按一定速率流出，当流出的速率小于流入的速率时，由于漏桶容量有限，后续进入的水直接溢出（拒绝请求），以此实现限流。</p>
-<h2 id="令牌桶算法"><a href="#令牌桶算法" class="headerlink" title="令牌桶算法"></a>令牌桶算法</h2><p><img src="https://s2.loli.net/2022/03/10/I9qBHMcwdabp3V4.png" alt="2.png"></p>
+<h2 id="令牌桶算法"><a href="#令牌桶算法" class="headerlink" title="令牌桶算法"></a>令牌桶算法</h2><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/10/I9qBHMcwdabp3V4.png" alt="2.png"></p>
 <p><code>令牌桶算法</code>原理可以理解成医院的<code>挂号看病</code>，只有拿到号以后才可以进行诊病。</p>
 <p>系统会维护一个<code>令牌（token）桶</code>，以一个<code>恒定的速度</code>往桶里<code>放入令牌</code>（token），这时如果有请求进来想要被处理，则需要<code>先从桶里获取一个令牌</code>（token），当桶里<code>没有令牌</code>（token）可取时，则该请求将被<code>拒绝服务</code>。令牌桶算法通过控制桶的容量、发放令牌的速率，来达到对请求的限制。</p>
 <h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><ul>
@@ -277,7 +235,7 @@
 <h3 id="限流接口"><a href="#限流接口" class="headerlink" title="限流接口"></a>限流接口</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.goitman.controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> cn.goitman.annotation.Restrict;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Nicky</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@className</span> RestrictController</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@blog</span> goitman.cn | blog.csdn.net/minkeyto</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span> 测试接口</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2022/3/16 10:07</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RestrictController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/restrict1&quot;)</span></span><br><span class="line">    <span class="meta">@Restrict(key = &quot;restrict1&quot;, limitedNumber = 1, msg = &quot;当前排队人数较多，请稍后再试！&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">restrict1</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;OK&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/restrict2&quot;)</span></span><br><span class="line">    <span class="meta">@Restrict(key = &quot;restrict2&quot;, limitedNumber = 2)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">restrict2</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;OK&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="并发测试"><a href="#并发测试" class="headerlink" title="并发测试"></a>并发测试</h3><p>模拟1秒内10个并发线程，依次请求restrict1、restrict2接口各一次，日志如下</p>
-<p><img src="https://s2.loli.net/2022/03/14/71H3GKSWh5yvLif.png"></p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/14/71H3GKSWh5yvLif.png"></p>
 <p>预加载日志：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">2022-03-16 17:09:15.709 [TRACEID:] INFO  [main] cn.goitman.commandrunner.StartRunner : 创建令牌桶 : restrict2，大小为2</span><br><span class="line">2022-03-16 17:09:15.710 [TRACEID:] INFO  [main] cn.goitman.commandrunner.StartRunner : 创建令牌桶 : restrict1，大小为1</span><br></pre></td></tr></table></figure>
 
@@ -292,7 +250,7 @@
 
 
 <h2 id="局限"><a href="#局限" class="headerlink" title="局限"></a>局限</h2><p>预加载只能在项目启动时加载一次，不够灵活；<code>有人说为什么不用Redis保存RateLimiter对象呢？</code>众所周知任何数据存储都需要序列化，而Redis不会主动去做这个事情，看看下图</p>
-<p><img src="https://s2.loli.net/2022/03/16/5D9lxgORLibYGAM.png"></p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/16/5D9lxgORLibYGAM.png"></p>
 <p>由图可知：</p>
 <blockquote>
 <ol>
@@ -318,11 +276,11 @@
 </blockquote>
 <h2 id="Lua脚本"><a href="#Lua脚本" class="headerlink" title="Lua脚本"></a>Lua脚本</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Lua是由标准的C语言编写的，源码部分不过2万多行C代码，甚至一个完整的Lua解释器也就200k的大小。</p>
 <h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><h3 id="Windows-环境"><a href="#Windows-环境" class="headerlink" title="Windows 环境"></a>Windows 环境</h3><p><a target="_blank" rel="noopener" href="https://download.csdn.net/download/minkeyto/84998364">进入下载网址</a> 下载lua绿色压缩版</p>
-<p><img src="https://s2.loli.net/2022/03/18/HPj5eSzWwqskiX6.png"></p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/18/HPj5eSzWwqskiX6.png"></p>
 <p>配置环境变量</p>
-<p><img src="https://s2.loli.net/2022/03/18/JK57oven4sy2LBf.png"></p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/18/JK57oven4sy2LBf.png"></p>
 <p>win + R 快捷键进入cmd，验证是否安装配置成功</p>
-<p><img src="https://s2.loli.net/2022/03/18/upzcD9mdwgCSlFj.png"></p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/18/upzcD9mdwgCSlFj.png"></p>
 <h3 id="Mac-环境"><a href="#Mac-环境" class="headerlink" title="Mac 环境"></a>Mac 环境</h3><p>建议用brew工具直接执行brew install lua就可以顺利安装，有关brew工具的安装可以参考 <a target="_blank" rel="noopener" href="https://brew.sh/">https://brew.sh/</a> 网站，使用brew安装后的目录在<code>/usr/local/Cellar/lua/X.X.X_X</code></p>
 <h3 id="linux-环境"><a href="#linux-环境" class="headerlink" title="linux 环境"></a>linux 环境</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">//从官网下载安装包</span><br><span class="line">curl -R -O http://www.lua.org/ftp/lua-5.3.5.tar.gz</span><br><span class="line">//解压安装包</span><br><span class="line">tar zxf lua-5.3.5.tar.gz</span><br><span class="line">//进入文件夹中</span><br><span class="line"><span class="built_in">cd</span> lua-5.3.5</span><br><span class="line">//如果安装了readline，直接进行↓（若无安装会报错，解决方法看下方）</span><br><span class="line">make linux <span class="built_in">test</span></span><br><span class="line">//安装</span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
 
@@ -342,8 +300,8 @@
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Hello World!</span><br></pre></td></tr></table></figure>
 
 <h3 id="IDEA-插件安装"><a href="#IDEA-插件安装" class="headerlink" title="IDEA 插件安装"></a>IDEA 插件安装</h3><p><code>File -&gt; Settings -&gt; Plugins</code>，搜索<code>lua</code>，选中<code>EmmyLua</code>插件安装</p>
-<p><img src="https://s2.loli.net/2022/03/18/RjvyelLB7QWw4xK.png"></p>
-<p><img src="https://s2.loli.net/2022/03/18/EcJwbRvkjtepYgI.png"></p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/18/RjvyelLB7QWw4xK.png"></p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/03/18/EcJwbRvkjtepYgI.png"></p>
 <h2 id="示范案例-1"><a href="#示范案例-1" class="headerlink" title="示范案例"></a>示范案例</h2><h3 id="依赖-1"><a href="#依赖-1" class="headerlink" title="依赖"></a>依赖</h3><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- redis --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">exclusions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lettuce-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.lettuce<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">exclusions</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>redis.clients<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jedis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="Redis配置"><a href="#Redis配置" class="headerlink" title="Redis配置"></a>Redis配置</h3><p>Redis单机简易配置如下，分布式配置可参考 <a href="https://www.goitman.cn/2020/08/17/Redis/">Redis 教程</a></p>
@@ -401,57 +359,57 @@
 <blockquote>
 <p>源码地址：<a target="_blank" rel="noopener" href="https://github.com/wangdaicong/spring-boot-project/tree/master/throttling-demo">https://github.com/wangdaicong/spring-boot-project/tree/master/throttling-demo</a></p>
 </blockquote>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://www.goitman.cn">灵熙云</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://www.goitman.cn/2022/03/21/%E5%AE%9E%E6%88%98%E9%99%90%E6%B5%81%E7%BB%84%E4%BB%B6%E8%AE%BE%E8%AE%A1/">http://www.goitman.cn/2022/03/21/实战限流组件设计/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://www.goitman.cn" target="_blank">灵熙云工作室</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/redis/">redis</a><a class="post-meta__tags" href="/tags/%E9%99%90%E6%B5%81/">限流</a><a class="post-meta__tags" href="/tags/%E4%BB%A4%E7%89%8C%E7%AE%97%E6%B3%95/">令牌算法</a><a class="post-meta__tags" href="/tags/lua%E8%84%9A%E6%9C%AC/">lua脚本</a><a class="post-meta__tags" href="/tags/%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95/">漏桶算法</a></div><div class="post_share"><div class="social-share" data-image="https://s2.loli.net/2022/03/21/6xYg7RHKFiOWlAf.jpg" data-sites="wechat,weibo,qq,facebook,twitter"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/gh/overtrue/share.js@master/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/file/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/file/wechat.jpg" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/03/22/%E7%94%A8%E5%A5%BDSpringBoot%E5%86%85%E7%BD%AE%E5%B7%A5%E5%85%B7%E7%B1%BB/"><img class="prev-cover" src="https://s2.loli.net/2022/03/22/aWmpkPE8tzr74cw.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">用好SpringBoot内置工具类</div></div></a></div><div class="next-post pull-right"><a href="/2022/02/28/Druid%E7%9B%91%E6%8E%A7%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE%E6%BA%90/"><img class="next-cover" src="https://s2.loli.net/2022/02/28/tKqbMuLTH21mkXN.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Druid监控统计数据源</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/11/02/Java%E7%94%9F%E6%88%90%E6%9C%89%E8%A7%84%E5%88%99%E7%9A%84%E7%BC%96%E5%8F%B7/" title="Java生成有规则的编号"><img class="cover" src="https://i.loli.net/2020/11/02/d62jD4vzgik1LQc.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-11-02</div><div class="title">Java生成有规则的编号</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E9%99%90%E6%B5%81"><span class="toc-number">1.</span> <span class="toc-text">为什么要限流</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%99%90%E6%B5%81%E7%BB%B4%E5%BA%A6"><span class="toc-number">2.</span> <span class="toc-text">限流维度</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#QPS%E5%92%8C%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8E%A7%E5%88%B6"><span class="toc-number">2.1.</span> <span class="toc-text">QPS和连接数控制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%A0%E8%BE%93%E9%80%9F%E7%8E%87"><span class="toc-number">2.2.</span> <span class="toc-text">传输速率</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%BB%91%E7%99%BD%E5%90%8D%E5%8D%95"><span class="toc-number">2.3.</span> <span class="toc-text">黑白名单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83"><span class="toc-number">2.4.</span> <span class="toc-text">分布式环境</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">基础算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%BA%E5%AE%9A%E7%AA%97%E5%8F%A3%E7%AE%97%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text">固定窗口算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E7%AE%97%E6%B3%95"><span class="toc-number">3.2.</span> <span class="toc-text">滑动窗口算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95"><span class="toc-number">3.3.</span> <span class="toc-text">漏桶算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A4%E7%89%8C%E6%A1%B6%E7%AE%97%E6%B3%95"><span class="toc-number">3.4.</span> <span class="toc-text">令牌桶算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">3.5.</span> <span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RateLimiter-%E9%99%90%E6%B5%81"><span class="toc-number">4.</span> <span class="toc-text">RateLimiter 限流</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B3%E6%BB%91%E7%AA%81%E5%8F%91%E9%99%90%E6%B5%81-SmoothBursty"><span class="toc-number">4.1.</span> <span class="toc-text">平滑突发限流(SmoothBursty)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B3%E6%BB%91%E9%A2%84%E7%83%AD%E9%99%90%E6%B5%81-SmoothwarmingUp"><span class="toc-number">4.2.</span> <span class="toc-text">平滑预热限流(SmoothwarmingUp)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E6%B6%88%E8%B4%B9"><span class="toc-number">4.3.</span> <span class="toc-text">预消费</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E8%8C%83%E6%A1%88%E4%BE%8B"><span class="toc-number">4.4.</span> <span class="toc-text">示范案例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96"><span class="toc-number">4.4.1.</span> <span class="toc-text">依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3"><span class="toc-number">4.4.2.</span> <span class="toc-text">自定义注解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E5%8A%A0%E8%BD%BD"><span class="toc-number">4.4.3.</span> <span class="toc-text">预加载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%87%E9%9D%A2%E6%8B%A6%E6%88%AA"><span class="toc-number">4.4.4.</span> <span class="toc-text">切面拦截</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%99%90%E6%B5%81%E6%8E%A5%E5%8F%A3"><span class="toc-number">4.4.5.</span> <span class="toc-text">限流接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95"><span class="toc-number">4.4.6.</span> <span class="toc-text">并发测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%80%E9%99%90"><span class="toc-number">4.5.</span> <span class="toc-text">局限</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis-Lua-%E9%99%90%E6%B5%81"><span class="toc-number">5.</span> <span class="toc-text">Redis + Lua 限流</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Lua%E8%84%9A%E6%9C%AC"><span class="toc-number">5.1.</span> <span class="toc-text">Lua脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">5.1.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-number">5.1.2.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Windows-%E7%8E%AF%E5%A2%83"><span class="toc-number">5.1.3.</span> <span class="toc-text">Windows 环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mac-%E7%8E%AF%E5%A2%83"><span class="toc-number">5.1.4.</span> <span class="toc-text">Mac 环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#linux-%E7%8E%AF%E5%A2%83"><span class="toc-number">5.1.5.</span> <span class="toc-text">linux 环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IDEA-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="toc-number">5.1.6.</span> <span class="toc-text">IDEA 插件安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E8%8C%83%E6%A1%88%E4%BE%8B-1"><span class="toc-number">5.2.</span> <span class="toc-text">示范案例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96-1"><span class="toc-number">5.2.1.</span> <span class="toc-text">依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis%E9%85%8D%E7%BD%AE"><span class="toc-number">5.2.2.</span> <span class="toc-text">Redis配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3-1"><span class="toc-number">5.2.3.</span> <span class="toc-text">自定义注解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%87%E9%9D%A2%E6%8B%A6%E6%88%AA-1"><span class="toc-number">5.2.4.</span> <span class="toc-text">切面拦截</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Lua%E8%84%9A%E6%9C%AC-1"><span class="toc-number">5.2.5.</span> <span class="toc-text">Lua脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BA%E5%AE%9A%E7%AA%97%E5%8F%A3%E9%99%90%E6%B5%81"><span class="toc-number">5.2.5.1.</span> <span class="toc-text">固定窗口限流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E9%99%90%E6%B5%81"><span class="toc-number">5.2.5.2.</span> <span class="toc-text">滑动窗口限流</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95-1"><span class="toc-number">5.2.6.</span> <span class="toc-text">并发测试</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nginx-%E9%99%90%E6%B5%81"><span class="toc-number">6.</span> <span class="toc-text">Nginx 限流</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#iP%E9%99%90%E6%B5%81"><span class="toc-number">6.1.</span> <span class="toc-text">iP限流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E7%BB%B4%E5%BA%A6%E9%99%90%E6%B5%81"><span class="toc-number">6.2.</span> <span class="toc-text">多维度限流</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%90%8E%E8%AF%AD"><span class="toc-number">7.</span> <span class="toc-text">后语</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background-image: url('https://s2.loli.net/2022/03/21/6xYg7RHKFiOWlAf.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 灵熙云</div><div class="framework-info"><span>Copyright Ⓒ 灵熙云工作室. All rights reserved.</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>(() => {
-  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
-  if ($mermaidWrap.length) {
-    window.runMermaid = () => {
-      window.loadMermaid = true
-      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
-
-      Array.from($mermaidWrap).forEach((item, index) => {
-        const mermaidSrc = item.firstElementChild
-        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
-        const mermaidID = 'mermaid-' + index
-        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
-        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
-          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
-        })
-      })
-    }
-
-    const loadMermaid = () => {
-      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
-    }
-
-    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:minkeyto@qq.com">灵熙云</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://www.goitman.cn/2022/03/21/%E5%AE%9E%E6%88%98%E9%99%90%E6%B5%81%E7%BB%84%E4%BB%B6%E8%AE%BE%E8%AE%A1/">http://www.goitman.cn/2022/03/21/实战限流组件设计/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://www.goitman.cn" target="_blank">灵熙云工作室</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/redis/">redis</a><a class="post-meta__tags" href="/tags/%E9%99%90%E6%B5%81/">限流</a><a class="post-meta__tags" href="/tags/%E4%BB%A4%E7%89%8C%E7%AE%97%E6%B3%95/">令牌算法</a><a class="post-meta__tags" href="/tags/lua%E8%84%9A%E6%9C%AC/">lua脚本</a><a class="post-meta__tags" href="/tags/%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95/">漏桶算法</a></div><div class="post_share"><div class="social-share" data-image="https://s2.loli.net/2022/04/27/9xQwapEFrtc4HnP.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"/><script src="https://fastly.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js"></script></div></div><div class="post-reward"><button class="reward-button" type="button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><img class="post-qr-code__img" src="/file/wechat.jpg" alt="微信" onclick="window.open('/file/wechat.jpg')"/><div class="post-qr-code__desc">微信</div></li></ul></div></button></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/03/22/%E7%94%A8%E5%A5%BDSpringBoot%E5%86%85%E7%BD%AE%E5%B7%A5%E5%85%B7%E7%B1%BB/"><img class="prev-cover" data-src="https://s2.loli.net/2022/03/22/aWmpkPE8tzr74cw.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">用好SpringBoot内置工具类</div></div></a></div><div class="next-post pull-right"><a href="/2022/02/28/Druid%E7%9B%91%E6%8E%A7%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE%E6%BA%90/"><img class="next-cover" data-src="https://s2.loli.net/2022/02/28/tKqbMuLTH21mkXN.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Druid监控统计数据源</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2020/11/02/Java生成有规则的编号/" title="Java生成有规则的编号"><img class="relatedPosts_cover" data-src="https://i.loli.net/2020/11/02/d62jD4vzgik1LQc.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="fas fa-history fa-fw"></i> 2021-07-22</div><div class="relatedPosts_title">Java生成有规则的编号</div></div></a></div></div></div><hr><div id="post-comment"><div class="comment-head"><div class="comment-headling"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div class="comments-items-1" data-name="Valine"><div class="vcomment" id="vcomment"></div><script>function loadvaline () {  
+  var requestSetting = function (from,set) {
+    var from = from
+    var setting = set.split(',').filter(function(item){
+    return from.indexOf(item) > -1
+    });
+    setting = setting.length == 0 ? from :setting;
+    return setting
   }
-})()</script><script>function loadValine () {
+
+  var guestInfo = requestSetting(['nick','mail','link'],'nick,mail,link')
+  var requiredFields = requestSetting(['nick','mail'],'nick,mail')
+
   function initValine () {
-    const valine = new Valine(Object.assign({
-      el: '#vcomment',
+    window.valine = new Valine({
+      el:'#vcomment',
       appId: 'eKp2wzPKybiFid4KXcVFcyMX-gzGzoHsz',
       appKey: 'RSA7FDJfrFwpawTfG1vE6R71',
+      placeholder: 'minkeyto@qq.com',
       avatar: 'monsterid',
+      meta: guestInfo,
+      pageSize: '10',
+      lang: 'zh-CN',
+      recordIP: false,
       serverURLs: '',
+      emojiCDN: '',
       emojiMaps: "",
-      path: window.location.pathname,
-      visitor: 
-    }, ))
+      enableQQ: false,
+      requiredFields: requiredFields
+    });
   }
-
-  if (typeof Valine === 'function') initValine() 
-  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+  loadScript('https://fastly.jsdelivr.net/npm/valine/dist/Valine.min.js', initValine)
 }
 
-if ('Valine' === 'Valine' || !true) {
-  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
-  else setTimeout(loadValine, 0)
-} else {
+if ('Valine' === 'Valine' || false) {
+  window.addEventListener('load', loadvaline)
+}
+else {
   function loadOtherComment () {
-    loadValine()
+    loadvaline()
   }
-}</script></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="true"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = false;
+}</script></div></div></div></article></main><footer id="footer" style="background-image: url(https://s2.loli.net/2022/03/21/6xYg7RHKFiOWlAf.jpg)" data-type="photo"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2022 By 灵熙云</div><div class="framework-info"><span>Copyright Ⓒ 灵熙云工作室. All rights reserved.</span></div><div class="footer_custom_text">Hi, welcome to my blog !</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div class="search-mask"></div><script src="https://fastly.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://fastly.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://fastly.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script defer id="ribbon" src="/js/third-party/canvas-ribbon.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="true"></script><script id="ribbon_piao" mobile="false" src="/js/third-party/piao.js"></script><script src="/js/third-party/activate-power-mode.js"></script><script>POWERMODE.colorful = false;
 POWERMODE.shake = false;
-POWERMODE.mobile = false;
 document.body.addEventListener('input', POWERMODE);
-</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://fastly.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://fastly.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://fastly.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {
+  pangu.autoSpacingPage()
+})</script><script src="/js/search/local-search.js"></script><script>if (document.getElementsByClassName('mermaid').length) {
+  loadScript('https://fastly.jsdelivr.net/npm/mermaid/dist/mermaid.min.js',function () {
+    mermaid.initialize({
+      theme: 'default',
+  })
+})
+}</script></body></html>

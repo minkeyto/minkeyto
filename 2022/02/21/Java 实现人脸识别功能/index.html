@@ -1,151 +1,110 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Java 实现人脸识别功能 | 灵熙云工作室</title><meta name="keywords" content="人脸识别,数据采集,图像分析,算法"><meta name="author" content="灵熙云,minkeyto@qq.com"><meta name="copyright" content="灵熙云"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="环境准备 本地配置：   配置环境(推荐jdk8，mysql5.7，maven3，idea) 引擎库libarcsoft_face、libarcsoft_face_engine、libarcsoft_face_engine_jni。把dll或so文件拷贝到java.library.path所包含的路径下,注意区分X86和X64，和当前jdk版本一致。  人脸识别SDK人脸识别技术是很复杂的，自己用">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Java 实现人脸识别功能">
-<meta property="og:url" content="http://www.goitman.cn/2022/02/21/Java%20%E5%AE%9E%E7%8E%B0%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB%E5%8A%9F%E8%83%BD/index.html">
-<meta property="og:site_name" content="灵熙云工作室">
-<meta property="og:description" content="环境准备 本地配置：   配置环境(推荐jdk8，mysql5.7，maven3，idea) 引擎库libarcsoft_face、libarcsoft_face_engine、libarcsoft_face_engine_jni。把dll或so文件拷贝到java.library.path所包含的路径下,注意区分X86和X64，和当前jdk版本一致。  人脸识别SDK人脸识别技术是很复杂的，自己用">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://s2.loli.net/2022/02/21/5yjFcGvzJEhRqpS.jpg">
-<meta property="article:published_time" content="2022-02-21T03:07:48.455Z">
-<meta property="article:modified_time" content="2022-02-21T03:24:33.282Z">
-<meta property="article:author" content="灵熙云">
-<meta property="article:tag" content="人脸识别">
-<meta property="article:tag" content="数据采集">
-<meta property="article:tag" content="图像分析">
-<meta property="article:tag" content="算法">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://s2.loli.net/2022/02/21/5yjFcGvzJEhRqpS.jpg"><link rel="shortcut icon" href="/file/favicon.png"><link rel="canonical" href="http://www.goitman.cn/2022/02/21/Java%20%E5%AE%9E%E7%8E%B0%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB%E5%8A%9F%E8%83%BD/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Java 实现人脸识别功能 | 灵熙云工作室</title><meta name="description" content="环境准备 本地配置：   配置环境(推荐jdk8，mysql5.7，maven3，idea) 引擎库libarcsoft_face、libarcsoft_face_engine、libarcsoft_face_engine_jni。把dll或so文件拷贝到java.library.path所包含的路径下,注意区分X86和X64，和当前jdk版本一致。  人脸识别SDK人脸识别技术是很复杂的，自己用"><meta name="keywords" content="人脸识别,数据采集,图像分析,算法"><meta name="author" content="灵熙云,minkeyto@qq.com"><meta name="copyright" content="灵熙云"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/file/favicon.png"><link rel="canonical" href="http://www.goitman.cn/2022/02/21/Java%20%E5%AE%9E%E7%8E%B0%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB%E5%8A%9F%E8%83%BD/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preconnect" href="//zz.bdstatic.com"/><meta property="og:type" content="article"><meta property="og:title" content="Java 实现人脸识别功能"><meta property="og:url" content="http://www.goitman.cn/2022/02/21/Java%20%E5%AE%9E%E7%8E%B0%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB%E5%8A%9F%E8%83%BD/"><meta property="og:site_name" content="灵熙云工作室"><meta property="og:description" content="环境准备 本地配置：   配置环境(推荐jdk8，mysql5.7，maven3，idea) 引擎库libarcsoft_face、libarcsoft_face_engine、libarcsoft_face_engine_jni。把dll或so文件拷贝到java.library.path所包含的路径下,注意区分X86和X64，和当前jdk版本一致。  人脸识别SDK人脸识别技术是很复杂的，自己用"><meta property="og:image" content="https://s2.loli.net/2022/02/21/5yjFcGvzJEhRqpS.jpg"><meta property="article:published_time" content="2022-02-21T03:07:48.455Z"><meta property="article:modified_time" content="2022-02-21T03:24:33.282Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'false'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="prev" title="几行事务代码，让我赔了16万" href="http://www.goitman.cn/2022/02/22/%E5%87%A0%E8%A1%8C%E4%BA%8B%E5%8A%A1%E4%BB%A3%E7%A0%81%EF%BC%8C%E8%AE%A9%E6%88%91%E8%B5%94%E4%BA%8616%E4%B8%87/"><link rel="next" title="如何校验两个文件内容是否相同" href="http://www.goitman.cn/2022/02/17/%E5%A6%82%E4%BD%95%E6%A0%A1%E9%AA%8C%E4%B8%A4%E4%B8%AA%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9%E6%98%AF%E5%90%A6%E7%9B%B8%E5%90%8C/"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?5c009f46ba6df7bc385f101477536214";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
   root: '/',
   algolia: undefined,
-  localSearch: {"path":"/search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容:${query}"}},
   translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
   noticeOutdate: undefined,
-  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
   copy: {
     success: '复制成功',
     error: '复制错误',
     noSupport: '浏览器不支持'
   },
-  relativeDate: {
-    homepage: false,
-    post: false
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
   },
-  runtime: '',
-  date_suffix: {
-    just: '刚刚',
-    min: '分钟前',
-    hour: '小时前',
-    day: '天前',
-    month: '个月前'
-  },
+  runtime_unit: '天',
+  runtime: true,
   copyright: undefined,
-  lightbox: 'fancybox',
-  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
-  source: {
-    justifiedGallery: {
-      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
-      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
-    }
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://fastly.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://fastly.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
   },
+  baiduPush: true,
+  highlightCopy: true,
+  highlightLang: true,
   isPhotoFigcaption: false,
   islazyload: true,
-  isAnchor: false
-}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: 'Java 实现人脸识别功能',
+  isanchor: false    
+}</script><script>var GLOBAL_CONFIG_SITE = { 
   isPost: true,
   isHome: false,
   isHighlightShrink: false,
-  isToc: true,
+  isSidebar: true,
   postUpdate: '2022-02-21 11:24:33'
-}</script><noscript><style type="text/css">
-  #nav {
-    opacity: 1
-  }
-  .justified-gallery img {
-    opacity: 1
-  }
-
-  #recent-posts time,
-  #post-meta time {
-    display: inline !important
-  }
-</style></noscript><script>(win=>{
-    win.saveToLocal = {
-      set: function setWithExpiry(key, value, ttl) {
-        if (ttl === 0) return
-        const now = new Date()
-        const expiryDay = ttl * 86400000
-        const item = {
-          value: value,
-          expiry: now.getTime() + expiryDay,
-        }
-        localStorage.setItem(key, JSON.stringify(item))
-      },
-
-      get: function getWithExpiry(key) {
-        const itemStr = localStorage.getItem(key)
-
-        if (!itemStr) {
-          return undefined
-        }
-        const item = JSON.parse(itemStr)
-        const now = new Date()
-
-        if (now.getTime() > item.expiry) {
-          localStorage.removeItem(key)
-          return undefined
-        }
-        return item.value
-      }
-    }
-  
-    win.getScript = url => new Promise((resolve, reject) => {
-      const script = document.createElement('script')
-      script.src = url
-      script.async = true
-      script.onerror = reject
-      script.onload = script.onreadystatechange = function() {
-        const loadState = this.readyState
-        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-        script.onload = script.onreadystatechange = null
-        resolve()
-      }
-      document.head.appendChild(script)
-    })
-  
-      win.activateDarkMode = function () {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
-        }
-      }
-      win.activateLightMode = function () {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-        }
-      }
-      const t = saveToLocal.get('theme')
-    
-          if (t === 'dark') activateDarkMode()
-          else if (t === 'light') activateLightMode()
-        
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        if (asideStatus === 'hide') {
-          document.documentElement.classList.add('hide-aside')
-        } else {
-          document.documentElement.classList.remove('hide-aside')
-        }
-      }
-    
-    const detectApple = () => {
-      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
-        document.documentElement.classList.add('apple')
-      }
-    }
-    detectApple()
-    })(window)</script><link rel="stylesheet" href="/css/effect.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/file/head.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">35</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">123</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://s2.loli.net/2022/02/21/5yjFcGvzJEhRqpS.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">灵熙云工作室</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Java 实现人脸识别功能</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-02-21T03:07:48.455Z" title="发表于 2022-02-21 11:07:48">2022-02-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-02-21T03:24:33.282Z" title="更新于 2022-02-21 11:24:33">2022-02-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/">技术专题</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/%E7%AE%97%E6%B3%95/">算法</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Java 实现人脸识别功能"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><ul>
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img{
+  opacity: 1
+}
+</style></noscript><link rel="stylesheet" href="/css/effect.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/file/head.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">35</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">123</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">15</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-list"></i><span> 专题笔记</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/2020/08/17/Redis/"><i class="fa-fw fa fa-file"></i><span> Redis</span></a></li><li><a class="site-page" href="/2021/12/06/Log4j2/"><i class="fa-fw fa fa-file"></i><span> Log4j2</span></a></li><li><a class="site-page" href="/2022/02/08/Sharding-JDBC/"><i class="fa-fw fa fa-file"></i><span> Sharding-JDBC</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div></div></div><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">1.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%ABSDK"><span class="toc-number">2.</span> <span class="toc-text">人脸识别SDK</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Java%E9%A1%B9%E7%9B%AE%E6%90%AD%E5%BB%BA"><span class="toc-number">3.</span> <span class="toc-text">Java项目搭建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C"><span class="toc-number">4.</span> <span class="toc-text">操作</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">5.</span> <span class="toc-text">源码分析</span></a></li></ol></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://s2.loli.net/2022/02/21/5yjFcGvzJEhRqpS.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">灵熙云工作室</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-list"></i><span> 专题笔记</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/2020/08/17/Redis/"><i class="fa-fw fa fa-file"></i><span> Redis</span></a></li><li><a class="site-page" href="/2021/12/06/Log4j2/"><i class="fa-fw fa fa-file"></i><span> Log4j2</span></a></li><li><a class="site-page" href="/2022/02/08/Sharding-JDBC/"><i class="fa-fw fa fa-file"></i><span> Sharding-JDBC</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Java 实现人脸识别功能</div></div><div id="post-meta"><div class="meta-firstline"><time class="post-meta__date"><span class="post-meta__date-created" title="发表于 2022-02-21 11:07:48"><i class="far fa-calendar-alt fa-fw"></i> 发表于 2022-02-21</span><span class="post-meta__separator">|</span><span class="post-meta__date-updated" title="更新于 2022-02-21 11:24:33"><i class="fas fa-history fa-fw"></i> 更新于 2022-02-21</span></time><span class="post-meta__categories"><span class="post-meta__separator">|</span><i class="fas fa-inbox fa-fw post-meta__icon"></i><a class="post-meta__categories" href="/categories/%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/">技术专题</a><i class="fas fa-angle-right post-meta__separator"></i><i class="fas fa-inbox fa-fw post-meta__icon"></i><a class="post-meta__categories" href="/categories/%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/%E7%AE%97%E6%B3%95/">算法</a></span></div><div class="meta-secondline"> <span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta__icon"></i><span>字数总计:</span><span class="word-count">2k</span><span class="post-meta__separator">|</span><i class="far fa-clock fa-fw post-meta__icon"></i><span>阅读时长: 9 分钟</span></span></div><div class="meta-thirdline"><span class="post-meta-pv-cv"><span class="post-meta__separator">|</span><i class="far fa-eye fa-fw post-meta__icon"></i><span>阅读量:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-commentcount"></span><span class="post-meta__separator">|</span><i class="far fa-comments fa-fw post-meta__icon"></i><span>评论数:</span><a href="/2022/02/21/Java%20%E5%AE%9E%E7%8E%B0%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB%E5%8A%9F%E8%83%BD/#post-comment" itemprop="discussionUrl"><span class="valine-comment-count comment-count" data-xid="/2022/02/21/Java%20%E5%AE%9E%E7%8E%B0%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB%E5%8A%9F%E8%83%BD/" itemprop="commentCount"></span></a></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><ul>
 <li>本地配置：</li>
 </ul>
 <ol>
@@ -155,8 +114,8 @@
 <h1 id="人脸识别SDK"><a href="#人脸识别SDK" class="headerlink" title="人脸识别SDK"></a>人脸识别SDK</h1><p>人脸识别技术是很复杂的，自己用Java手撕一个识别算法有点不切实际，毕竟实力不允许我这么嚣张，还是借助三方的SDK吧！</p>
 <p>找了一圈发现一个免费的人脸识别SDK：<code> ArcSoft</code>，地址：<code>https://ai.arcsoft.com.cn</code>。</p>
 <p><code>官网首页 -&gt; 右上角开发者中心 -&gt; 选择“人脸识别” -&gt; 添加SDK</code>，会生成APPID、SDK KEY后续会用到，根据需要选择不同的环境（本文基于windows环境），然后下载SDK是一个压缩包。</p>
-<p><img src="https://img-blog.csdnimg.cn/0e1240f6c09f4e6db44db27fa47b7483.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6Z2I54aZ6Zuy,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/871646dad0784bd8a1471b65c3c27ac2.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6Z2I54aZ6Zuy,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
-<p><img src="https://img-blog.csdnimg.cn/f982d21088d848459f42b12a96c03ee2.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6Z2I54aZ6Zuy,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<p><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/0e1240f6c09f4e6db44db27fa47b7483.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6Z2I54aZ6Zuy,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"><br><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/871646dad0784bd8a1471b65c3c27ac2.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6Z2I54aZ6Zuy,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<p><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/f982d21088d848459f42b12a96c03ee2.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6Z2I54aZ6Zuy,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
 <h1 id="Java项目搭建"><a href="#Java项目搭建" class="headerlink" title="Java项目搭建"></a>Java项目搭建</h1><ul>
 <li>下载demo项目</li>
 </ul>
@@ -178,7 +137,7 @@
 <li>根目录创建lib文件夹</li>
 </ul>
 <p>在项目根目录创建文件夹 lib,将下载的SDK压缩包中的<code>arcsoft-sdk-face-3.0.0.0.jar</code>放入项目根目录</p>
-<p><img src="https://img-blog.csdnimg.cn/c9baa0a6432247b9888c04706af330d0.png" alt="在这里插入图片描述"></p>
+<p><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/c9baa0a6432247b9888c04706af330d0.png" alt="在这里插入图片描述"></p>
 <ul>
 <li>引入arcsoft依赖包</li>
 </ul>
@@ -191,19 +150,19 @@
 <li>启动项目</li>
 </ul>
 <p>到此为止配置完成，<code>run Application</code>启动；测试一下：<code>http://127.0.0.1:8089/demo</code>，如下页面即启动成功</p>
-<p><img src="https://img-blog.csdnimg.cn/326e0150dd9948849cd5e4229b235032.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6Z2I54aZ6Zuy,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<p><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/326e0150dd9948849cd5e4229b235032.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6Z2I54aZ6Zuy,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
 <h1 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h1><ul>
 <li>录入人脸图像</li>
 </ul>
 <p>页面输入名称，点击摄像头注册调起本地摄像头，提交后将当前图像传入后台，识别提取当前人脸体征，保存至数据库。</p>
-<p><img src="https://img-blog.csdnimg.cn/fc4b33e69cce4909a23eafc017c193fe.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6Z2I54aZ6Zuy,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<p><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/fc4b33e69cce4909a23eafc017c193fe.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6Z2I54aZ6Zuy,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
 <ul>
 <li>人脸对比</li>
 </ul>
 <p>录入完人脸图像后测试一下能否识别成功，提交当前的图像，发现识别成功相似度92%。但是作为程序员对什么事情都要持怀疑的态度，这结果不是老铁在页面写死的吧？</p>
-<p><img src="https://img-blog.csdnimg.cn/8324abfb46604e2891ba2bc6d18438d3.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6Z2I54aZ6Zuy,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<p><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/8324abfb46604e2891ba2bc6d18438d3.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6Z2I54aZ6Zuy,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
 <p>为了进一步验证，这回把脸挡住再试一下，发现提示“人脸不匹配”，证明真的有进行比对。</p>
-<p><img src="https://img-blog.csdnimg.cn/e2ddbd507ee146679e7a54ed35f69a6f.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6Z2I54aZ6Zuy,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<p><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/e2ddbd507ee146679e7a54ed35f69a6f.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6Z2I54aZ6Zuy,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
 <h1 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h1><p>简单看了一下项目源码，分析一下实现的过程：</p>
 <ul>
 <li>JS调起本地摄像头拍照，上传图片文件字符串</li>
@@ -223,58 +182,58 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">人脸识别</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RequestMapping(value = &quot;/faceSearch&quot;, method = RequestMethod.POST)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="keyword">public</span> Result&lt;FaceSearchResDto&gt; <span class="title function_">faceSearch</span><span class="params">(String file, Integer groupId)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    <span class="type">byte</span>[] decode = Base64.decode(base64Process(file));</span><br><span class="line">    <span class="type">BufferedImage</span> <span class="variable">bufImage</span> <span class="operator">=</span> ImageIO.read(<span class="keyword">new</span> <span class="title class_">ByteArrayInputStream</span>(decode));</span><br><span class="line">    <span class="type">ImageInfo</span> <span class="variable">imageInfo</span> <span class="operator">=</span> ImageFactory.bufferedImage2ImageInfo(bufImage);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//人脸特征获取</span></span><br><span class="line">    <span class="type">byte</span>[] bytes = faceEngineService.extractFaceFeature(imageInfo);</span><br><span class="line">    <span class="keyword">if</span> (bytes == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> Results.newFailedResult(ErrorCodeEnum.NO_FACE_DETECTED);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//人脸比对，获取比对结果</span></span><br><span class="line">    List&lt;FaceUserInfo&gt; userFaceInfoList = faceEngineService.compareFaceFeature(bytes, groupId);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (CollectionUtil.isNotEmpty(userFaceInfoList)) &#123;</span><br><span class="line">        <span class="type">FaceUserInfo</span> <span class="variable">faceUserInfo</span> <span class="operator">=</span> userFaceInfoList.get(<span class="number">0</span>);</span><br><span class="line">        <span class="type">FaceSearchResDto</span> <span class="variable">faceSearchResDto</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FaceSearchResDto</span>();</span><br><span class="line">        BeanUtil.copyProperties(faceUserInfo, faceSearchResDto);</span><br><span class="line">        List&lt;ProcessInfo&gt; processInfoList = faceEngineService.process(imageInfo);</span><br><span class="line">        <span class="keyword">if</span> (CollectionUtil.isNotEmpty(processInfoList)) &#123;</span><br><span class="line">            <span class="comment">//人脸检测</span></span><br><span class="line">            List&lt;FaceInfo&gt; faceInfoList = faceEngineService.detectFaces(imageInfo);</span><br><span class="line">            <span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> faceInfoList.get(<span class="number">0</span>).getRect().getLeft();</span><br><span class="line">            <span class="type">int</span> <span class="variable">top</span> <span class="operator">=</span> faceInfoList.get(<span class="number">0</span>).getRect().getTop();</span><br><span class="line">            <span class="type">int</span> <span class="variable">width</span> <span class="operator">=</span> faceInfoList.get(<span class="number">0</span>).getRect().getRight() - left;</span><br><span class="line">            <span class="type">int</span> <span class="variable">height</span> <span class="operator">=</span> faceInfoList.get(<span class="number">0</span>).getRect().getBottom() - top;</span><br><span class="line"></span><br><span class="line">            <span class="type">Graphics2D</span> <span class="variable">graphics2D</span> <span class="operator">=</span> bufImage.createGraphics();</span><br><span class="line">            graphics2D.setColor(Color.RED);<span class="comment">//红色</span></span><br><span class="line">            <span class="type">BasicStroke</span> <span class="variable">stroke</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BasicStroke</span>(<span class="number">5f</span>);</span><br><span class="line">            graphics2D.setStroke(stroke);</span><br><span class="line">            graphics2D.drawRect(left, top, width, height);</span><br><span class="line">            <span class="type">ByteArrayOutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ByteArrayOutputStream</span>();</span><br><span class="line">            ImageIO.write(bufImage, <span class="string">&quot;jpg&quot;</span>, outputStream);</span><br><span class="line">            <span class="type">byte</span>[] bytes1 = outputStream.toByteArray();</span><br><span class="line">            faceSearchResDto.setImage(<span class="string">&quot;data:image/jpeg;base64,&quot;</span> + Base64Utils.encodeToString(bytes1));</span><br><span class="line">            faceSearchResDto.setAge(processInfoList.get(<span class="number">0</span>).getAge());</span><br><span class="line">            faceSearchResDto.setGender(processInfoList.get(<span class="number">0</span>).getGender().equals(<span class="number">1</span>) ? <span class="string">&quot;女&quot;</span> : <span class="string">&quot;男&quot;</span>);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> Results.newSuccessResult(faceSearchResDto);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> Results.newFailedResult(ErrorCodeEnum.FACE_DOES_NOT_MATCH);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>整个人脸识别功能的大致流程图如下：</p>
-<p><img src="https://img-blog.csdnimg.cn/img_convert/016378162bbee45ad0a7ccd2ab7666d0.png" alt="人脸流程.png"></p>
-</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/">人脸识别</a><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/">数据采集</a><a class="post-meta__tags" href="/tags/%E5%9B%BE%E5%83%8F%E5%88%86%E6%9E%90/">图像分析</a><a class="post-meta__tags" href="/tags/%E7%AE%97%E6%B3%95/">算法</a></div><div class="post_share"><div class="social-share" data-image="https://s2.loli.net/2022/02/21/5yjFcGvzJEhRqpS.jpg" data-sites="wechat,weibo,qq,facebook,twitter"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/gh/overtrue/share.js@master/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/file/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/file/wechat.jpg" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/02/22/%E5%87%A0%E8%A1%8C%E4%BA%8B%E5%8A%A1%E4%BB%A3%E7%A0%81%EF%BC%8C%E8%AE%A9%E6%88%91%E8%B5%94%E4%BA%8616%E4%B8%87/"><img class="prev-cover" src="https://s2.loli.net/2022/02/22/QYvJl3UXeWatnrf.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">几行事务代码，让我赔了16万</div></div></a></div><div class="next-post pull-right"><a href="/2022/02/17/%E5%A6%82%E4%BD%95%E6%A0%A1%E9%AA%8C%E4%B8%A4%E4%B8%AA%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9%E6%98%AF%E5%90%A6%E7%9B%B8%E5%90%8C/"><img class="next-cover" src="https://s2.loli.net/2022/02/17/aKIhJ8XtQbDmWgT.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">如何校验两个文件内容是否相同</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/02/17/%E5%A6%82%E4%BD%95%E6%A0%A1%E9%AA%8C%E4%B8%A4%E4%B8%AA%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9%E6%98%AF%E5%90%A6%E7%9B%B8%E5%90%8C/" title="如何校验两个文件内容是否相同"><img class="cover" src="https://s2.loli.net/2022/02/17/aKIhJ8XtQbDmWgT.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-17</div><div class="title">如何校验两个文件内容是否相同</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">1.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%ABSDK"><span class="toc-number">2.</span> <span class="toc-text">人脸识别SDK</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Java%E9%A1%B9%E7%9B%AE%E6%90%AD%E5%BB%BA"><span class="toc-number">3.</span> <span class="toc-text">Java项目搭建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C"><span class="toc-number">4.</span> <span class="toc-text">操作</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">5.</span> <span class="toc-text">源码分析</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background-image: url('https://s2.loli.net/2022/02/21/5yjFcGvzJEhRqpS.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 灵熙云</div><div class="framework-info"><span>Copyright Ⓒ 灵熙云工作室. All rights reserved.</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>(() => {
-  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
-  if ($mermaidWrap.length) {
-    window.runMermaid = () => {
-      window.loadMermaid = true
-      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
-
-      Array.from($mermaidWrap).forEach((item, index) => {
-        const mermaidSrc = item.firstElementChild
-        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
-        const mermaidID = 'mermaid-' + index
-        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
-        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
-          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
-        })
-      })
-    }
-
-    const loadMermaid = () => {
-      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
-    }
-
-    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+<p><img src= "/img/loading.gif" data-src="https://img-blog.csdnimg.cn/img_convert/016378162bbee45ad0a7ccd2ab7666d0.png" alt="人脸流程.png"></p>
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/">人脸识别</a><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/">数据采集</a><a class="post-meta__tags" href="/tags/%E5%9B%BE%E5%83%8F%E5%88%86%E6%9E%90/">图像分析</a><a class="post-meta__tags" href="/tags/%E7%AE%97%E6%B3%95/">算法</a></div><div class="post_share"><div class="social-share" data-image="https://s2.loli.net/2022/04/27/9xQwapEFrtc4HnP.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"/><script src="https://fastly.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js"></script></div></div><div class="post-reward"><button class="reward-button" type="button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><img class="post-qr-code__img" src="/file/wechat.jpg" alt="微信" onclick="window.open('/file/wechat.jpg')"/><div class="post-qr-code__desc">微信</div></li></ul></div></button></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/02/22/%E5%87%A0%E8%A1%8C%E4%BA%8B%E5%8A%A1%E4%BB%A3%E7%A0%81%EF%BC%8C%E8%AE%A9%E6%88%91%E8%B5%94%E4%BA%8616%E4%B8%87/"><img class="prev-cover" data-src="https://s2.loli.net/2022/02/22/QYvJl3UXeWatnrf.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">几行事务代码，让我赔了16万</div></div></a></div><div class="next-post pull-right"><a href="/2022/02/17/%E5%A6%82%E4%BD%95%E6%A0%A1%E9%AA%8C%E4%B8%A4%E4%B8%AA%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9%E6%98%AF%E5%90%A6%E7%9B%B8%E5%90%8C/"><img class="next-cover" data-src="https://s2.loli.net/2022/02/17/aKIhJ8XtQbDmWgT.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">如何校验两个文件内容是否相同</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2022/02/17/如何校验两个文件内容是否相同/" title="如何校验两个文件内容是否相同"><img class="relatedPosts_cover" data-src="https://s2.loli.net/2022/02/17/aKIhJ8XtQbDmWgT.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="fas fa-history fa-fw"></i> 2022-02-17</div><div class="relatedPosts_title">如何校验两个文件内容是否相同</div></div></a></div></div></div><hr><div id="post-comment"><div class="comment-head"><div class="comment-headling"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div class="comments-items-1" data-name="Valine"><div class="vcomment" id="vcomment"></div><script>function loadvaline () {  
+  var requestSetting = function (from,set) {
+    var from = from
+    var setting = set.split(',').filter(function(item){
+    return from.indexOf(item) > -1
+    });
+    setting = setting.length == 0 ? from :setting;
+    return setting
   }
-})()</script><script>function loadValine () {
+
+  var guestInfo = requestSetting(['nick','mail','link'],'nick,mail,link')
+  var requiredFields = requestSetting(['nick','mail'],'nick,mail')
+
   function initValine () {
-    const valine = new Valine(Object.assign({
-      el: '#vcomment',
+    window.valine = new Valine({
+      el:'#vcomment',
       appId: 'eKp2wzPKybiFid4KXcVFcyMX-gzGzoHsz',
       appKey: 'RSA7FDJfrFwpawTfG1vE6R71',
+      placeholder: 'minkeyto@qq.com',
       avatar: 'monsterid',
+      meta: guestInfo,
+      pageSize: '10',
+      lang: 'zh-CN',
+      recordIP: false,
       serverURLs: '',
+      emojiCDN: '',
       emojiMaps: "",
-      path: window.location.pathname,
-      visitor: 
-    }, ))
+      enableQQ: false,
+      requiredFields: requiredFields
+    });
   }
-
-  if (typeof Valine === 'function') initValine() 
-  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+  loadScript('https://fastly.jsdelivr.net/npm/valine/dist/Valine.min.js', initValine)
 }
 
-if ('Valine' === 'Valine' || !true) {
-  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
-  else setTimeout(loadValine, 0)
-} else {
+if ('Valine' === 'Valine' || false) {
+  window.addEventListener('load', loadvaline)
+}
+else {
   function loadOtherComment () {
-    loadValine()
+    loadvaline()
   }
-}</script></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="true"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = false;
+}</script></div></div></div></article></main><footer id="footer" style="background-image: url(https://s2.loli.net/2022/02/21/5yjFcGvzJEhRqpS.jpg)" data-type="photo"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2022 By 灵熙云</div><div class="framework-info"><span>Copyright Ⓒ 灵熙云工作室. All rights reserved.</span></div><div class="footer_custom_text">Hi, welcome to my blog !</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div class="search-mask"></div><script src="https://fastly.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://fastly.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://fastly.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script defer id="ribbon" src="/js/third-party/canvas-ribbon.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="true"></script><script id="ribbon_piao" mobile="false" src="/js/third-party/piao.js"></script><script src="/js/third-party/activate-power-mode.js"></script><script>POWERMODE.colorful = false;
 POWERMODE.shake = false;
-POWERMODE.mobile = false;
 document.body.addEventListener('input', POWERMODE);
-</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://fastly.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://fastly.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://fastly.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {
+  pangu.autoSpacingPage()
+})</script><script src="/js/search/local-search.js"></script><script>if (document.getElementsByClassName('mermaid').length) {
+  loadScript('https://fastly.jsdelivr.net/npm/mermaid/dist/mermaid.min.js',function () {
+    mermaid.initialize({
+      theme: 'default',
+  })
+})
+}</script></body></html>
