@@ -4,7 +4,7 @@
   <url>
     <loc>http://www.goitman.cn/2022/04/27/So%20easy%20Spring%E4%BA%8B%E5%8A%A1%E5%9B%9E%E6%BB%9A%E6%9C%BA%E5%88%B6/</loc>
     
-    <lastmod>2022-04-27</lastmod>
+    <lastmod>2022-05-18</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -362,6 +362,13 @@
 
   
   <url>
+    <loc>http://www.goitman.cn/tags/%E7%A8%8B%E5%BA%8F%E4%BA%BA%E7%94%9F/</loc>
+    <lastmod>2022-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>http://www.goitman.cn/tags/Apifox/</loc>
     <lastmod>2022-05-18</lastmod>
     <changefreq>weekly</changefreq>
@@ -391,13 +398,6 @@
   
   <url>
     <loc>http://www.goitman.cn/tags/Postman/</loc>
-    <lastmod>2022-05-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.goitman.cn/tags/%E7%A8%8B%E5%BA%8F%E4%BA%BA%E7%94%9F/</loc>
     <lastmod>2022-05-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -838,6 +838,20 @@
   </url>
   
   <url>
+    <loc>http://www.goitman.cn/tags/RabbitMQ/</loc>
+    <lastmod>2022-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.goitman.cn/tags/%E5%BB%B6%E8%BF%9F%E6%8E%A8%E9%80%81/</loc>
+    <lastmod>2022-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>http://www.goitman.cn/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
     <lastmod>2022-05-18</lastmod>
     <changefreq>weekly</changefreq>
@@ -867,20 +881,6 @@
   
   <url>
     <loc>http://www.goitman.cn/tags/oracle/</loc>
-    <lastmod>2022-05-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.goitman.cn/tags/RabbitMQ/</loc>
-    <lastmod>2022-05-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.goitman.cn/tags/%E5%BB%B6%E8%BF%9F%E6%8E%A8%E9%80%81/</loc>
     <lastmod>2022-05-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -964,6 +964,20 @@
   </url>
   
   <url>
+    <loc>http://www.goitman.cn/tags/spring/</loc>
+    <lastmod>2022-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.goitman.cn/tags/%E9%80%9A%E7%94%A8mapper/</loc>
+    <lastmod>2022-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>http://www.goitman.cn/tags/Jar/</loc>
     <lastmod>2022-05-18</lastmod>
     <changefreq>weekly</changefreq>
@@ -1007,20 +1021,6 @@
   
   <url>
     <loc>http://www.goitman.cn/tags/SHA-1/</loc>
-    <lastmod>2022-05-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.goitman.cn/tags/spring/</loc>
-    <lastmod>2022-05-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.goitman.cn/tags/%E9%80%9A%E7%94%A8mapper/</loc>
     <lastmod>2022-05-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1225,14 +1225,14 @@
 
   
   <url>
-    <loc>http://www.goitman.cn/categories/%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91/</loc>
+    <loc>http://www.goitman.cn/categories/%E7%A8%8B%E5%BA%8F%E4%BA%BA%E7%94%9F/</loc>
     <lastmod>2022-05-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://www.goitman.cn/categories/%E7%A8%8B%E5%BA%8F%E4%BA%BA%E7%94%9F/</loc>
+    <loc>http://www.goitman.cn/categories/%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91/</loc>
     <lastmod>2022-05-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1288,13 +1288,6 @@
   </url>
   
   <url>
-    <loc>http://www.goitman.cn/categories/%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/%E7%BC%93%E5%AD%98/</loc>
-    <lastmod>2022-05-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>http://www.goitman.cn/categories/%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/%E5%B7%A5%E4%BD%9C%E6%B5%81/</loc>
     <lastmod>2022-05-18</lastmod>
     <changefreq>weekly</changefreq>
@@ -1303,6 +1296,13 @@
   
   <url>
     <loc>http://www.goitman.cn/categories/%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/</loc>
+    <lastmod>2022-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.goitman.cn/categories/%E6%8A%80%E6%9C%AF%E4%B8%93%E9%A2%98/%E7%BC%93%E5%AD%98/</loc>
     <lastmod>2022-05-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
