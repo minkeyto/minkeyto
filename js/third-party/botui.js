@@ -4874,7 +4874,7 @@ function bot_ui_ini() {
     .add({ delay: 800, content: "👋 嗨, 认识你很高兴！" })
     .then(function () {
       botui.message
-        .add({ delay: 1100, content: "我是一名苦逼开发工程师" })
+        .add({ delay: 1100, content: "一名苦逼开发工程师" })
         .then(function () {
           botui.message
             .add({ delay: 1100, content: "现在广州工作" })
