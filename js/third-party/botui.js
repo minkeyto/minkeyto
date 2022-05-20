@@ -4959,7 +4959,7 @@ function bot_ui_ini() {
               botui.action
                 .button({
                   delay: 1500,
-                  action: [{ text: "打开 goitman 慢吗？", value: "why-domain" }]
+                  action: [{ text: "打开 goitman 慢？", value: "why-domain" }]
                 })
                 .then(function (a) {
                   fifthpart();
