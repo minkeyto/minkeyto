@@ -4895,7 +4895,7 @@ function bot_ui_ini() {
         });
     });
   var sure = function () {
-      botui.message.add({ delay: 600, content: "毕业于计算机科学与技术专业 😘" }).then(function () {
+      botui.message.add({ delay: 600, content: "计算机科学与技术专业 😘" }).then(function () {
         secondpart();
       });
     },
