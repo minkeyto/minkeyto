@@ -4874,7 +4874,7 @@ function bot_ui_ini() {
     .add({ delay: 800, content: "👋 嗨, 认识你很高兴！" })
     .then(function () {
       botui.message
-        .add({ delay: 1100, content: "一名苦逼开发工程师" })
+        .add({ delay: 1100, content: "I am 一名苦逼开发工程师" })
         .then(function () {
           botui.message
             .add({ delay: 1100, content: "现在广州工作" })
@@ -4934,6 +4934,10 @@ function bot_ui_ini() {
         .add({
           delay: 1e3,
           content: "🤔 Spring、Hibernate、Mybatis、Spring Boot、Spring Cloud、MySql、Oracle、Redis、MongoDB、Dubbo、Kafka、RabbitMQ、RocketMQ、Elasticsearch、JavaScript、JQuery、AJAX、Html、Css、Linux、Docker等"
+        })
+		.then(function () {
+          botui.message
+            .add({ delay: 1100, content: "有个小团队，可承接项目，欢迎咨询！" })
         })
         .then(function () {
           botui.action
