@@ -473,7 +473,7 @@ $(function () {
    */
 
   if (GLOBAL_CONFIG_SITE.isPost && GLOBAL_CONFIG_SITE.isSidebar) {
-    $('.toc-child').hide()
+    decodeURI($('.toc-child')).hide()
 
     // main of scroll
     $(window).scroll(throttle(function (event) {
