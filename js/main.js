@@ -473,7 +473,8 @@ $(function () {
    */
 
   if (GLOBAL_CONFIG_SITE.isPost && GLOBAL_CONFIG_SITE.isSidebar) {
-    decodeURI($('.toc-child')).hide()
+    //$('.toc-child').hide()
+	decodeURI($('.toc-child')).hide()
 
     // main of scroll
     $(window).scroll(throttle(function (event) {
@@ -489,8 +490,8 @@ $(function () {
         closeMobileSidebar('toc')
       } else {
         e.preventDefault()
-        scrollToDest(decodeURI($(this).attr('href')))
-		//scrollToDest($(this).attr('href'))
+        //scrollToDest(decodeURI($(this).attr('href')))
+		scrollToDest($(this).attr('href'))
       }
     })
 
