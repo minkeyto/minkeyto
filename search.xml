@@ -57,17 +57,17 @@
       
         <tags>
             
-            <tag> 点赞 </tag>
-            
             <tag> Redis </tag>
+            
+            <tag> 缓存 </tag>
+            
+            <tag> 点赞 </tag>
             
             <tag> 钩子函数 </tag>
             
             <tag> Quartz </tag>
             
             <tag> Scheduling </tag>
-            
-            <tag> 缓存 </tag>
             
         </tags>
       
