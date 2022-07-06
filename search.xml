@@ -20,7 +20,11 @@
       
         <tags>
             
+            <tag> Linux </tag>
+            
             <tag> Redis </tag>
+            
+            <tag> 缓存 </tag>
             
             <tag> shell脚本 </tag>
             
