@@ -57,6 +57,8 @@
             
             <tag> 可重入锁 </tag>
             
+            <tag> 主从复制 </tag>
+            
             <tag> Redis分布式锁 </tag>
             
             <tag> 原子性 </tag>
@@ -64,8 +66,6 @@
             <tag> 读写锁 </tag>
             
             <tag> lua脚本 </tag>
-            
-            <tag> 主从复制 </tag>
             
             <tag> RedissonRedLock </tag>
             
@@ -125,11 +125,11 @@
       
         <tags>
             
+            <tag> MySQL </tag>
+            
             <tag> 虚拟机 </tag>
             
             <tag> JDK </tag>
-            
-            <tag> MySQL </tag>
             
             <tag> Tomcat </tag>
             
@@ -164,9 +164,9 @@
       
         <tags>
             
-            <tag> RabbitMQ </tag>
-            
             <tag> Redis </tag>
+            
+            <tag> RabbitMQ </tag>
             
             <tag> Quartz </tag>
             
@@ -238,17 +238,17 @@
       
         <tags>
             
-            <tag> 点赞 </tag>
-            
             <tag> Redis </tag>
+            
+            <tag> 缓存 </tag>
+            
+            <tag> 点赞 </tag>
             
             <tag> 钩子函数 </tag>
             
             <tag> Quartz </tag>
             
             <tag> Scheduling </tag>
-            
-            <tag> 缓存 </tag>
             
             <tag> 事务支持 </tag>
             
