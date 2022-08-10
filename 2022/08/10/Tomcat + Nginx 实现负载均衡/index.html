@@ -1,0 +1,286 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tomcat + Nginx 实现负载均衡 | 灵熙云工作室</title><meta name="description" content="Tomcat 简介 Tomcat 是一个免费的开源的 Serlvet 容器，它是 Apache 基金会的 Jakarta 项目中的一个核心项目； 由 Apache，Sun 和其它一些公司及个人共同开发而成。 与传统的桌面应用程序不同，Tomcat 中的应用程序是一个 WAR（Web Archive）文件。 WAR 是 Sun 提出的一种 Web 应用程序格式，与 JAR 类似，也是许多文件的一个压"><meta name="keywords" content="Nginx,负载均衡,JDK,Tomcat"><meta name="author" content="灵熙云,minkeyto@qq.com"><meta name="copyright" content="灵熙云"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/file/favicon.png"><link rel="canonical" href="http://www.goitman.cn/2022/08/10/Tomcat%20+%20Nginx%20%E5%AE%9E%E7%8E%B0%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preconnect" href="//zz.bdstatic.com"/><meta name="msvalidate.01" content="8izvf3GqbX"/><meta property="og:type" content="article"><meta property="og:title" content="Tomcat + Nginx 实现负载均衡"><meta property="og:url" content="http://www.goitman.cn/2022/08/10/Tomcat%20+%20Nginx%20%E5%AE%9E%E7%8E%B0%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/"><meta property="og:site_name" content="灵熙云工作室"><meta property="og:description" content="Tomcat 简介 Tomcat 是一个免费的开源的 Serlvet 容器，它是 Apache 基金会的 Jakarta 项目中的一个核心项目； 由 Apache，Sun 和其它一些公司及个人共同开发而成。 与传统的桌面应用程序不同，Tomcat 中的应用程序是一个 WAR（Web Archive）文件。 WAR 是 Sun 提出的一种 Web 应用程序格式，与 JAR 类似，也是许多文件的一个压"><meta property="og:image" content="https://s2.loli.net/2022/08/10/TiMUq1PW6GDhZSE.jpg"><meta property="article:published_time" content="2022-08-10T03:32:32.086Z"><meta property="article:modified_time" content="2022-08-10T08:27:20.341Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'false'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="next" title="线程数据交换、工作窃取算法，你懂吗？" href="http://www.goitman.cn/2022/08/05/%E7%BA%BF%E7%A8%8B%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2%E3%80%81%E5%B7%A5%E4%BD%9C%E7%AA%83%E5%8F%96%E7%AE%97%E6%B3%95%EF%BC%8C%E4%BD%A0%E6%87%82%E5%90%97/"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?5c009f46ba6df7bc385f101477536214";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容:${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: false,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://fastly.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://fastly.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: true,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script>var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2022-08-10 16:27:20'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img{
+  opacity: 1
+}
+</style></noscript><link rel="stylesheet" href="/css/effect.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/file/head.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">50</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">192</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">18</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/notes/"><i class="fa-fw fa fa-book"></i><span> 笔记</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div></div></div><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Tomcat-%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">Tomcat 简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-Tomcat-%E6%9C%8D%E5%8A%A1"><span class="toc-number">2.</span> <span class="toc-text">安装 Tomcat 服务</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-Tomcat"><span class="toc-number">2.1.</span> <span class="toc-text">安装配置 Tomcat</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81"><span class="toc-number">2.2.</span> <span class="toc-text">验证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE-Java-%E7%9A%84-Web-%E7%9B%AE%E5%BD%95"><span class="toc-number">2.3.</span> <span class="toc-text">配置 Java 的 Web 目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9-Tomcat-%E4%B8%BB%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">2.4.</span> <span class="toc-text">修改 Tomcat 主配置文件</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="toc-number">3.</span> <span class="toc-text">负载均衡</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2-Nginx-%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">3.1.</span> <span class="toc-text">部署 Nginx 服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE-Nginx-%E4%B8%BB%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">3.2.</span> <span class="toc-text">配置 Nginx 主配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81-1"><span class="toc-number">3.3.</span> <span class="toc-text">验证</span></a></li></ol></li></ol></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://s2.loli.net/2022/08/10/TiMUq1PW6GDhZSE.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">灵熙云工作室</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/notes/"><i class="fa-fw fa fa-book"></i><span> 笔记</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-users"></i><span> 友链&amp;留言板</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Tomcat + Nginx 实现负载均衡</div></div><div id="post-meta"><div class="meta-firstline"><time class="post-meta__date"><span class="post-meta__date-created" title="发表于 2022-08-10 11:32:32"><i class="far fa-calendar-alt fa-fw"></i> 发表于 2022-08-10</span><span class="post-meta__separator">|</span><span class="post-meta__date-updated" title="更新于 2022-08-10 16:27:20"><i class="fas fa-history fa-fw"></i> 更新于 2022-08-10</span></time><span class="post-meta__categories"><span class="post-meta__separator">|</span><i class="fas fa-inbox fa-fw post-meta__icon"></i><a class="post-meta__categories" href="/categories/%E6%9C%8D%E5%8A%A1%E9%83%A8%E7%BD%B2/">服务部署</a><i class="fas fa-angle-right post-meta__separator"></i><i class="fas fa-inbox fa-fw post-meta__icon"></i><a class="post-meta__categories" href="/categories/%E6%9C%8D%E5%8A%A1%E9%83%A8%E7%BD%B2/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/">负载均衡</a></span></div><div class="meta-secondline"> <span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta__icon"></i><span>字数总计:</span><span class="word-count">992</span><span class="post-meta__separator">|</span><i class="far fa-clock fa-fw post-meta__icon"></i><span>阅读时长: 4 分钟</span></span></div><div class="meta-thirdline"><span class="post-meta-pv-cv"><span class="post-meta__separator">|</span><i class="far fa-eye fa-fw post-meta__icon"></i><span>阅读量:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-commentcount"></span><span class="post-meta__separator">|</span><i class="far fa-comments fa-fw post-meta__icon"></i><span>评论数:</span><a href="/2022/08/10/Tomcat%20+%20Nginx%20%E5%AE%9E%E7%8E%B0%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/#post-comment" itemprop="discussionUrl"><span class="valine-comment-count comment-count" data-xid="/2022/08/10/Tomcat%20+%20Nginx%20%E5%AE%9E%E7%8E%B0%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" itemprop="commentCount"></span></a></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h1 id="Tomcat-简介"><a href="#Tomcat-简介" class="headerlink" title="Tomcat 简介"></a>Tomcat 简介</h1><ul>
+<li>Tomcat 是一个免费的开源的 Serlvet 容器，它是 Apache 基金会的 Jakarta 项目中的一个核心项目；</li>
+<li>由 Apache，Sun 和其它一些公司及个人共同开发而成。</li>
+<li>与传统的桌面应用程序不同，Tomcat 中的应用程序是一个 WAR（Web Archive）文件。</li>
+<li>WAR 是 Sun 提出的一种 Web 应用程序格式，与 JAR 类似，也是许多文件的一个压缩包。</li>
+</ul>
+<h1 id="安装-Tomcat-服务"><a href="#安装-Tomcat-服务" class="headerlink" title="安装 Tomcat 服务"></a>安装 Tomcat 服务</h1><p>准备工作：</p>
+<table>
+<thead>
+<tr>
+<th align="center">主机名</th>
+<th align="center">操作系统</th>
+<th align="center">IP地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Tomcat-A</td>
+<td align="center">CentOS 7.x</td>
+<td align="center">192.168.1.1</td>
+</tr>
+</tbody></table>
+<h2 id="安装配置-Tomcat"><a href="#安装配置-Tomcat" class="headerlink" title="安装配置 Tomcat"></a>安装配置 Tomcat</h2><ul>
+<li>安装 JDK：<a target="_blank" rel="noopener" href="https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html">下载地址</a>（需要创建 Oracle 账号）</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Tomcat-A ~]# ls</span><br><span class="line">anaconda-ks.cfg  apache-tomcat-8.5.16.tar.gz  jdk-8u91-linux-x64.tar.gz</span><br><span class="line">[root@Tomcat-A ~]# tar zxf jdk-8u91-linux-x64.tar.gz</span><br><span class="line">[root@Tomcat-A ~]# mv jdk1.8.0_91/ /usr/local/java</span><br><span class="line">[root@Tomcat-A ~]# cat &lt;&lt;END &gt;&gt; /etc/profile</span><br></pre></td></tr></table></figure>
+<p>编辑内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">export JAVA_HOME=/usr/local/java</span><br><span class="line">export PATH=$PATH:/usr/local/java/bin</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Tomcat-A ~]# source /etc/profile</span><br><span class="line">[root@Tomcat-A ~]# java -version # 查看 Java 版本号</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>安装 Tomcat 软件：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Tomcat-A ~]# wget https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.16/bin/apache-tomcat-8.5.16.tar.gz</span><br><span class="line">[root@Tomcat-A ~]# tar zxf apache-tomcat-8.5.16.tar.gz</span><br><span class="line">[root@Tomcat-A ~]# mv apache-tomcat-8.5.16 /usr/local/tomcat8</span><br><span class="line">[root@Tomcat-A ~]# /usr/local/tomcat8/bin/startup.sh # 启动 Tomcat</span><br><span class="line">[root@Tomcat-A ~]# netstat -anpt | grep 8080 # Tomcat 的工作端口</span><br><span class="line">[root@Tomcat-A ~]# netstat -anpt | grep java # 查看 Java 端口号</span><br></pre></td></tr></table></figure>
+
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/ZichQdsB9IHO6NT.png"></p>
+<p>注解：</p>
+<blockquote>
+<ul>
+<li><code>8005</code>端口：用 <code>shutdown.sh</code> 关闭 Tomcat 的时候需要用到的端口号，如果此端口没启动，Tomcat 不能用 shutdown 命令关闭。</li>
+<li><code>8009</code>端口：是 Tomcat 负责和其他的 HTTP 服务器建立连接的端口，如 Nginx 和 Apache 互通时使用。（AJP&#x2F;1.3 协议）</li>
+<li><code>8080</code>端口：HTTP 访问时使用的端口。（HTTP&#x2F;1.1 协议）</li>
+</ul>
+</blockquote>
+<h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/32BseNP87i4JGgE.png"></p>
+<h2 id="配置-Java-的-Web-目录"><a href="#配置-Java-的-Web-目录" class="headerlink" title="配置 Java 的 Web 目录"></a>配置 Java 的 Web 目录</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Tomcat-A ~]# mkdir -p /web/tomcat</span><br><span class="line">[root@Tomcat-A ~]# echo &quot;192.168.1.1:Tomcat-A&quot; &gt; /web/tomcat/index.jsp</span><br></pre></td></tr></table></figure>
+
+<h2 id="修改-Tomcat-主配置文件"><a href="#修改-Tomcat-主配置文件" class="headerlink" title="修改 Tomcat 主配置文件"></a>修改 Tomcat 主配置文件</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Tomcat-A ~]# vim /usr/local/tomcat8/conf/server.xml</span><br></pre></td></tr></table></figure>
+<p>在148-151行添加：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Context</span> <span class="attr">docBase</span>=<span class="string">&quot;/web/tomcat&quot;</span> <span class="attr">path</span>=<span class="string">&quot;&quot;</span> <span class="attr">reloadable</span>=<span class="string">&quot;false&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Context</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/Hr1AZ9uBgjI4vVF.png"></p>
+<p>注解：</p>
+<blockquote>
+<ul>
+<li><code>unpackWARs=&quot;true&quot;</code>：配置自动识别 war 包。</li>
+<li><code>autoDeploy=&quot;true&quot;</code>：开启自动部署。</li>
+<li><code>Context docBase=&quot;/web/tomcat&quot;</code>：网页根目录。</li>
+<li><code>path=&quot;&quot;</code>：设置网页；相当于是 Nginx 中的 Location。</li>
+<li><code>reloadble=&quot;false&quot;</code>：不会自动重新加载 Web 应用，配置为 true 则会根据文件被改动后自动重新加载。</li>
+</ul>
+</blockquote>
+<p>重启 Tomcat 服务</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Tomcat-A ~]# /usr/local/tomcat8/bin/shutdown.sh</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Tomcat-A ~]# /usr/local/tomcat8/bin/startup.sh</span><br></pre></td></tr></table></figure>
+
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/QFqYUHVimGLnABD.png"></p>
+<p>验证：</p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/5kyr1WcDxgRbFAu.png"></p>
+<h1 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h1><p>准备工作：</p>
+<table>
+<thead>
+<tr>
+<th align="center">主机名</th>
+<th align="center">操作系统</th>
+<th align="center">IP地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Tomcat-A</td>
+<td align="center">CentOS 7.x</td>
+<td align="center">192.168.1.1</td>
+</tr>
+<tr>
+<td align="center">Tomcat-B</td>
+<td align="center">CentOS 7.x</td>
+<td align="center">192.168.1.2</td>
+</tr>
+<tr>
+<td align="center">Nginx-Server</td>
+<td align="center">CentOS 7.x</td>
+<td align="center">192.168.1.3</td>
+</tr>
+</tbody></table>
+<p>注意：</p>
+<blockquote>
+<ul>
+<li><code>Tomcat-A</code> 可以用上面配置；</li>
+<li><code>Tomcat-B</code> 跟 Tomcat-A 步骤一样，但页面要区分开，方便测试；</li>
+</ul>
+</blockquote>
+<h2 id="部署-Nginx-服务器"><a href="#部署-Nginx-服务器" class="headerlink" title="部署 Nginx 服务器"></a>部署 Nginx 服务器</h2><ul>
+<li>安装 Nginx 服务</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Nginx-Server ~]# yum -y install pcre-devel zlib-devel popt-devel openssl-devel openssl</span><br><span class="line">[root@Nginx-Server ~]# wget http://www.nginx.org/download/nginx-1.18.0.tar.gz</span><br><span class="line">[root@Nginx-Server ~]# ls</span><br><span class="line">anaconda-ks.cfg  nginx-1.18.0.tar.gz</span><br><span class="line">[root@Nginx-Server ~]# tar zxf nginx-1.18.0.tar.gz -C /usr/src/</span><br><span class="line">[root@Nginx-Server ~]# cd /usr/src/nginx-1.18.0/</span><br><span class="line">[root@Nginx-Server nginx-1.18.0]# useradd -M -s /sbin/nologin nginx</span><br><span class="line">[root@Nginx-Server nginx-1.18.0]# ./configure \</span><br><span class="line">--prefix=/usr/local/nginx \</span><br><span class="line">--user=nginx \</span><br><span class="line">--group=nginx \</span><br><span class="line">--with-http_stub_status_module &amp;&amp; make &amp;&amp; make install</span><br><span class="line">[root@Nginx-Server nginx-1.18.0]# ln -s /usr/local/nginx/sbin/nginx /usr/local/sbin/</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置-Nginx-主配置文件"><a href="#配置-Nginx-主配置文件" class="headerlink" title="配置 Nginx 主配置文件"></a>配置 Nginx 主配置文件</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Nginx-Server ~]# vim /usr/local/nginx/conf/nginx.conf</span><br></pre></td></tr></table></figure>
+<p>在 32 行增加：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">upstream tomcat_server &#123;</span><br><span class="line">    server 192.168.1.1:8080 weight=1;</span><br><span class="line">    server 192.168.1.2:8080 weight=1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 49 行添加：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">proxy_pass http://tomcat_server;</span><br></pre></td></tr></table></figure>
+
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/Vh9kJDYfBAG4iv8.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Nginx-Server ~]# nginx -t # 检查 Nginx 配置文件是否正确</span><br><span class="line">[root@Nginx-Server ~]# nginx # 启用 Nginx 服务</span><br><span class="line">[root@Nginx-Server ~]# ps aux | grep nginx # 查看 Nginx 服务进程</span><br><span class="line">[root@Nginx-Server ~]# netstat -anpt | grep nginx # 查看 Nginx 端口号和进程号</span><br></pre></td></tr></table></figure>
+
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/O9mnKSBYcVbakoU.png"></p>
+<h2 id="验证-1"><a href="#验证-1" class="headerlink" title="验证"></a>验证</h2><p>使用浏览器访问 Nginx 服务器 IP 地址：</p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/Gp1lPVSRIAzwegi.png"></p>
+<p>不断刷新页面，观察页面变化：</p>
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/Gm6JUbHdERKvzgO.png"></p>
+<p>使用脚本查看效果：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Nginx-Server ~]# for i in $(seq 10);do curl http://192.168.1.3;done</span><br></pre></td></tr></table></figure>
+
+<p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/Z7mxXRHPwWpTq9Y.png"></p>
+<blockquote>
+<p>原文：blog.csdn.net&#x2F;weixin_46902396&#x2F;article&#x2F;details&#x2F;122574996</p>
+</blockquote>
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Nginx/">Nginx</a><a class="post-meta__tags" href="/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/">负载均衡</a><a class="post-meta__tags" href="/tags/JDK/">JDK</a><a class="post-meta__tags" href="/tags/Tomcat/">Tomcat</a></div><div class="post_share"><div class="social-share" data-image="https://s2.loli.net/2022/08/10/TiMUq1PW6GDhZSE.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"/><script src="https://fastly.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js"></script></div></div><div class="post-reward"><button class="reward-button" type="button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><img class="post-qr-code__img" src="/file/wechat.jpg" alt="微信" onclick="window.open('/file/wechat.jpg')"/><div class="post-qr-code__desc">微信</div></li></ul></div></button></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2022/08/05/%E7%BA%BF%E7%A8%8B%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2%E3%80%81%E5%B7%A5%E4%BD%9C%E7%AA%83%E5%8F%96%E7%AE%97%E6%B3%95%EF%BC%8C%E4%BD%A0%E6%87%82%E5%90%97/"><img class="next-cover" data-src="https://s2.loli.net/2022/08/05/F4sO9d3GWjZXMwc.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">线程数据交换、工作窃取算法，你懂吗？</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2022/06/10/So easy 将程序部署到服务器/" title="So easy 将程序部署到服务器"><img class="relatedPosts_cover" data-src="https://s2.loli.net/2022/06/10/uVKZvd31mjSnhlP.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="fas fa-history fa-fw"></i> 2022-08-10</div><div class="relatedPosts_title">So easy 将程序部署到服务器</div></div></a></div><div class="relatedPosts_item"><a href="/2022/04/11/Caddy超越Nginx，下一代Web服务器/" title="Caddy超越Nginx，下一代Web服务器？"><img class="relatedPosts_cover" data-src="https://s2.loli.net/2022/04/11/sSTLlxib6jRZCkH.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="fas fa-history fa-fw"></i> 2022-08-10</div><div class="relatedPosts_title">Caddy超越Nginx，下一代Web服务器？</div></div></a></div><div class="relatedPosts_item"><a href="/2022/01/10/别再说不会解决跨域问题啦/" title="别再说不会解决 "跨域" 问题啦"><img class="relatedPosts_cover" data-src="https://s2.loli.net/2022/01/10/XWg4lUGY8Tt6xDK.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="fas fa-history fa-fw"></i> 2022-01-10</div><div class="relatedPosts_title">别再说不会解决 "跨域" 问题啦</div></div></a></div><div class="relatedPosts_item"><a href="/2021/12/08/Linux CPU使用率与负载过高解决思路/" title="Linux CPU使用率与负载过高解决思路"><img class="relatedPosts_cover" data-src="https://s2.loli.net/2021/12/08/rLQNvnelJSVbs1P.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="fas fa-history fa-fw"></i> 2022-08-10</div><div class="relatedPosts_title">Linux CPU使用率与负载过高解决思路</div></div></a></div></div></div><hr><div id="post-comment"><div class="comment-head"><div class="comment-headling"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div class="comments-items-1" data-name="Valine"><div class="vcomment" id="vcomment"></div><script>function loadvaline () {  
+  var requestSetting = function (from,set) {
+    var from = from
+    var setting = set.split(',').filter(function(item){
+    return from.indexOf(item) > -1
+    });
+    setting = setting.length == 0 ? from :setting;
+    return setting
+  }
+
+  var guestInfo = requestSetting(['nick','mail','link'],'nick,mail,link')
+  var requiredFields = requestSetting(['nick','mail'],'nick,mail')
+
+  function initValine () {
+    window.valine = new Valine({
+      el:'#vcomment',
+      appId: 'eKp2wzPKybiFid4KXcVFcyMX-gzGzoHsz',
+      appKey: 'RSA7FDJfrFwpawTfG1vE6R71',
+      placeholder: 'minkeyto@qq.com',
+      avatar: 'monsterid',
+      meta: guestInfo,
+      pageSize: '10',
+      lang: 'zh-CN',
+      recordIP: false,
+      serverURLs: '',
+      emojiCDN: '',
+      emojiMaps: "",
+      enableQQ: false,
+      requiredFields: requiredFields
+    });
+  }
+  loadScript('https://fastly.jsdelivr.net/npm/valine/dist/Valine.min.js', initValine)
+}
+
+if ('Valine' === 'Valine' || false) {
+  window.addEventListener('load', loadvaline)
+}
+else {
+  function loadOtherComment () {
+    loadvaline()
+  }
+}</script></div></div></div></article></main><footer id="footer" style="background-image: url(https://s2.loli.net/2022/08/10/TiMUq1PW6GDhZSE.jpg)" data-type="photo"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2022 By 灵熙云</div><div class="framework-info"><span>Copyright Ⓒ 灵熙云工作室. All rights reserved.</span></div><div class="footer_custom_text">Hi, welcome to my blog !</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div class="search-mask"></div><script src="https://fastly.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://fastly.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://fastly.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script defer id="ribbon" src="/js/third-party/canvas-ribbon.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="true"></script><script id="ribbon_piao" mobile="false" src="/js/third-party/piao.js"></script><script src="/js/third-party/activate-power-mode.js"></script><script>POWERMODE.colorful = false;
+POWERMODE.shake = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://fastly.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://fastly.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://fastly.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {
+  pangu.autoSpacingPage()
+})</script><script src="/js/search/local-search.js"></script><script>if (document.getElementsByClassName('mermaid').length) {
+  loadScript('https://fastly.jsdelivr.net/npm/mermaid/dist/mermaid.min.js',function () {
+    mermaid.initialize({
+      theme: 'default',
+  })
+})
+}</script></body></html>

@@ -4,6 +4,39 @@
   
     
     <entry>
+      <title>Tomcat + Nginx 实现负载均衡</title>
+      <link href="/2022/08/10/Tomcat%20+%20Nginx%20%E5%AE%9E%E7%8E%B0%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/"/>
+      <url>/2022/08/10/Tomcat%20+%20Nginx%20%E5%AE%9E%E7%8E%B0%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Tomcat-简介"><a href="#Tomcat-简介" class="headerlink" title="Tomcat 简介"></a>Tomcat 简介</h1><ul><li>Tomcat 是一个免费的开源的 Serlvet 容器，它是 Apache 基金会的 Jakarta 项目中的一个核心项目；</li><li>由 Apache，Sun 和其它一些公司及个人共同开发而成。</li><li>与传统的桌面应用程序不同，Tomcat 中的应用程序是一个 WAR（Web Archive）文件。</li><li>WAR 是 Sun 提出的一种 Web 应用程序格式，与 JAR 类似，也是许多文件的一个压缩包。</li></ul><h1 id="安装-Tomcat-服务"><a href="#安装-Tomcat-服务" class="headerlink" title="安装 Tomcat 服务"></a>安装 Tomcat 服务</h1><p>准备工作：</p><table><thead><tr><th align="center">主机名</th><th align="center">操作系统</th><th align="center">IP地址</th></tr></thead><tbody><tr><td align="center">Tomcat-A</td><td align="center">CentOS 7.x</td><td align="center">192.168.1.1</td></tr></tbody></table><h2 id="安装配置-Tomcat"><a href="#安装配置-Tomcat" class="headerlink" title="安装配置 Tomcat"></a>安装配置 Tomcat</h2><ul><li>安装 JDK：<a href="https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html">下载地址</a>（需要创建 Oracle 账号）</li></ul><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Tomcat-A ~]# ls</span><br><span class="line">anaconda-ks.cfg  apache-tomcat-8.5.16.tar.gz  jdk-8u91-linux-x64.tar.gz</span><br><span class="line">[root@Tomcat-A ~]# tar zxf jdk-8u91-linux-x64.tar.gz</span><br><span class="line">[root@Tomcat-A ~]# mv jdk1.8.0_91/ /usr/local/java</span><br><span class="line">[root@Tomcat-A ~]# cat &lt;&lt;END &gt;&gt; /etc/profile</span><br></pre></td></tr></table></figure><p>编辑内容如下：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">export JAVA_HOME=/usr/local/java</span><br><span class="line">export PATH=$PATH:/usr/local/java/bin</span><br><span class="line">END</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Tomcat-A ~]# source /etc/profile</span><br><span class="line">[root@Tomcat-A ~]# java -version # 查看 Java 版本号</span><br></pre></td></tr></table></figure><ul><li>安装 Tomcat 软件：</li></ul><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Tomcat-A ~]# wget https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.16/bin/apache-tomcat-8.5.16.tar.gz</span><br><span class="line">[root@Tomcat-A ~]# tar zxf apache-tomcat-8.5.16.tar.gz</span><br><span class="line">[root@Tomcat-A ~]# mv apache-tomcat-8.5.16 /usr/local/tomcat8</span><br><span class="line">[root@Tomcat-A ~]# /usr/local/tomcat8/bin/startup.sh # 启动 Tomcat</span><br><span class="line">[root@Tomcat-A ~]# netstat -anpt | grep 8080 # Tomcat 的工作端口</span><br><span class="line">[root@Tomcat-A ~]# netstat -anpt | grep java # 查看 Java 端口号</span><br></pre></td></tr></table></figure><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/ZichQdsB9IHO6NT.png"></p><p>注解：</p><blockquote><ul><li><code>8005</code>端口：用 <code>shutdown.sh</code> 关闭 Tomcat 的时候需要用到的端口号，如果此端口没启动，Tomcat 不能用 shutdown 命令关闭。</li><li><code>8009</code>端口：是 Tomcat 负责和其他的 HTTP 服务器建立连接的端口，如 Nginx 和 Apache 互通时使用。（AJP&#x2F;1.3 协议）</li><li><code>8080</code>端口：HTTP 访问时使用的端口。（HTTP&#x2F;1.1 协议）</li></ul></blockquote><h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/32BseNP87i4JGgE.png"></p><h2 id="配置-Java-的-Web-目录"><a href="#配置-Java-的-Web-目录" class="headerlink" title="配置 Java 的 Web 目录"></a>配置 Java 的 Web 目录</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Tomcat-A ~]# mkdir -p /web/tomcat</span><br><span class="line">[root@Tomcat-A ~]# echo &quot;192.168.1.1:Tomcat-A&quot; &gt; /web/tomcat/index.jsp</span><br></pre></td></tr></table></figure><h2 id="修改-Tomcat-主配置文件"><a href="#修改-Tomcat-主配置文件" class="headerlink" title="修改 Tomcat 主配置文件"></a>修改 Tomcat 主配置文件</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Tomcat-A ~]# vim /usr/local/tomcat8/conf/server.xml</span><br></pre></td></tr></table></figure><p>在148-151行添加：</p><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Context</span> <span class="attr">docBase</span>=<span class="string">&quot;/web/tomcat&quot;</span> <span class="attr">path</span>=<span class="string">&quot;&quot;</span> <span class="attr">reloadable</span>=<span class="string">&quot;false&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Context</span>&gt;</span></span><br></pre></td></tr></table></figure><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/Hr1AZ9uBgjI4vVF.png"></p><p>注解：</p><blockquote><ul><li><code>unpackWARs=&quot;true&quot;</code>：配置自动识别 war 包。</li><li><code>autoDeploy=&quot;true&quot;</code>：开启自动部署。</li><li><code>Context docBase=&quot;/web/tomcat&quot;</code>：网页根目录。</li><li><code>path=&quot;&quot;</code>：设置网页；相当于是 Nginx 中的 Location。</li><li><code>reloadble=&quot;false&quot;</code>：不会自动重新加载 Web 应用，配置为 true 则会根据文件被改动后自动重新加载。</li></ul></blockquote><p>重启 Tomcat 服务</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Tomcat-A ~]# /usr/local/tomcat8/bin/shutdown.sh</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Tomcat-A ~]# /usr/local/tomcat8/bin/startup.sh</span><br></pre></td></tr></table></figure><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/QFqYUHVimGLnABD.png"></p><p>验证：</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/5kyr1WcDxgRbFAu.png"></p><h1 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h1><p>准备工作：</p><table><thead><tr><th align="center">主机名</th><th align="center">操作系统</th><th align="center">IP地址</th></tr></thead><tbody><tr><td align="center">Tomcat-A</td><td align="center">CentOS 7.x</td><td align="center">192.168.1.1</td></tr><tr><td align="center">Tomcat-B</td><td align="center">CentOS 7.x</td><td align="center">192.168.1.2</td></tr><tr><td align="center">Nginx-Server</td><td align="center">CentOS 7.x</td><td align="center">192.168.1.3</td></tr></tbody></table><p>注意：</p><blockquote><ul><li><code>Tomcat-A</code> 可以用上面配置；</li><li><code>Tomcat-B</code> 跟 Tomcat-A 步骤一样，但页面要区分开，方便测试；</li></ul></blockquote><h2 id="部署-Nginx-服务器"><a href="#部署-Nginx-服务器" class="headerlink" title="部署 Nginx 服务器"></a>部署 Nginx 服务器</h2><ul><li>安装 Nginx 服务</li></ul><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Nginx-Server ~]# yum -y install pcre-devel zlib-devel popt-devel openssl-devel openssl</span><br><span class="line">[root@Nginx-Server ~]# wget http://www.nginx.org/download/nginx-1.18.0.tar.gz</span><br><span class="line">[root@Nginx-Server ~]# ls</span><br><span class="line">anaconda-ks.cfg  nginx-1.18.0.tar.gz</span><br><span class="line">[root@Nginx-Server ~]# tar zxf nginx-1.18.0.tar.gz -C /usr/src/</span><br><span class="line">[root@Nginx-Server ~]# cd /usr/src/nginx-1.18.0/</span><br><span class="line">[root@Nginx-Server nginx-1.18.0]# useradd -M -s /sbin/nologin nginx</span><br><span class="line">[root@Nginx-Server nginx-1.18.0]# ./configure \</span><br><span class="line">--prefix=/usr/local/nginx \</span><br><span class="line">--user=nginx \</span><br><span class="line">--group=nginx \</span><br><span class="line">--with-http_stub_status_module &amp;&amp; make &amp;&amp; make install</span><br><span class="line">[root@Nginx-Server nginx-1.18.0]# ln -s /usr/local/nginx/sbin/nginx /usr/local/sbin/</span><br></pre></td></tr></table></figure><h2 id="配置-Nginx-主配置文件"><a href="#配置-Nginx-主配置文件" class="headerlink" title="配置 Nginx 主配置文件"></a>配置 Nginx 主配置文件</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Nginx-Server ~]# vim /usr/local/nginx/conf/nginx.conf</span><br></pre></td></tr></table></figure><p>在 32 行增加：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">upstream tomcat_server &#123;</span><br><span class="line">    server 192.168.1.1:8080 weight=1;</span><br><span class="line">    server 192.168.1.2:8080 weight=1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>在 49 行添加：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">proxy_pass http://tomcat_server;</span><br></pre></td></tr></table></figure><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/Vh9kJDYfBAG4iv8.png"></p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Nginx-Server ~]# nginx -t # 检查 Nginx 配置文件是否正确</span><br><span class="line">[root@Nginx-Server ~]# nginx # 启用 Nginx 服务</span><br><span class="line">[root@Nginx-Server ~]# ps aux | grep nginx # 查看 Nginx 服务进程</span><br><span class="line">[root@Nginx-Server ~]# netstat -anpt | grep nginx # 查看 Nginx 端口号和进程号</span><br></pre></td></tr></table></figure><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/O9mnKSBYcVbakoU.png"></p><h2 id="验证-1"><a href="#验证-1" class="headerlink" title="验证"></a>验证</h2><p>使用浏览器访问 Nginx 服务器 IP 地址：</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/Gp1lPVSRIAzwegi.png"></p><p>不断刷新页面，观察页面变化：</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/Gm6JUbHdERKvzgO.png"></p><p>使用脚本查看效果：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@Nginx-Server ~]# for i in $(seq 10);do curl http://192.168.1.3;done</span><br></pre></td></tr></table></figure><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2022/08/10/Z7mxXRHPwWpTq9Y.png"></p><blockquote><p>原文：blog.csdn.net&#x2F;weixin_46902396&#x2F;article&#x2F;details&#x2F;122574996</p></blockquote>]]></content>
+      
+      
+      <categories>
+          
+          <category> 服务部署 </category>
+          
+          <category> 负载均衡 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Nginx </tag>
+            
+            <tag> 负载均衡 </tag>
+            
+            <tag> JDK </tag>
+            
+            <tag> Tomcat </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>线程数据交换、工作窃取算法，你懂吗？</title>
       <link href="/2022/08/05/%E7%BA%BF%E7%A8%8B%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2%E3%80%81%E5%B7%A5%E4%BD%9C%E7%AA%83%E5%8F%96%E7%AE%97%E6%B3%95%EF%BC%8C%E4%BD%A0%E6%87%82%E5%90%97/"/>
       <url>/2022/08/05/%E7%BA%BF%E7%A8%8B%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2%E3%80%81%E5%B7%A5%E4%BD%9C%E7%AA%83%E5%8F%96%E7%AE%97%E6%B3%95%EF%BC%8C%E4%BD%A0%E6%87%82%E5%90%97/</url>
@@ -276,7 +309,7 @@
       
       <categories>
           
-          <category> 服务器 </category>
+          <category> 服务部署 </category>
           
       </categories>
       
@@ -320,8 +353,6 @@
             
             <tag> 可重入锁 </tag>
             
-            <tag> 主从复制 </tag>
-            
             <tag> Redis分布式锁 </tag>
             
             <tag> 原子性 </tag>
@@ -329,6 +360,8 @@
             <tag> 读写锁 </tag>
             
             <tag> lua脚本 </tag>
+            
+            <tag> 主从复制 </tag>
             
             <tag> RedissonRedLock </tag>
             
@@ -350,7 +383,7 @@
       
       <categories>
           
-          <category> 服务器 </category>
+          <category> 服务部署 </category>
           
       </categories>
       
@@ -381,7 +414,7 @@
       
       <categories>
           
-          <category> 服务器 </category>
+          <category> 服务部署 </category>
           
       </categories>
       
@@ -501,17 +534,17 @@
       
         <tags>
             
-            <tag> Redis </tag>
-            
-            <tag> 缓存 </tag>
-            
             <tag> 点赞 </tag>
+            
+            <tag> Redis </tag>
             
             <tag> 钩子函数 </tag>
             
             <tag> Quartz </tag>
             
             <tag> Scheduling </tag>
+            
+            <tag> 缓存 </tag>
             
             <tag> 事务支持 </tag>
             
@@ -566,7 +599,7 @@
       
       <categories>
           
-          <category> 服务器 </category>
+          <category> 服务部署 </category>
           
       </categories>
       
@@ -634,7 +667,9 @@
       
       <categories>
           
-          <category> 服务器 </category>
+          <category> 服务部署 </category>
+          
+          <category> 日志框架 </category>
           
       </categories>
       
@@ -937,7 +972,9 @@
       
       <categories>
           
-          <category> 服务器 </category>
+          <category> 服务部署 </category>
+          
+          <category> 负载均衡 </category>
           
       </categories>
       
