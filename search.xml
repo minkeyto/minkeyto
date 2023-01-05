@@ -4,6 +4,41 @@
   
     
     <entry>
+      <title>网站被攻击？Nginx 实现自动封禁IP</title>
+      <link href="/2023/01/05/%E7%BD%91%E7%AB%99%E8%A2%AB%E6%94%BB%E5%87%BB%EF%BC%9FNgnix%20%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E5%B0%81%E7%A6%81IP/"/>
+      <url>/2023/01/05/%E7%BD%91%E7%AB%99%E8%A2%AB%E6%94%BB%E5%87%BB%EF%BC%9FNgnix%20%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E5%B0%81%E7%A6%81IP/</url>
+      
+        <content type="html"><![CDATA[<h1 id="IP-封禁"><a href="#IP-封禁" class="headerlink" title="IP 封禁"></a>IP 封禁</h1><ul><li><p>在<code>nginx</code>的<code>conf目录</code>下创建一个<code>blockip.conf</code>文件</p></li><li><p>里面放<code>需要封禁的IP</code>，格式如下</p></li></ul><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">deny 1.2.3.4;</span><br></pre></td></tr></table></figure><ul><li>在<code>nginx</code>的<code>HTTP的配置</code>中添加如下内容</li></ul><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">include blockips.conf;</span><br></pre></td></tr></table></figure><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/05/Dqwik4a3jucKhe7.png"></p><ul><li>重启<code>nginx</code></li></ul><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/usr/local/nginx/sbin/nginx -s reload</span><br></pre></td></tr></table></figure><ul><li>然后你就会看到IP被封禁了，你会喜提<code>403</code>；</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/05/z1ZCIv4PeQYxUrm.png"></p><h1 id="实现自动封禁IP"><a href="#实现自动封禁IP" class="headerlink" title="实现自动封禁IP"></a>实现自动封禁IP</h1><ul><li>如何实现使用<code>nginx自动封禁ip的功能</code>?</li></ul><blockquote><ol><li><code>AWK</code>统计<code>access.log</code>，记录每分钟访问超过60次的ip，然后配合nginx进行封禁</li><li>编写<code>shell脚本</code></li><li><code>crontab</code>定时跑脚本</li></ol></blockquote><p>先来实现第一个吧</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/05/6htCPy8J9imGzak.png"></p><ul><li><code>操作一</code>： AWK统计access.log，记录每分钟访问超过60次的ip</li></ul><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">awk <span class="string">&#x27;&#123;print $1&#125;&#x27;</span> access.log | <span class="built_in">sort</span> | <span class="built_in">uniq</span> -<span class="built_in">cd</span> | awk <span class="string">&#x27;&#123;if($1&gt;60)print $0&#125;&#x27;</span></span><br></pre></td></tr></table></figure><blockquote><ol><li><code>awk &#39;&#123;print $1&#125;&#39; access.log</code> ：取出access.log的第一列即为ip</li><li><code>sort | uniq -cd</code> ：去重和排序</li><li><code>awk &#39;&#123;if($1&gt;60)print $0&#125;&#39;</code> ： 判断重复的数量是否超过60个，超过60个就展示出来</li></ol></blockquote><ul><li><code>操作二</code>：编写shell脚本，实现整体功能（写了注释代码）</li></ul><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#不能把别人IP一直封着吧，这里就清除掉了</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&quot;</span> &gt; /usr/local/nginx/conf/blockip.conf</span><br><span class="line"></span><br><span class="line"><span class="comment">#前面最开始编写的统计数据功能</span></span><br><span class="line">ip_list=$(awk <span class="string">&#x27;&#123;print $1&#125;&#x27;</span> access.log | <span class="built_in">sort</span> | <span class="built_in">uniq</span> -<span class="built_in">cd</span> | awk <span class="string">&#x27;&#123;if($1&gt;60)print $0&#125;&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#判断这个变量是否为空</span></span><br><span class="line"><span class="keyword">if</span> <span class="built_in">test</span> -z <span class="string">&quot;<span class="variable">$ip_list</span>&quot;</span></span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">        <span class="comment">#为空写入 11.log中，并重新启动nginx</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;为空&quot;</span>  &gt;&gt; /usr/local/nginx/logs/11.<span class="built_in">log</span></span><br><span class="line"></span><br><span class="line">        /usr/local/nginx/sbin/nginx -s reload</span><br><span class="line"></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">        <span class="comment">#如果不为空 前面加上 deny格式和ip写入blockip.conf中</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;deny&quot;</span> <span class="variable">$ip_list</span> &gt; /usr/local/nginx/conf/blockip.conf</span><br><span class="line">    </span><br><span class="line">        <span class="comment">#因为前面携带了行数，所有我们需要去除掉前面的行数，写入后在读取一次</span></span><br><span class="line">        ip_list2=$(awk <span class="string">&#x27;&#123;print $3&#125;&#x27;</span> /usr/local/nginx/conf/blockip.conf)</span><br><span class="line">        </span><br><span class="line">        <span class="comment">#最后再把读取出来的值，在次写入到blockip.conf中</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;deny&quot;</span> <span class="variable">$ip_list2</span><span class="string">&quot;;&quot;</span>&gt; /usr/local/nginx/conf/blockip.conf</span><br><span class="line"></span><br><span class="line">        <span class="comment">#重启nginx</span></span><br><span class="line">        /usr/local/nginx/sbin/nginx -s reload</span><br><span class="line">        <span class="comment">#清空之前的日志，从最新的开始截取</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&quot;</span> &gt; /usr/local/nginx/logs/access.log</span><br><span class="line"></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure><ul><li><code>操作三</code>：使用crontab定时，来实现访问每分钟超过60的</li></ul><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">crontab -e </span><br><span class="line">* * * * * <span class="built_in">cd</span> /usr/local/nginx/logs/ &amp;&amp; sh ip_test.sh  每一分钟运行一次</span><br><span class="line">systemctl restart crond.service 重启一下配置既可</span><br></pre></td></tr></table></figure><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/05/YK9tHEZqnX7wy81.png"></p><p>上面就是全部思路，当然如果<code>你有更好的思路或者方法，欢迎在评论区探讨</code>。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 服务部署 </category>
+          
+          <category> Nginx </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Nginx </tag>
+            
+            <tag> Linux </tag>
+            
+            <tag> shell脚本 </tag>
+            
+            <tag> 封禁IP </tag>
+            
+            <tag> crontab定时脚本 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Teleport 简易堡垒机系统</title>
       <link href="/2022/12/12/Teleport%20%E7%AE%80%E6%98%93%E5%A0%A1%E5%9E%92%E6%9C%BA%E7%B3%BB%E7%BB%9F/"/>
       <url>/2022/12/12/Teleport%20%E7%AE%80%E6%98%93%E5%A0%A1%E5%9E%92%E6%9C%BA%E7%B3%BB%E7%BB%9F/</url>
@@ -14,8 +49,6 @@
       <categories>
           
           <category> 服务部署 </category>
-          
-          <category> 堡垒机 </category>
           
       </categories>
       
@@ -155,7 +188,7 @@
           
           <category> 服务部署 </category>
           
-          <category> 负载均衡 </category>
+          <category> Nginx </category>
           
       </categories>
       
@@ -493,8 +526,6 @@
             
             <tag> 可重入锁 </tag>
             
-            <tag> 主从复制 </tag>
-            
             <tag> Redis分布式锁 </tag>
             
             <tag> 原子性 </tag>
@@ -502,6 +533,8 @@
             <tag> 读写锁 </tag>
             
             <tag> lua脚本 </tag>
+            
+            <tag> 主从复制 </tag>
             
             <tag> RedissonRedLock </tag>
             
@@ -674,17 +707,17 @@
       
         <tags>
             
-            <tag> Redis </tag>
-            
-            <tag> 缓存 </tag>
-            
             <tag> 点赞 </tag>
+            
+            <tag> Redis </tag>
             
             <tag> 钩子函数 </tag>
             
             <tag> Quartz </tag>
             
             <tag> Scheduling </tag>
+            
+            <tag> 缓存 </tag>
             
             <tag> 事务支持 </tag>
             
