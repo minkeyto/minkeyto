@@ -4,6 +4,47 @@
   
     
     <entry>
+      <title>如何将自己开发的网站放到网上？看这一篇就够了</title>
+      <link href="/2023/01/12/%E5%A6%82%E4%BD%95%E5%B0%86%E8%87%AA%E5%B7%B1%E5%BC%80%E5%8F%91%E7%9A%84%E7%BD%91%E7%AB%99%E6%94%BE%E5%88%B0%E7%BD%91%E4%B8%8A%EF%BC%9F%E7%9C%8B%E8%BF%99%E4%B8%80%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/"/>
+      <url>/2023/01/12/%E5%A6%82%E4%BD%95%E5%B0%86%E8%87%AA%E5%B7%B1%E5%BC%80%E5%8F%91%E7%9A%84%E7%BD%91%E7%AB%99%E6%94%BE%E5%88%B0%E7%BD%91%E4%B8%8A%EF%BC%9F%E7%9C%8B%E8%BF%99%E4%B8%80%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/</url>
+      
+        <content type="html"><![CDATA[<p><code>有很多做网页的前端后端小白都想把自己辛辛苦苦做出来的网站放到网上</code>，让别人观摩观摩。可无奈技术有限，对于网站部署流程有些迷茫。在这里，我会告诉大家，如何将自己做出来的网站放到网上。</p><p>首先，我们需要明白几个概念：<code>备案</code>，<code>解析</code>。</p><p>然后，我们还要知道，应该准备什么东西：<code>网站源代码</code>（这个就不细说了），<code>服务器</code>，<code>域名</code>。</p><h1 id="备案"><a href="#备案" class="headerlink" title="备案"></a>备案</h1><p><code>所谓的网站备案其实是网站的ICP备案的简称</code>，国家相关规定如下：《互联网信息服务管理办法》指出互联网信息服务分为<code>经营性</code>和<code>非经营性两类</code>。国家对<code>经营性</code>互联网信息服务实行<code>许可制度</code>；对<code>非经营性</code>互联网信息服务实行<code>备案制度</code>。未取得许可或者未履行备案手续的，不得从事互联网信息服务。</p><p>一般来说，<code>备案指的是域名进行备案</code>，而不是服务器进行备案。一个网站是否备案，是取决于网站所用空间是国内还是国外的.</p><blockquote><ol><li>如果是<code>国内</code>主机，网站域名需要备案&#96;，才能通过域名访问到你的网站。</li><li>如果是<code>国外</code>主机，<code>网站域名是不用备案的</code>，也可以通过域名访问。</li></ol></blockquote><h1 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h1><p><code>域名解析</code>是把<code>域名指向网站空间IP</code>，让人们通过注册的域名可以方便地访问到网站的一种服务。IP地址是网络上标识站点的数字地址，<code>为了方便记忆，采用域名来代替IP地址标识站点地址</code>。域名解析就是域名到IP地址的转换过程。<code>域名的解析工作由DNS服务器完成</code>。</p><p>了解完这些之后，我们可以进行实际操作。</p><h1 id="服务器"><a href="#服务器" class="headerlink" title="服务器"></a>服务器</h1><p><code>服务器是提供计算服务器、网络服务的一种设备</code>。当我们访问一个网站时，点击这个网站会发出访问请求，服务器会响应服务请求，并相对应地进行处理，反馈相对应的数据。</p><p>如果我们<code>想要把自己的网站让别人也能看到，那就必须要放到服务器上</code>。而比较常见的分为<code>个人服务器</code>，<code>企业级服务器</code>。一般我们需要的是个人服务器。现在人们用的比较多的服务器有：<code>阿里云</code>，<code>腾讯云</code>，<code>百度云</code>等。在这里我<code>以阿里云为例进行讲解</code>（其他几款流程也大致相同）。</p><h2 id="购买服务器"><a href="#购买服务器" class="headerlink" title="购买服务器"></a>购买服务器</h2><blockquote><p>阿里云官网：<a href="https://www.aliyun.com/">https://www.aliyun.com/</a></p></blockquote><p>注册什么的有支付宝一般没什么问题，略过</p><p>对于小白来说，<code>个人服务器</code>一般有两种选择，一种是<code>云服务器 ECS </code>，一种是<code>轻量应用服务器</code>。</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/aHNSbIL6C7uZ1Fd.png" alt="云服务器ECS"></p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/4rZHeBXyG2CQ8sW.png" alt="轻量应用服务器"></p><p>两者区别不大，<code>前者类似于纯净版系统，需要有一定的运维技术，配置起来较为繁琐</code>；<code>后者类似于基础版系统，易用易上手</code>。在性能上，后者将系统盘升级为SSD，容量减小一半，提升了性能。相同CPU，在内存相同的情况下，单来比较磁盘读写性能,可见速度的提升明显。</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/UiZLNokdRnWIaBE.png" alt="购买界面"></p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/NoMrdY7LUyjXiDS.png" alt="支付界面"></p><blockquote><p><code>注：在阿里云需要购买3个月以上的服务器才可以申请备案（ECS云服务器中按量付费购买的服务器也不可以申请备案），需要备案的小白要注意了。</code></p></blockquote><p>当然，如果你还是<code>学生</code>的话，<code>阿里云有“云翼扶持计划”</code>。</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/aO1j7HKpIVm98Tc.png"></p><p>购买成功后，我们需要进行服务器的配置。</p><h2 id="配置服务器"><a href="#配置服务器" class="headerlink" title="配置服务器"></a>配置服务器</h2><p>当你购买了服务器后，就可以到右上角的控制台去查看。</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/Rqe2PJrCXaW34Mh.png"></p><p>这里是你自己的控制台，你所购买的产品都可以在这里查看。</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/MHPLoSvTIiUQEsJ.png"></p><p>点击<code>“远程连接”</code>后</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/leSCLqJ3ohaOurt.png"></p><p>因为进入控制台后，大部分的操作都需要<code>“管理员权限”</code>，所以首先先<code>切换</code>成“管理员”。输入：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo su root</span><br></pre></td></tr></table></figure><p>这里的“root”是默认管理员的名字，需要看自己管理员的名字进行更改。接下来<code>进入到usr文件夹下</code>，输入：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd /usr</span><br></pre></td></tr></table></figure><blockquote><p>注：这里<code>cd /usr</code>中间是有一个空格的，否则无法进入。</p></blockquote><p>在<code>usr</code>文件夹下<code>创建一个文件夹</code>，例如：java，用来存放后面用到的tomcat和java的jdk包。输入：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mkdir java</span><br></pre></td></tr></table></figure><p>再输入查看命令：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure><p>就可以查看到usr下所有的文件夹，以及java文件夹是否创建成功。</p><p>因为<code>涉及到jdk,tomcat的安装和解压</code>，为了方便操作，我们需要<code>下载一个软件：xftp（或者filezilla也行）</code>，顺便下载java的jdk压缩包，和tomcat的压缩包，具体的可以去官网下载，不细说。</p><p>安装成功后打开xftp，新建会话。</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/oYgMH1ReSrnsNjc.png"></p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/U9Z1WulP2iHcySb.png"></p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/OPZludTWL5Ywgev.png"></p><p>确认之后即可。</p><p>将下载好的<code>JDK</code>和<code>tomcat</code>的<code>压缩包</code>复制粘贴到<code>xftp</code>中<code>右侧</code>的<code>usr/java目录下</code>。（这里我已经粘贴解压好，本来是空的）。</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/Xt2ikTuw3Cm86ZS.png"></p><p>然后回到命令行控制台，查看一下文件夹是否成功粘贴到java文件夹下。</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/KqFYXTDk5eEfOA9.png"></p><p>成功后可以解压这两个压缩包在此目录下，分别输入：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tar -xzvf  jdk-xxxxx.tar.gz</span><br><span class="line"></span><br><span class="line">tar -xzvf apache-tomcat-xxxxxx.tar.gz</span><br></pre></td></tr></table></figure><p><code>xxxx</code>是你自己<code>下载的压缩包对应名字</code>。如果觉得解压后的文件夹名字太长，需要更改，输入：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mv 更改前名字 更改后名字</span><br></pre></td></tr></table></figure><p>成功后如下图</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/PQcugsTE4LXMUK8.png"></p><p>然后开始配置一些必需变量，输入：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim /etc/profile</span><br></pre></td></tr></table></figure><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/ZOn9pdITM3h1P47.png"></p><p>这里需要在里面添加环境变量，直接在控制台输入。当然，为了方便，可以从<code>xftp</code>中找到<code>profile</code>文件导出，<code>修改后再导入覆盖</code>。</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/4f7j3cKBzGdIwTy.png"></p><p>右键导出，在<code>结尾增加</code>如下代码：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">JAVA_HOME=/usr/java/你的jdk文件夹名</span><br><span class="line">PATH=/usr/java/你的jdk文件夹名/bin:$PATH</span><br><span class="line">CLASSPATH=.:/usr/java/你的jdk文件夹名/lib/dt.jar:/usr/java/你的jdk文件夹名/lib/tools.jar</span><br><span class="line">CATALINA_HOME=/usr/java/你的tomcat文件夹名</span><br><span class="line">export JAVA_HOME PATH CLASSPATH CATALINA_HOME</span><br></pre></td></tr></table></figure><p>修改成功导入即可。然后在控制台<code>启动配置</code>，输入：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">source /etc/profile</span><br></pre></td></tr></table></figure><p>然后查看下，再输入：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">javac</span><br></pre></td></tr></table></figure><p>如果显示下图，配置无误</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/QfzEJ92DghCZStv.png"></p><p>进入<code>tomcat</code>文件夹<code>bin</code>目录下。输入：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd /usr/java/你的tomcat文件夹名/bin</span><br></pre></td></tr></table></figure><p><code>启动tomcat</code>：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">./startup.sh</span><br></pre></td></tr></table></figure><p>如果也出现如下图，恭喜你，你的服务器已经配置成功！！</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/SmX3ZMFNi6WnHbI.png"></p><h1 id="域名"><a href="#域名" class="headerlink" title="域名"></a>域名</h1><p><code>域名，是由一串用点分隔的名字组成的Internet上某一台计算机或计算机组的名称，用于在数据传输时标识计算机的电子方位。</code></p><p>IP地址，是Internet主机的作为路由寻址用的数字型标识，人不容易记忆，因而产生了域名这一种字符型标识。</p><p>通俗的说域名就相当于一个家庭的门牌号码，别人通过这个号码可以很容易的找到你。这也意味着在全世界没有重复的域名。当然，此时没有域名也可以使用IP地址来访问你的网站。</p><h2 id="购买域名"><a href="#购买域名" class="headerlink" title="购买域名"></a>购买域名</h2><p>可以到阿里云官网进行域名购买，<code>购买前需要先查询你想购买的域名名字是否已经被人注册</code>。</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/4oRWycHqOus8Qjf.png"></p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/r8oMUcQzxvpG4uf.png"></p><p>选择自己心仪的域名进行注册购买。</p><h2 id="域名配置"><a href="#域名配置" class="headerlink" title="域名配置"></a>域名配置</h2><p>域名购买成功后，可以进入到自己的控制台查看。</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/kevUwSR7KEGfg8T.png"></p><p>由于<code>刚购买的域名</code>，所以<code>需要实名认证</code>，点击（2）后<code>填写相关资料后提交</code>，<code>大概1个工作日内会有你的“专属商务经理”给你打电话进行实名认证资料和核实，没问题的话一般3-5个工作日内就会认证成功</code>。</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/YA3DBu586dIyHPZ.png"></p><p>然后就要进行域名的备案了。</p><blockquote><p>注：如果你购买的服务器在<code>中国大陆内</code>，就<code>需要进行域名备案才能将域名配置到服务器</code>，如果<code>不是</code>，就可以<code>忽略“备案”这一步</code>。</p></blockquote><p>具体备案步骤可以点击这里查看（<code>https://help.aliyun.com/knowledge_detail/36922.html?spm=a2c4g.11186623.6.558.30ba1ff5Iku2Fj </code>），比较详细，我就不细说了。</p><p>备案需要10~20个工作日，在这期间我们可以先进行域名的解析。在控制台点击“解析”</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/jyxPn4MGOJo3ZRE.png"></p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/FJnPMRvNXoqaW82.png"></p><p>这里有两种快速域名解析的方法：</p><ul><li>网站域名解析</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/HTfVIntBPpEUqFS.png" alt="网站域名解析"></p><ul><li>邮箱域名解析</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/jfXLkOuJ413q7A2.png" alt="邮箱域名解析"></p><p>点击“确认”，解析成功。</p><h1 id="上传网站源码"><a href="#上传网站源码" class="headerlink" title="上传网站源码"></a>上传网站源码</h1><p>我们可以通过<code>FTP类的工具</code>帮助我们更加方便地<code>上传源码到服务器上</code>，目前国外用的较多的是<code>FileZilla</code>，国内用的多的是<code>XFTP工具</code>，<code>putty</code>等。这里我<code>以xftp5为例</code>。</p><p>先前我们已经远程连接过自己的服务器了，这里直接连接即可。</p><p>连接成功之后我们会找到这样一个文件夹（这里的<code>java文件夹是解压jdk和tomcat所在的文件夹</code>）：</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/12/xncimtVu7qod1jJ.jpg"></p><p><code>进入到上面绿色框中的文件夹内，其余的东西不需要动，将你做好的整个网站源码放到新的文件夹里（注意最好全英命名），通过FTP传输进来</code>。</p><p>然后你可以<code>通过你的域名+文件夹名+html单页面名即可访问你的网页</code>（例如：www.域名.com&#x2F;webapps&#x2F;里你存放网页的文件夹名&#x2F;index）。</p><p>这时候你的网站基本部署完毕了！</p><p>如果你的网页不加端口号就通过IP地址和域名来访问网页，这时候需要尝试修改一下端口，修改到<code>80端口</code>，然后<code>重启</code>一下<code>tomcat</code> 再试一下。<code>tomcat 默认配置文件</code>为<code>server.xml ，将其中的</code>8080修改为80<code>，然后</code>重启tomcat<code> 再试一下，因为</code>默认只有80端口可以不加端口号进行访问&#96;。</p><blockquote><p>来源：blog.csdn.net&#x2F;Jekin_KE&#x2F;article&#x2F;details&#x2F;87312623</p></blockquote>]]></content>
+      
+      
+      <categories>
+          
+          <category> 服务部署 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> JDK </tag>
+            
+            <tag> ICP备案 </tag>
+            
+            <tag> 域名解析 </tag>
+            
+            <tag> 服务器购买 </tag>
+            
+            <tag> 域名购买 </tag>
+            
+            <tag> FileZilla </tag>
+            
+            <tag> xftp </tag>
+            
+            <tag> tomcat </tag>
+            
+            <tag> java </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>获取resources目录下文件路径的九套功法</title>
       <link href="/2023/01/11/%E8%8E%B7%E5%8F%96resources%E7%9B%AE%E5%BD%95%E4%B8%8B%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84%E7%9A%84%E4%B9%9D%E5%A5%97%E5%8A%9F%E6%B3%95/"/>
       <url>/2023/01/11/%E8%8E%B7%E5%8F%96resources%E7%9B%AE%E5%BD%95%E4%B8%8B%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84%E7%9A%84%E4%B9%9D%E5%A5%97%E5%8A%9F%E6%B3%95/</url>
@@ -602,8 +643,6 @@
             
             <tag> 可重入锁 </tag>
             
-            <tag> 主从复制 </tag>
-            
             <tag> Redis分布式锁 </tag>
             
             <tag> 原子性 </tag>
@@ -611,6 +650,8 @@
             <tag> 读写锁 </tag>
             
             <tag> lua脚本 </tag>
+            
+            <tag> 主从复制 </tag>
             
             <tag> RedissonRedLock </tag>
             
@@ -783,17 +824,17 @@
       
         <tags>
             
-            <tag> Redis </tag>
-            
-            <tag> 缓存 </tag>
-            
             <tag> 点赞 </tag>
+            
+            <tag> Redis </tag>
             
             <tag> 钩子函数 </tag>
             
             <tag> Quartz </tag>
             
             <tag> Scheduling </tag>
+            
+            <tag> 缓存 </tag>
             
             <tag> 事务支持 </tag>
             
