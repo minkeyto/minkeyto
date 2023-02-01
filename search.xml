@@ -4,6 +4,41 @@
   
     
     <entry>
+      <title>Sa-Token-Quick-Login 快速登录认证法</title>
+      <link href="/2023/02/01/Sa-Token-Quick-Login%20%E5%BF%AB%E9%80%9F%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81/"/>
+      <url>/2023/02/01/Sa-Token-Quick-Login%20%E5%BF%AB%E9%80%9F%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81/</url>
+      
+        <content type="html"><![CDATA[<h1 id="解决什么问题"><a href="#解决什么问题" class="headerlink" title="解决什么问题"></a>解决什么问题</h1><p><code>Sa-Token-Quick-Login</code>可以为一个系统快速的、<code>零代码 注入一个登录页面</code></p><p>试想一下，假如我们开发了一个非常简单的小系统，比如说：服务器性能监控页面， 我们将它部署在服务器上，通过访问这个页面，我们可以随时了解服务器性能信息，非常方便</p><p>然而，这个页面方便我们的同时，也方便了一些不法的攻击者，由于这个页面毫无防护的暴露在公网中，任何一台安装了浏览器的电脑都可以随时访问它！</p><p>为此，我们必须给这个系统加上一个登录认证，只有知晓了后台密码的人员才可以进行访问</p><p><code>细细想来，完成这个功能你需要：</code></p><blockquote><ol><li>编写前端登录页面，手写各种表单样式</li><li>寻找合适的ajax类库，jQuery？Axios？还是直接前后台不分离？</li><li>寻找合适的模板引擎，比如jsp、Thymeleaf、FreeMarker、Velocity……选哪个呢？</li><li>处理后台各种拦截认证逻辑，前后台接口对接</li><li>你可能还会遇到令人头痛欲裂的模板引擎中ContextPath处理</li><li>……</li></ol></blockquote><p>你马上就会发现，写个监控页你一下午就可以搞定，然而这个登录页你却可能需要花上两三天的时间，这是一笔及其不划算的时间浪费</p><p>那么现在你可能就会有个疑问，难道就没有什么方法给我的小项目快速增加一个登录功能吗？</p><p><code>Sa-Token-Quick-Login</code>便是为了解决这个问题！</p><blockquote><p>官方文档地址：<a href="https://sa-token.cc/doc.html#/plugin/quick-login">https://sa-token.cc/doc.html#/plugin/quick-login</a></p></blockquote><h1 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h1><p><code>Sa-Token-Quick-Login</code>旨在用最小的成本为项目增加一个登录认证功能</p><blockquote><ul><li>简单：只需要<code>引入一个依赖便可</code>为系统注入登录功能，快速、简单、零代码！</li><li>不可定制：由于<code>登录页面不可定制</code>，所以<code>Sa-Token-Quick-Login</code>非常不适合普通项目的登录认证模块，STQL也无意去解决所有项目的登录认证模块</li></ul></blockquote><p><code>Sa-Token-Quick-Login</code>的定位是这样的场景：你的项目需要一个登录认证功能、这个认证页面可以不华丽、可以烂，但是一定要有，同时你又不想花费太多的时间浪费在登录页面上， 那么你便可以尝试一下<code>Sa-Token-Quick-Login</code></p><h1 id="整合步骤"><a href="#整合步骤" class="headerlink" title="整合步骤"></a>整合步骤</h1><p>首先我们需要创建一个SpringBoot的demo项目，比如：<code>sa-token-demo-quick-login</code></p><h2 id="添加依赖"><a href="#添加依赖" class="headerlink" title="添加依赖"></a>添加依赖</h2><ul><li>Maven方式</li></ul><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- Sa-Token-Quick-Login 插件 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>cn.dev33<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>sa-token-quick-login<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.34.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure><ul><li>Gradle方式</li></ul><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// Sa-Token-Quick-Login 插件</span><br><span class="line">implementation &#x27;cn.dev33:sa-token-quick-login:1.34.0&#x27;</span><br></pre></td></tr></table></figure><h2 id="参数配置"><a href="#参数配置" class="headerlink" title="参数配置"></a>参数配置</h2><ul><li>yaml风格</li></ul><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Sa-Token-Quick-Login 配置</span></span><br><span class="line"><span class="attr">sa:</span> </span><br><span class="line">    <span class="comment"># 登录账号</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">sa</span></span><br><span class="line">    <span class="comment"># 登录密码</span></span><br><span class="line">    <span class="attr">pwd:</span> <span class="number">123456</span></span><br><span class="line">    <span class="comment"># 是否自动随机生成账号密码 (此项为true时, name与pwd失效)</span></span><br><span class="line">    <span class="attr">auto:</span> <span class="literal">false</span></span><br><span class="line">    <span class="comment"># 是否开启全局认证(关闭后将不再强行拦截) </span></span><br><span class="line">    <span class="attr">auth:</span> <span class="literal">true</span></span><br><span class="line">    <span class="comment"># 登录页标题</span></span><br><span class="line">    <span class="attr">title:</span> <span class="string">Sa-Token</span> <span class="string">登录</span></span><br><span class="line">    <span class="comment"># 是否显示底部版权信息 </span></span><br><span class="line">    <span class="attr">copr:</span> <span class="literal">true</span></span><br><span class="line">    <span class="comment"># 指定拦截路径 </span></span><br><span class="line">    <span class="comment"># include: /**</span></span><br><span class="line">    <span class="comment"># 指定排除路径</span></span><br><span class="line">    <span class="comment"># exclude: /1.jpg</span></span><br></pre></td></tr></table></figure><ul><li>properties风格</li></ul><figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="comment">####### Sa-Token-Quick-Login 配置 #######</span></span><br><span class="line"><span class="comment"># 登录账号</span></span><br><span class="line"><span class="attr">sa.name</span>=<span class="string">sa</span></span><br><span class="line"><span class="comment"># 登录密码</span></span><br><span class="line"><span class="attr">sa.pwd</span>=<span class="string">123456</span></span><br><span class="line"><span class="comment"># 是否自动随机生成账号密码 (此项为true时, name与pwd失效)</span></span><br><span class="line"><span class="attr">sa.auto</span>=<span class="string">false</span></span><br><span class="line"><span class="comment"># 是否开启全局认证(关闭后将不再强行拦截) </span></span><br><span class="line"><span class="attr">sa.auth</span>=<span class="string">true</span></span><br><span class="line"><span class="comment"># 登录页标题</span></span><br><span class="line"><span class="attr">sa.title</span>=<span class="string">Sa-Token 登录</span></span><br><span class="line"><span class="comment"># 是否显示底部版权信息 </span></span><br><span class="line"><span class="attr">sa.copr</span>=<span class="string">true</span></span><br><span class="line"><span class="comment"># 指定拦截路径 </span></span><br><span class="line"><span class="comment"># sa.include=/**</span></span><br><span class="line"><span class="comment"># 指定排除路径</span></span><br><span class="line"><span class="comment"># sa.exclude=/1.jpg</span></span><br></pre></td></tr></table></figure><h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 测试专用Controller </span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestController</span> &#123;</span><br><span class="line">    <span class="comment">// 浏览器访问测试： http://localhost:8081</span></span><br><span class="line">    <span class="meta">@RequestMapping(&#123;&quot;/&quot;, &quot;/index&quot;&#125;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">index</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">str</span> <span class="operator">=</span> <span class="string">&quot;&lt;br /&gt;&quot;</span></span><br><span class="line">                + <span class="string">&quot;&lt;h1 style=&#x27;text-align: center;&#x27;&gt;资源页 （登录后才可进入本页面） &lt;/h1&gt;&quot;</span></span><br><span class="line">                + <span class="string">&quot;&lt;hr/&gt;&quot;</span></span><br><span class="line">                + <span class="string">&quot;&lt;p style=&#x27;text-align: center;&#x27;&gt; Sa-Token &quot;</span> + SaTokenConsts.VERSION_NO + <span class="string">&quot; &lt;/p&gt;&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> str;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>启动项目，使用浏览器访问：<code>http://localhost:8081</code>，首次访问时，由于处于未登录状态，会被强制进入登录页面</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/31/4SuHWbv8NndhRxM.png"></p><p>使用默认账号：<code>sa / 123456</code>进行登录，登录过后正常返回资源页面</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/01/31/gyKFspQubAkraPm.png"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 敏捷开发 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> SpringBoot </tag>
+            
+            <tag> Sa-Token-Quick-Login </tag>
+            
+            <tag> 零代码 </tag>
+            
+            <tag> 登录认证 </tag>
+            
+            <tag> Maven </tag>
+            
+            <tag> Gradle </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>如何将自己开发的网站放到网上？看这一篇就够了</title>
       <link href="/2023/01/12/%E5%A6%82%E4%BD%95%E5%B0%86%E8%87%AA%E5%B7%B1%E5%BC%80%E5%8F%91%E7%9A%84%E7%BD%91%E7%AB%99%E6%94%BE%E5%88%B0%E7%BD%91%E4%B8%8A%EF%BC%9F%E7%9C%8B%E8%BF%99%E4%B8%80%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/"/>
       <url>/2023/01/12/%E5%A6%82%E4%BD%95%E5%B0%86%E8%87%AA%E5%B7%B1%E5%BC%80%E5%8F%91%E7%9A%84%E7%BD%91%E7%AB%99%E6%94%BE%E5%88%B0%E7%BD%91%E4%B8%8A%EF%BC%9F%E7%9C%8B%E8%BF%99%E4%B8%80%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/</url>
@@ -824,17 +859,17 @@
       
         <tags>
             
-            <tag> 点赞 </tag>
-            
             <tag> Redis </tag>
+            
+            <tag> 缓存 </tag>
+            
+            <tag> 点赞 </tag>
             
             <tag> 钩子函数 </tag>
             
             <tag> Quartz </tag>
             
             <tag> Scheduling </tag>
-            
-            <tag> 缓存 </tag>
             
             <tag> 事务支持 </tag>
             
