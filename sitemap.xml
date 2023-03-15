@@ -656,41 +656,6 @@
   </url>
   
   <url>
-    <loc>http://www.goitman.cn/tags/Druid/</loc>
-    <lastmod>2023-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.goitman.cn/tags/SQL%E7%9B%91%E6%8E%A7%E7%BB%9F%E8%AE%A1/</loc>
-    <lastmod>2023-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.goitman.cn/tags/%E5%8A%A0%E5%AF%86/</loc>
-    <lastmod>2023-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.goitman.cn/tags/%E8%BF%9E%E6%8E%A5%E6%B1%A0/</loc>
-    <lastmod>2023-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.goitman.cn/tags/SpringBoot/</loc>
-    <lastmod>2023-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>http://www.goitman.cn/tags/Caddy/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
@@ -734,6 +699,41 @@
   
   <url>
     <loc>http://www.goitman.cn/tags/%E6%96%87%E4%BB%B6%E5%8E%8B%E7%BC%A9/</loc>
+    <lastmod>2023-03-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.goitman.cn/tags/Druid/</loc>
+    <lastmod>2023-03-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.goitman.cn/tags/SQL%E7%9B%91%E6%8E%A7%E7%BB%9F%E8%AE%A1/</loc>
+    <lastmod>2023-03-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.goitman.cn/tags/%E5%8A%A0%E5%AF%86/</loc>
+    <lastmod>2023-03-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.goitman.cn/tags/%E8%BF%9E%E6%8E%A5%E6%B1%A0/</loc>
+    <lastmod>2023-03-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.goitman.cn/tags/SpringBoot/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -803,21 +803,21 @@
   </url>
   
   <url>
-    <loc>http://www.goitman.cn/tags/lua/</loc>
+    <loc>http://www.goitman.cn/tags/lua%E8%84%9A%E6%9C%AC/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://www.goitman.cn/tags/JNI/</loc>
+    <loc>http://www.goitman.cn/tags/java/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://www.goitman.cn/tags/%E8%84%9A%E6%9C%AC/</loc>
+    <loc>http://www.goitman.cn/tags/%E7%BC%93%E5%AD%98/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -831,14 +831,7 @@
   </url>
   
   <url>
-    <loc>http://www.goitman.cn/tags/%E5%8F%82%E6%95%B0%E7%B1%BB%E5%9E%8B/</loc>
-    <lastmod>2023-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.goitman.cn/tags/%E8%BF%94%E5%9B%9E%E7%B1%BB%E5%9E%8B/</loc>
+    <loc>http://www.goitman.cn/tags/springboot/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -867,6 +860,13 @@
   
   <url>
     <loc>http://www.goitman.cn/tags/%E7%AE%97%E6%B3%95/</loc>
+    <lastmod>2023-03-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.goitman.cn/tags/%E4%BB%A3%E7%A0%81%E4%BC%98%E5%8C%96/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -937,13 +937,6 @@
   
   <url>
     <loc>http://www.goitman.cn/tags/%E8%BD%BB%E9%87%8F%E7%BA%A7%E9%94%81/</loc>
-    <lastmod>2023-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.goitman.cn/tags/%E4%BB%A3%E7%A0%81%E4%BC%98%E5%8C%96/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1195,13 +1188,6 @@
   </url>
   
   <url>
-    <loc>http://www.goitman.cn/tags/lua%E8%84%9A%E6%9C%AC/</loc>
-    <lastmod>2023-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>http://www.goitman.cn/tags/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
@@ -1223,14 +1209,14 @@
   </url>
   
   <url>
-    <loc>http://www.goitman.cn/tags/%E7%82%B9%E8%B5%9E/</loc>
+    <loc>http://www.goitman.cn/tags/Redis/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://www.goitman.cn/tags/Redis/</loc>
+    <loc>http://www.goitman.cn/tags/%E7%82%B9%E8%B5%9E/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1245,13 +1231,6 @@
   
   <url>
     <loc>http://www.goitman.cn/tags/Scheduling/</loc>
-    <lastmod>2023-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.goitman.cn/tags/%E7%BC%93%E5%AD%98/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1853,13 +1832,6 @@
   </url>
   
   <url>
-    <loc>http://www.goitman.cn/tags/java/</loc>
-    <lastmod>2023-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>http://www.goitman.cn/tags/Jar/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
@@ -2401,14 +2373,14 @@
   </url>
   
   <url>
-    <loc>http://www.goitman.cn/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
+    <loc>http://www.goitman.cn/categories/%E6%9C%8D%E5%8A%A1%E9%83%A8%E7%BD%B2/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://www.goitman.cn/categories/%E6%9C%8D%E5%8A%A1%E9%83%A8%E7%BD%B2/</loc>
+    <loc>http://www.goitman.cn/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
     <lastmod>2023-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

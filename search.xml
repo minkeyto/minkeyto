@@ -22,17 +22,15 @@
       
         <tags>
             
-            <tag> lua </tag>
+            <tag> lua脚本 </tag>
             
-            <tag> JNI </tag>
+            <tag> java </tag>
             
-            <tag> 脚本 </tag>
+            <tag> 缓存 </tag>
             
             <tag> 签名 </tag>
             
-            <tag> 参数类型 </tag>
-            
-            <tag> 返回类型 </tag>
+            <tag> springboot </tag>
             
         </tags>
       
@@ -168,6 +166,8 @@
       
         <tags>
             
+            <tag> java </tag>
+            
             <tag> JDK </tag>
             
             <tag> ICP备案 </tag>
@@ -183,8 +183,6 @@
             <tag> xftp </tag>
             
             <tag> tomcat </tag>
-            
-            <tag> java </tag>
             
         </tags>
       
@@ -754,11 +752,11 @@
       
         <tags>
             
+            <tag> 缓存 </tag>
+            
             <tag> Linux </tag>
             
             <tag> Redis </tag>
-            
-            <tag> 缓存 </tag>
             
             <tag> shell脚本 </tag>
             
@@ -789,6 +787,8 @@
       
         <tags>
             
+            <tag> lua脚本 </tag>
+            
             <tag> 可重入锁 </tag>
             
             <tag> Redis分布式锁 </tag>
@@ -796,8 +796,6 @@
             <tag> 原子性 </tag>
             
             <tag> 读写锁 </tag>
-            
-            <tag> lua脚本 </tag>
             
             <tag> 主从复制 </tag>
             
@@ -972,17 +970,17 @@
       
         <tags>
             
+            <tag> 缓存 </tag>
+            
             <tag> Quartz </tag>
             
-            <tag> 点赞 </tag>
-            
             <tag> Redis </tag>
+            
+            <tag> 点赞 </tag>
             
             <tag> 钩子函数 </tag>
             
             <tag> Scheduling </tag>
-            
-            <tag> 缓存 </tag>
             
             <tag> 事务支持 </tag>
             
@@ -1184,9 +1182,9 @@
       
         <tags>
             
-            <tag> redis </tag>
-            
             <tag> lua脚本 </tag>
+            
+            <tag> redis </tag>
             
             <tag> 限流 </tag>
             
