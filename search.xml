@@ -4,6 +4,41 @@
   
     
     <entry>
+      <title>福音：IDEA、VSCODE神级插件Bito</title>
+      <link href="/2023/05/11/%E7%A6%8F%E9%9F%B3%EF%BC%9AIDEA%E3%80%81VSCODE%E7%A5%9E%E7%BA%A7%E6%8F%92%E4%BB%B6Bito/"/>
+      <url>/2023/05/11/%E7%A6%8F%E9%9F%B3%EF%BC%9AIDEA%E3%80%81VSCODE%E7%A5%9E%E7%BA%A7%E6%8F%92%E4%BB%B6Bito/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Bito是什么？"><a href="#Bito是什么？" class="headerlink" title="Bito是什么？"></a>Bito是什么？</h1><p><code>Bito</code>是一款在编程软件中使用的插件，由<code>ChatGPT</code>团队开发，它是<code>ChatGPT</code>团队为了提高开发效率而开发的一款工具。</p><p><code>Bito</code>的<code>AI</code>帮助开发人员极大地提高了其影响力。它像一把瑞士军刀，使用与<code>ChatGPT</code>相同的模型，可以将开发人员的工作效率提高10倍，每天为您节省一个小时!</p><p><code>Bito</code>使编写代码，理解语法，编写测试用例，解释代码，评论代码，检查安全性甚至解释高级概念变得容易。经过数十亿行代码和数百万个文档的培训，可以完成令人难以置信的工作，而无需搜索网络或浪费时间在繁琐的事情上。</p><blockquote><p><code>官方文档</code>：<a href="https://docs.bito.ai/">https://docs.bito.ai/</a></p></blockquote><h1 id="IDEA环境"><a href="#IDEA环境" class="headerlink" title="IDEA环境"></a>IDEA环境</h1><blockquote><p>注意：<code>Bito</code>对于<code>idea</code>版本是有要求的，它要求<code>最低版本是2021.1+</code> 。如果你的<code>idea版本太低，那就升级版本吧</code></p></blockquote><h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul><li>打开<code>IDEA</code>的<code>Settings</code>界面，选择<code>Plugin</code>选项，输入<code>Bito</code>，直接点击<code>Install</code>安装即可，安装完成后，重启IDEA，插件生效</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/aryDgWHuPJz25oG.png"></p><ul><li>下图为已安装界面</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/ckwdOevgnbXLKqI.png"></p><h2 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h2><ul><li>在<code>IDEA</code>的右侧，可以看到<code>Bito</code>标签栏，点击展开</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/Etxksyr2RHJp45O.png"></p><ul><li>点击<code>Sign Up Or Sign-in</code>去注册或登录，输入邮箱(<code>QQ邮箱也行</code>)，勾选<code>记住</code>标签之后，点击<code>Continue</code>继续</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/O5e6KAjRPSp4CEt.png"></p><ul><li>邮箱获取验证码，输入后点击<code>submit</code>，来到如下界面会出现很多工作区，可以点击<code>join</code>选择加入，这里就创建新工作空间啦，点击<code>create workspace</code></li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/I5MxAyOiJjW1DF3.png"></p><ul><li>任意填写工作空间名即可，点击<code>Next</code></li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/ZiG4QB7Czplncra.png"></p><ul><li>可以复制工作空间地址分享出去，这里点击<code>Skip for now</code>跳过</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/9sXBueqPd1L86SC.png"></p><ul><li>点击<code>Skip Step</code>跳过</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/1v3NDiY2czG9C86.png"></p><ul><li>来到此界面，注册成功，接下来就是用了</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/M36YblnKZ51cD94.png"></p><ul><li>创建好的工作空间会在首页显示</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/IiDc2YgOLntW1l3.png"></p><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><ul><li>在对话框中输入需求</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/eYO5lMJWL2IcN9z.png"></p><ul><li>比如来个冒泡排序，回车便会回答生成代码</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/gu3PXFQIcYraZwb.png"></p><ul><li>下方有很多快捷模板<code>Templates</code>，包含<code>代码解释</code>、<code>注释生成</code>、<code>性能检测</code>、<code>安全检测</code>、<code>风格检查</code>、<code>优化可读性</code>、<code>清理代码</code>、<code>生成单元测试</code>、<code>新模板</code>，下图为<code>代码解释</code>效果，右键菜单也有快捷模板这些功能</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/mRb4xfHkwiDoCM2.png"></p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/a6PT1jRm8HhnX9x.png"></p><h1 id="VSCODE环境"><a href="#VSCODE环境" class="headerlink" title="VSCODE环境"></a>VSCODE环境</h1><p><code>VSCODE</code>中的安装更加简单，使用跟在<code>IDEA</code>中一模一样</p><blockquote><p>注意：和<code>IDEA</code>一样，<code>Bito</code>对于<code>VSCODE</code>版本也是有要求的</p></blockquote><ul><li>点击<code>扩展</code>图标，输入<code>bito</code>，点击安装（下图<code>VSCODE</code>为老版本，扩展按钮图标或位置可能不一致）</li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/8yYvGjIps19zdhR.png"></p><ul><li>安装好后，点击界面最左侧<code>活动栏</code>中的<code>Bito</code>图标，之后便是注册、获取验证码、创建工作空间等的界面与上述一样操作，在此就不再累述啦</li></ul><h1 id="疑难问题"><a href="#疑难问题" class="headerlink" title="疑难问题"></a>疑难问题</h1><p>IDEA市场不显示插件，设置代理解决</p><ul><li>打开IDEA的Settings界面，如下图设置<code>plugins.jetbrains.com</code></li></ul><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/7MRfSb9aVWtuIHO.png"></p><p>出现下图表明连接没问题</p><p><img src= "/img/loading.gif" data-src="https://s2.loli.net/2023/05/11/gXiYa824wnPs517.png"></p><p>以上步骤解决了就不用往下看了</p><ul><li>打开hosts文件，手动配置ip</li></ul><p><code>C:\Windows\System32\drivers\etc\hosts</code>末尾追加<code>13.226.159.106 plugins.jetbrains.com</code></p><ul><li>刷新<code>DNS</code></li></ul><p>管理员身份打开<code>cmd</code>界面，输入<code>ipconfig /flushdns</code>回车</p><ul><li>重新打开<code>idea</code>的<code>plugins</code>插件，列表出来了</li></ul><h1 id="后叙"><a href="#后叙" class="headerlink" title="后叙"></a>后叙</h1><p>毕竟是靠ChatGPT训练模型孵化出来的产物，数据的安全性无法保证，利用它来帮助自身技术提升还是可以的</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 敏捷开发 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 代码生成 </tag>
+            
+            <tag> ChatGPT </tag>
+            
+            <tag> AI </tag>
+            
+            <tag> IDEA </tag>
+            
+            <tag> VSCODE </tag>
+            
+            <tag> Bito </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>IP 归属用 Ip2region 就够了</title>
       <link href="/2023/03/28/IP%20%E5%BD%92%E5%B1%9E%E7%94%A8%20Ip2region%20%E5%B0%B1%E5%A4%9F%E4%BA%86/"/>
       <url>/2023/03/28/IP%20%E5%BD%92%E5%B1%9E%E7%94%A8%20Ip2region%20%E5%B0%B1%E5%A4%9F%E4%BA%86/</url>
@@ -1815,7 +1850,7 @@
       
       <categories>
           
-          <category> 辅助工具 </category>
+          <category> 敏捷开发 </category>
           
       </categories>
       
@@ -1989,7 +2024,7 @@
       
       <categories>
           
-          <category> 辅助工具 </category>
+          <category> 敏捷开发 </category>
           
       </categories>
       
@@ -2078,7 +2113,7 @@
       
       <categories>
           
-          <category> 辅助工具 </category>
+          <category> 敏捷开发 </category>
           
       </categories>
       
