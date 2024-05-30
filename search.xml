@@ -131,6 +131,8 @@
       
         <tags>
             
+            <tag> 高可用 </tag>
+            
             <tag> PowerJob </tag>
             
             <tag> 工作流 </tag>
@@ -142,8 +144,6 @@
             <tag> xxl-job </tag>
             
             <tag> 定时策略 </tag>
-            
-            <tag> 高可用 </tag>
             
             <tag> 高性能 </tag>
             
@@ -863,15 +863,15 @@
             
             <tag> lua脚本 </tag>
             
+            <tag> 可重入锁 </tag>
+            
+            <tag> 主从复制 </tag>
+            
             <tag> Redis分布式锁 </tag>
             
             <tag> 原子性 </tag>
             
-            <tag> 可重入锁 </tag>
-            
             <tag> 读写锁 </tag>
-            
-            <tag> 主从复制 </tag>
             
             <tag> RedissonRedLock </tag>
             
@@ -970,11 +970,11 @@
       
         <tags>
             
-            <tag> Quartz </tag>
-            
             <tag> RabbitMQ </tag>
             
             <tag> Redis </tag>
+            
+            <tag> Quartz </tag>
             
             <tag> Netty </tag>
             
@@ -1046,11 +1046,11 @@
             
             <tag> 缓存 </tag>
             
+            <tag> Redis </tag>
+            
             <tag> Quartz </tag>
             
             <tag> 点赞 </tag>
-            
-            <tag> Redis </tag>
             
             <tag> 钩子函数 </tag>
             
@@ -1737,8 +1737,6 @@
       
         <tags>
             
-            <tag> 可重入锁 </tag>
-            
             <tag> 锁机制 </tag>
             
             <tag> 乐观锁 </tag>
@@ -1752,6 +1750,8 @@
             <tag> 互斥锁 </tag>
             
             <tag> 公平锁 </tag>
+            
+            <tag> 可重入锁 </tag>
             
             <tag> 自旋锁 </tag>
             
