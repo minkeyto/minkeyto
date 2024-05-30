@@ -863,11 +863,11 @@
             
             <tag> lua脚本 </tag>
             
-            <tag> 可重入锁 </tag>
-            
             <tag> Redis分布式锁 </tag>
             
             <tag> 原子性 </tag>
+            
+            <tag> 可重入锁 </tag>
             
             <tag> 读写锁 </tag>
             
@@ -1737,6 +1737,8 @@
       
         <tags>
             
+            <tag> 可重入锁 </tag>
+            
             <tag> 锁机制 </tag>
             
             <tag> 乐观锁 </tag>
@@ -1750,8 +1752,6 @@
             <tag> 互斥锁 </tag>
             
             <tag> 公平锁 </tag>
-            
-            <tag> 可重入锁 </tag>
             
             <tag> 自旋锁 </tag>
             
